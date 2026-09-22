@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>منصة التاريخ التعليمية - الأستاذ أمير</title>
 
-  <!-- خط عصري أنيق للغاية (Readex Pro + Tajawal) -->
+  <!-- خط عصري أنيق (Readex Pro + Tajawal) -->
   <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 
   <!-- Firebase SDK (v10 Compat) -->
@@ -14,12 +14,11 @@
 
   <style>
     :root {
-      /* ألوان عصرية تناسب منصة تعليمية راقية لمادة التاريخ */
-      --primary: #0f172a;           /* كحلي داكن عصري جداً */
+      --primary: #0f172a;
       --primary-light: #1e293b;
-      --accent: #d97706;            /* ذهبي دافئ أنيق */
+      --accent: #d97706;
       --accent-hover: #b45309;
-      --bg-body: #f8fafc;           /* رمادي فاتح مريح للعين */
+      --bg-body: #f8fafc;
       --card-bg: #ffffff;
       --text-main: #0f172a;
       --text-muted: #64748b;
@@ -54,7 +53,6 @@
       margin: 0 auto;
     }
 
-    /* الهيدر والعنوان */
     header {
       text-align: center;
       margin-bottom: 35px;
@@ -66,7 +64,6 @@
       font-weight: 700;
       color: var(--primary);
       margin-bottom: 8px;
-      letter-spacing: -0.5px;
     }
 
     header h1 span {
@@ -76,10 +73,8 @@
     header p {
       color: var(--text-muted);
       font-size: 1.05rem;
-      font-weight: 400;
     }
 
-    /* أزرار التبديل الرئيسية */
     .view-switcher {
       display: flex;
       justify-content: center;
@@ -96,13 +91,7 @@
       font-size: 0.95rem;
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-    }
-
-    .tab-btn:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
+      transition: all 0.3s ease;
     }
 
     .tab-btn.active {
@@ -112,7 +101,6 @@
       box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.3);
     }
 
-    /* الكروت والأقسام */
     .card {
       background: var(--card-bg);
       border-radius: 20px;
@@ -158,8 +146,6 @@
       border: 1.5px solid var(--border-color);
       border-radius: 12px;
       font-size: 1rem;
-      background-color: #fff;
-      color: var(--text-main);
       outline: none;
       transition: all 0.25s ease;
     }
@@ -169,7 +155,6 @@
       box-shadow: var(--shadow-glow);
     }
 
-    /* الأزرار التفاعلية العصرية */
     .btn {
       width: 100%;
       padding: 15px;
@@ -178,7 +163,7 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s ease;
       display: inline-flex;
       justify-content: center;
       align-items: center;
@@ -193,18 +178,6 @@
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(217, 119, 6, 0.45);
-    }
-
-    .btn-secondary {
-      background-color: var(--primary);
-      color: #ffffff;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
-    }
-
-    .btn-secondary:hover {
-      background-color: var(--primary-light);
-      transform: translateY(-2px);
     }
 
     .btn-subtle {
@@ -213,11 +186,6 @@
       border: 1px solid var(--border-color);
     }
 
-    .btn-subtle:hover {
-      background-color: #e2e8f0;
-    }
-
-    /* كارت ترحيب الطالب */
     .user-welcome-box {
       background: linear-gradient(135deg, #0f172a, #1e293b);
       color: white;
@@ -229,18 +197,6 @@
       align-items: center;
     }
 
-    .user-welcome-box h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .user-welcome-box p {
-      font-size: 0.85rem;
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-
-    /* لوحة التحكم والأستاذ */
     .sub-nav {
       display: flex;
       gap: 10px;
@@ -257,7 +213,6 @@
       font-weight: 600;
       color: var(--text-muted);
       cursor: pointer;
-      transition: all 0.2s;
     }
 
     .sub-nav-btn.active {
@@ -279,24 +234,6 @@
       background-color: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 14px;
-      transition: all 0.2s ease;
-    }
-
-    .student-card-item:hover {
-      border-color: var(--accent);
-      transform: translateX(-4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    }
-
-    .student-info h4 {
-      font-size: 1rem;
-      color: var(--primary);
-      margin-bottom: 4px;
-    }
-
-    .student-info p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
     }
 
     .badge {
@@ -306,19 +243,9 @@
       font-weight: 600;
     }
 
-    .badge-success {
-      background-color: #d1fae5;
-      color: #065f46;
-    }
-
-    .badge-danger {
-      background-color: #fee2e2;
-      color: #991b1b;
-    }
-
-    .hidden {
-      display: none !important;
-    }
+    .badge-success { background-color: #d1fae5; color: #065f46; }
+    .badge-danger { background-color: #fee2e2; color: #991b1b; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -329,21 +256,15 @@
       <p>مع الأستاذ أمير — تجربة تعليمية وتفاعلية عصرية</p>
     </header>
 
-    <!-- تبويب الانتقال الرئيسي -->
     <div class="view-switcher">
       <button class="tab-btn active" id="tab-student" onclick="switchMainView('student')">🎓 بوابة الطالب</button>
       <button class="tab-btn" id="tab-teacher" onclick="switchMainView('teacher')">👑 لوحة الأستاذ</button>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 1. واجهة الطالب (نظام الخطوتين)            -->
-    <!-- ========================================== -->
+    <!-- 1. بوابة الطالب -->
     <div id="student-view">
-
-      <!-- الخطوة الأولى: تسجيل دخول الطالب بالمنصة -->
       <div id="student-step-1" class="card">
         <h2 class="card-title">📝 تسجيل الدخول بالمنصة أولاً</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">أدخل بياناتك للتسجيل في المنصة والتمكن من تسجيل حضور الحصص.</p>
         
         <div class="form-group">
           <label for="reg-name">اسم الطالب ثلاثي:</label>
@@ -351,7 +272,7 @@
         </div>
 
         <div class="form-group">
-          <label for="reg-phone">رقم الهاتف (المسجل بالمنصة):</label>
+          <label for="reg-phone">رقم الهاتف:</label>
           <input type="tel" id="reg-phone" placeholder="مثال: 01012345678">
         </div>
 
@@ -371,10 +292,7 @@
         <button class="btn btn-primary" onclick="loginOrRegisterStudent()">الدخول والإنضمام للمنصة 🚀</button>
       </div>
 
-      <!-- الخطوة الثانية: تسجيل حضور الحصة والتعديل (تظهر بعد تسجيل الدخول) -->
       <div id="student-step-2" class="card hidden">
-        
-        <!-- كارت ترحيب ومعلومات الحساب -->
         <div class="user-welcome-box">
           <div>
             <h3 id="welcome-student-name">أهلاً بك يا طالب</h3>
@@ -387,38 +305,30 @@
         
         <div class="form-group">
           <label for="session-code">كود الحصة المعطى لك:</label>
-          <input type="text" id="session-code" placeholder="أدخل كود الحصة (مثال: 1020)">
+          <input type="text" id="session-code" placeholder="أدخل كود الحصة">
         </div>
 
         <button class="btn btn-primary" onclick="submitSessionCode()">تأكيد وتسجيل الحضور ✨</button>
 
         <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border-color);">
 
-        <button class="btn btn-subtle" onclick="updateStudentStage()">تحديث المرحلة الدراسية (مرتين أسبوعياً فقط) 🔄</button>
+        <button class="btn btn-subtle" onclick="updateStudentStage()">تحديث المرحلة الدراسية 🔄</button>
       </div>
-
     </div>
 
-    <!-- ========================================== -->
-    <!-- 2. لوحة الأستاذ (محمية بكلمة سر 1234)        -->
-    <!-- ========================================== -->
+    <!-- 2. لوحة الأستاذ -->
     <div id="teacher-view" class="hidden">
-      
-      <!-- شاشة القفل بكلمة السر -->
       <div id="teacher-lock-screen" class="card" style="text-align: center; max-width: 450px; margin: 0 auto;">
         <h2 class="card-title" style="justify-content: center;">🔒 لوحة التحكم محمية</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">أدخل كلمة السر الخاصة بالأستاذ للدخول:</p>
         <div class="form-group">
-          <input type="password" id="teacher-password" placeholder="كلمة السر" style="text-align: center; font-size: 1.2rem; letter-spacing: 4px;">
+          <input type="password" id="teacher-password" placeholder="كلمة السر" style="text-align: center; font-size: 1.2rem;">
         </div>
         <button class="btn btn-primary" onclick="unlockTeacherDashboard()">دخول اللوحة</button>
       </div>
 
-      <!-- محتوى لوحة التحكم الرئيسي -->
       <div id="teacher-content" class="card hidden">
         <h2 class="card-title">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
 
-        <!-- تعيين كود الحصة -->
         <div style="background: #f1f5f9; padding: 20px; border-radius: 14px; margin-bottom: 25px;">
           <div class="form-group" style="margin-bottom: 10px;">
             <label for="teacher-set-code">تحديث كود الحصة الحالي النشط:</label>
@@ -430,13 +340,11 @@
           <p id="current-active-code-display" style="font-size: 0.9rem; color: var(--accent); font-weight: 600;">الكود النشط حالياً: جاري التحميل...</p>
         </div>
 
-        <!-- أزرار التنقل الفرعية داخل لوحة الأستاذ -->
         <div class="sub-nav">
           <button class="sub-nav-btn active" id="subtab-all" onclick="switchTeacherSubTab('all')">📋 لائحة المسجلين بالمنصة</button>
           <button class="sub-nav-btn" id="subtab-session" onclick="switchTeacherSubTab('session')">🎯 حضور الحصة الحالية</button>
         </div>
 
-        <!-- تصفية المراحل -->
         <div class="form-group">
           <label for="filter-stage-select">اختر المرحلة لتصفية الطلاب:</label>
           <select id="filter-stage-select" onchange="renderTeacherData()">
@@ -451,27 +359,13 @@
           </select>
         </div>
 
-        <!-- قسم خيارات الفلترة لحضور الحصة الحالية فقط -->
-        <div id="session-filter-buttons" class="hidden" style="display: flex; gap: 10px; margin-bottom: 15px;">
-          <button class="btn btn-subtle" onclick="setAttendanceFilter('attended')">عرض من حضروا فقط 🟢</button>
-          <button class="btn btn-subtle" onclick="setAttendanceFilter('absent')">عرض من لم يحضروا 🔴</button>
-        </div>
-
         <h3 id="list-section-title" style="font-size: 1.1rem; color: var(--primary); margin-top: 20px;">قائمة المسجلين بالمنصة</h3>
-        
-        <!-- شبكة عرض الطلاب -->
-        <div class="student-grid" id="students-display-container">
-          <!-- يتم إدراج العناصر ديناميكياً -->
-        </div>
-
+        <div class="student-grid" id="students-display-container"></div>
       </div>
-
     </div>
-
   </div>
 
   <script>
-    // --- 1. إعدادات ومفتاح الفايربيس ---
     const firebaseConfig = {
       apiKey: "AIzaSyBja36JoyQuVrOtwwjATqLO9hVE-VG5ShQ",
       authDomain: "mramir-a454d.firebaseapp.com",
@@ -485,26 +379,25 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // حالة التطبيق اللحظية
-    let currentStudent = null; // بيانات الطالب الحالي المسجل دخول
+    let currentStudent = null;
     let isTeacherUnlocked = false;
-    let activeTeacherSubTab = 'all'; // 'all' أو 'session'
-    let currentAttendanceFilter = 'attended'; // 'attended' أو 'absent'
+    let activeTeacherSubTab = 'all';
 
-    // عند تحميل الصفحة: استرجاع الجلسة إذا كان الطالب مسجلاً مسبقاً
     window.onload = function() {
       const savedStudent = localStorage.getItem('history_app_student');
       if (savedStudent) {
-        currentStudent = JSON.parse(savedStudent);
-        showStudentStep2();
+        try {
+          currentStudent = JSON.parse(savedStudent);
+          showStudentStep2();
+        } catch(e) {
+          localStorage.removeItem('history_app_student');
+        }
       }
     };
 
-    // --- 2. التبديل الرئيسي بين شاشات التطبيق ---
     function switchMainView(view) {
       document.getElementById('tab-student').classList.toggle('active', view === 'student');
       document.getElementById('tab-teacher').classList.toggle('active', view === 'teacher');
-      
       document.getElementById('student-view').classList.toggle('hidden', view !== 'student');
       document.getElementById('teacher-view').classList.toggle('hidden', view !== 'teacher');
 
@@ -514,9 +407,6 @@
       }
     }
 
-    // --- 3. منطق الطالب (التسجيل، تسجيل الحضور، التحديث) ---
-
-    // أ) التسجيل / دخول المنصة برقم الهاتف والاسم
     async function loginOrRegisterStudent() {
       const name = document.getElementById('reg-name').value.trim();
       const phone = document.getElementById('reg-phone').value.trim();
@@ -532,17 +422,15 @@
         const doc = await studentRef.get();
 
         if (doc.exists) {
-          // طالب موجود مسبقاً -> تحديث الجلسة
           currentStudent = doc.data();
         } else {
-          // طالب جديد -> إنشاء حساب
           currentStudent = {
             name: name,
             phone: phone,
             stage: stage,
             updateCount: 0,
             lastResetDate: Date.now(),
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: new Date().toISOString()
           };
           await studentRef.set(currentStudent);
         }
@@ -552,7 +440,7 @@
         showStudentStep2();
       } catch (error) {
         console.error("خطأ أثناء تسجيل الطالب:", error);
-        alert("حدث خطأ أثناء التواصل مع السيرفر.");
+        alert("❌ خطأ اتصال بالسيرفر: " + error.message + "\nتأكد من تطبيق Rules في الفايربيس!");
       }
     }
 
@@ -570,7 +458,6 @@
       document.getElementById('student-step-1').classList.remove('hidden');
     }
 
-    // ب) تسجيل حضور الحصة بالكود
     async function submitSessionCode() {
       const inputCode = document.getElementById('session-code').value.trim();
       if (!inputCode) {
@@ -583,68 +470,39 @@
         const activeCode = configDoc.exists ? configDoc.data().activeCode : null;
 
         if (inputCode !== activeCode) {
-          alert("❌ كود الحصة غير صحيح! يرجى التأكد من الأستاذ.");
+          alert("❌ كود الحصة غير صحيح!");
           return;
         }
 
-        // تسجيل الحضور في مستند الحضور بالفايربيس
         const attendanceId = `${activeCode}_${currentStudent.phone}`;
         await db.collection('attendance').doc(attendanceId).set({
           phone: currentStudent.phone,
           name: currentStudent.name,
           stage: currentStudent.stage,
           sessionCode: activeCode,
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          timestamp: new Date().toISOString()
         });
 
         alert("✨ تم تسجيل حضورك بنجاح لهذه الحصة!");
         document.getElementById('session-code').value = '';
       } catch (error) {
-        console.error("خطأ في تسحيل الحضور:", error);
-        alert("حدث خطأ أثناء التأكيد.");
+        console.error("خطأ في تسجيل الحضور:", error);
+        alert("❌ تعذر تسجيل الحضور: " + error.message);
       }
     }
 
-    // ج) تحديث المرحلة الدراسية (بشرط مرتين أسبوعياً فقط)
     async function updateStudentStage() {
       const newStage = document.getElementById('reg-stage').value;
-      
-      const NOW = Date.now();
-      const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
-
-      let count = currentStudent.updateCount || 0;
-      let lastReset = currentStudent.lastResetDate || NOW;
-
-      if (NOW - lastReset > ONE_WEEK) {
-        count = 0;
-        lastReset = NOW;
-      }
-
-      if (count >= 2) {
-        alert("⚠️ عذراً! لقد استنفدت الحد الأقصى لتعديل المرحلة الدراسية هذا الأسبوع (مرتين فقط).");
-        return;
-      }
-
       try {
         currentStudent.stage = newStage;
-        currentStudent.updateCount = count + 1;
-        currentStudent.lastResetDate = lastReset;
-
-        await db.collection('students').doc(currentStudent.phone).update({
-          stage: newStage,
-          updateCount: currentStudent.updateCount,
-          lastResetDate: currentStudent.lastResetDate
-        });
-
+        await db.collection('students').doc(currentStudent.phone).update({ stage: newStage });
         localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
         showStudentStep2();
-        alert(`✅ تم تعديل مرحلتك الدراسية بنجاح. المتبقي لك: ${2 - currentStudent.updateCount} مرة هذا الأسبوع.`);
+        alert("✅ تم تعديل مرحلتك الدراسية بنجاح.");
       } catch (err) {
-        alert("تعذر حفظ التعديلات.");
+        alert("تعذر حفظ التعديلات: " + err.message);
       }
     }
-
-    // --- 4. لوحة الأستاذ وتداول البيانات ---
 
     function unlockTeacherDashboard() {
       const pass = document.getElementById('teacher-password').value;
@@ -660,21 +518,34 @@
     }
 
     async function saveActiveSessionCode() {
-      const code = document.getElementById('teacher-set-code').value.trim();
-      if (!code) return;
+      const codeInput = document.getElementById('teacher-set-code');
+      const code = codeInput.value.trim();
+      if (!code) {
+        alert("يرجى كتابة كود الحصة أولاً!");
+        return;
+      }
 
-      await db.collection('settings').doc('config').set({ activeCode: code }, { merge: true });
-      alert("✅ تم تحديث كود الحصة بنجاح!");
-      fetchActiveSessionCode();
-      document.getElementById('teacher-set-code').value = '';
+      try {
+        await db.collection('settings').doc('config').set({ activeCode: code }, { merge: true });
+        alert("✅ تم تحديث كود الحصة بنجاح!");
+        fetchActiveSessionCode();
+        codeInput.value = '';
+      } catch (error) {
+        console.error("خطأ في حفظ الكود:", error);
+        alert("❌ فشل حفظ الكود: " + error.message + "\nيرجى التأكد من صلاحيات الفايربيس (Rules).");
+      }
     }
 
     async function fetchActiveSessionCode() {
-      const doc = await db.collection('settings').doc('config').get();
-      if (doc.exists && doc.data().activeCode) {
-        document.getElementById('current-active-code-display').innerText = `الكود النشط حالياً: ${doc.data().activeCode}`;
-      } else {
-        document.getElementById('current-active-code-display').innerText = `الكود النشط حالياً: غير محدد`;
+      try {
+        const doc = await db.collection('settings').doc('config').get();
+        if (doc.exists && doc.data().activeCode) {
+          document.getElementById('current-active-code-display').innerText = `الكود النشط حالياً: ${doc.data().activeCode}`;
+        } else {
+          document.getElementById('current-active-code-display').innerText = `الكود النشط حالياً: غير محدد`;
+        }
+      } catch (error) {
+        console.error("خطأ قراءة الكود:", error);
       }
     }
 
@@ -682,76 +553,63 @@
       activeTeacherSubTab = tab;
       document.getElementById('subtab-all').classList.toggle('active', tab === 'all');
       document.getElementById('subtab-session').classList.toggle('active', tab === 'session');
-      
-      document.getElementById('session-filter-buttons').classList.toggle('hidden', tab !== 'session');
       document.getElementById('list-section-title').innerText = tab === 'all' ? "📋 لائحة المسجلين بالمنصة" : "🎯 حضور الحصة الحالية";
-
       renderTeacherData();
     }
 
-    function setAttendanceFilter(status) {
-      currentAttendanceFilter = status;
-      renderTeacherData();
-    }
-
-    // جلب وعرض البيانات بحالة حيّة حقيقية (Realtime Snapshot)
-    async function renderTeacherData() {
+    function renderTeacherData() {
       if (!isTeacherUnlocked) return;
 
       const selectedStage = document.getElementById('filter-stage-select').value;
-      const configDoc = await db.collection('settings').doc('config').get();
-      const activeCode = configDoc.exists ? configDoc.data().activeCode : "";
 
-      // جلب جميع الطلاب المسجلين
-      db.collection('students').onSnapshot(async (studentsSnapshot) => {
-        // جلب سجل الحضور للحصة النشطة
-        const attendanceSnapshot = await db.collection('attendance').where('sessionCode', '==', activeCode).get();
-        const attendedPhones = new Set();
-        attendanceSnapshot.forEach(doc => attendedPhones.add(doc.data().phone));
+      db.collection('settings').doc('config').get().then(configDoc => {
+        const activeCode = configDoc.exists ? configDoc.data().activeCode : "";
 
-        const container = document.getElementById('students-display-container');
-        container.innerHTML = '';
+        db.collection('students').onSnapshot(studentsSnapshot => {
+          db.collection('attendance').where('sessionCode', '==', activeCode).get().then(attendanceSnapshot => {
+            const attendedPhones = new Set();
+            attendanceSnapshot.forEach(doc => attendedPhones.add(doc.data().phone));
 
-        let studentsList = [];
-        studentsSnapshot.forEach(doc => studentsList.push(doc.data()));
+            const container = document.getElementById('students-display-container');
+            container.innerHTML = '';
 
-        // تصفية حسب المرحلة
-        if (selectedStage !== "الكل") {
-          studentsList = studentsList.filter(s => s.stage === selectedStage);
-        }
+            let studentsList = [];
+            studentsSnapshot.forEach(doc => studentsList.push(doc.data()));
 
-        if (studentsList.length === 0) {
-          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مسجلون في هذه القائمة.</p>`;
-          return;
-        }
+            if (selectedStage !== "الكل") {
+              studentsList = studentsList.filter(s => s.stage === selectedStage);
+            }
 
-        studentsList.forEach(student => {
-          const hasAttended = attendedPhones.has(student.phone);
+            if (studentsList.length === 0) {
+              container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مسجلون في هذه القائمة.</p>`;
+              return;
+            }
 
-          // تطبيق فلتر كشف الحصة الحالية إذا كان التبويب النشط
-          if (activeTeacherSubTab === 'session') {
-            if (currentAttendanceFilter === 'attended' && !hasAttended) return;
-            if (currentAttendanceFilter === 'absent' && hasAttended) return;
-          }
+            studentsList.forEach(student => {
+              const hasAttended = attendedPhones.has(student.phone);
 
-          const card = document.createElement('div');
-          card.className = 'student-card-item';
+              if (activeTeacherSubTab === 'session' && !hasAttended) return;
 
-          const badgeHTML = hasAttended 
-            ? `<span class="badge badge-success">حضر الحصة 🟢</span>` 
-            : `<span class="badge badge-danger">لم يحضر 🔴</span>`;
+              const card = document.createElement('div');
+              card.className = 'student-card-item';
 
-          card.innerHTML = `
-            <div class="student-info">
-              <h4>${student.name}</h4>
-              <p>📱 ${student.phone} | 📚 ${student.stage}</p>
-            </div>
-            <div>${badgeHTML}</div>
-          `;
+              const badgeHTML = hasAttended 
+                ? `<span class="badge badge-success">حضر الحصة 🟢</span>` 
+                : `<span class="badge badge-danger">لم يحضر 🔴</span>`;
 
-          container.appendChild(card);
-        });
-      });
+              card.innerHTML = `
+                <div>
+                  <h4 style="color: var(--primary); font-size: 1rem;">${student.name}</h4>
+                  <p style="color: var(--text-muted); font-size: 0.85rem;">📱 ${student.phone} | 📚 ${student.stage}</p>
+                </div>
+                <div>${badgeHTML}</div>
+              `;
+
+              container.appendChild(card);
+            });
+          }).catch(err => console.error("خطأ جلب سجل الحضور:", err));
+        }, err => console.error("خطأ جلب الطلاب:", err));
+      }).catch(err => console.error("خطأ الإعدادات:", err));
     }
   </script>
 </body>
