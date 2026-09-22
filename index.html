@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام تسجيل الحضور والغياب الذكي</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border-color: #334155;
+            --success: #22c55e;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-sub);
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            width: auto;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent);
+            color: #0f172a;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .info-card {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .info-card p {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .info-card strong {
+            color: var(--text-main);
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert-success { background: rgba(34, 197, 94, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .alert-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+
+        .timer-box {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 15px 0;
+        }
+
+        .student-list {
+            max-height: 250px;
+            overflow-y: auto;
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-top: 10px;
+        }
+
+        .student-item {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .student-item:last-child { border-bottom: none; }
+
+        .stage-badge {
+            font-size: 11px;
+            background: rgba(56, 189, 248, 0.2);
+            color: var(--accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- تبديل الواجهات -->
+    <div id="view-toggle" style="text-align: center; margin-bottom: 15px;">
+        <button onclick="switchRole('student')" id="btn-student-view" style="width: 48%; display: inline-block;">واجهة الطالب</button>
+        <button onclick="switchRole('teacher')" id="btn-teacher-view" style="width: 48%; display: inline-block; background-color: #475569; color: white;">لوحة الأستاذ</button>
+    </div>
+
+    <!-- ==================== واجهة الطالب ==================== -->
+    <div id="student-section">
+        <h2>تسجيل حضور الطالب</h2>
+
+        <!-- تسجيل البيانات لأول مرة -->
+        <div id="first-time-form">
+            <div class="form-group">
+                <label>اسم الطالب الثلاثي</label>
+                <input type="text" id="std-name" placeholder="أدخل اسمك الكامل">
+            </div>
+            <div class="form-group">
+                <label>رقم الهاتف / الواتساب</label>
+                <input type="tel" id="std-phone" placeholder="01xxxxxxxxx">
+            </div>
+            <div class="form-group">
+                <label>المرحلة الدراسية</label>
+                <select id="std-stage">
+                    <option value="1_prep">الصف الأول الإعدادي</option>
+                    <option value="2_prep">الصف الثاني الإعدادي</option>
+                    <option value="3_prep">الصف الثالث الإعدادي</option>
+                    <option value="1_sec">الصف الأول الثانوي</option>
+                    <option value="2_sec_gen">الصف الثاني الثانوي (عام)</option>
+                    <option value="2_sec_bac">الصف الثاني الثانوي (بكالوريا)</option>
+                    <option value="3_sec">الصف الثالث الثانوي</option>
+                </select>
+            </div>
+            <button onclick="saveStudentDeviceData()">حفظ وتثبيت البيانات على الجهاز</button>
+        </div>
+
+        <!-- التسجيل السريع برمز الحصة -->
+        <div id="quick-attendance-form" style="display: none;">
+            <div class="info-card">
+                <p>الطالب: <strong id="saved-name">-</strong></p>
+                <p>الهاتف: <strong id="saved-phone">-</strong></p>
+                <p>المرحلة: <strong id="saved-stage-title">-</strong></p>
+                <a href="#" onclick="resetDeviceData()" style="color: var(--danger); font-size: 12px; text-decoration: none;">تغيير البيانات المسجلة</a>
+            </div>
+
+            <div class="form-group">
+                <label>رمز الحصة (رمز الأستاذ)</label>
+                <input type="text" id="session-code-input" placeholder="أدخل رمز الحصة">
+            </div>
+            <button onclick="submitAttendance()">تسجيل الحضور الآن</button>
+        </div>
+
+        <div id="std-alert" class="alert"></div>
+    </div>
+
+    <!-- ==================== حماية كلمة السر للأستاذ ==================== -->
+    <div id="teacher-auth-section" style="display: none;">
+        <h2>تأكيد دخول الأستاذ</h2>
+        <div class="form-group">
+            <label>أدخل كلمة السر للوصول</label>
+            <input type="password" id="teacher-pass-input" placeholder="****">
+        </div>
+        <button onclick="verifyTeacherPassword()">دخول اللوحة</button>
+        <div id="auth-alert" class="alert"></div>
+    </div>
+
+    <!-- ==================== لوحة تحكم الأستاذ ==================== -->
+    <div id="teacher-section" style="display: none;">
+        <h2>لوحة إشراف الأستاذ</h2>
+
+        <div class="form-group">
+            <label>اختر المراحل الدراسية لتفعيل الحصة (يمكن تحديد أكثر من مرحلة):</label>
+            <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox" class="stage-cb" value="1_prep"> الأول الإعدادي</label>
+                <label class="checkbox-item"><input type="checkbox" class="stage-cb" value="2_prep"> الثاني الإعدادي</label>
+                <label class="checkbox-item"><input type="checkbox" class="stage-cb" value="3_prep"> الثالث الإعدادي</label>
+                <label class="checkbox-item"><input type="checkbox" class="stage-cb" value="1_sec"> الأول الثانوي</label>
+                <label class="checkbox-item"><input type="checkbox" class="stage-cb" value="2_sec_gen"> الثاني الثانوي (عام)</label>
+                <label class="checkbox-item"><input type="checkbox" class="stage-cb" value="2_sec_bac"> الثاني الثانوي (بكالوريا)</label>
+                <label class="checkbox-item"><input type="checkbox" class="stage-cb" value="3_sec"> الثالث الثانوي</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>رمز الحصة الحالية</label>
+            <input type="text" id="tch-session-code" placeholder="مثال: MATH101">
+        </div>
+
+        <div class="form-group">
+            <label>مدة فتح باب الحضور (بالدقائق)</label>
+            <input type="number" id="tch-duration" value="15" min="1">
+        </div>
+
+        <button onclick="startSession()">بدء الحصة للمراحل المحددة</button>
+
+        <div class="timer-box" id="timer-display">-- : --</div>
+
+        <h3>إجمالي الطلاب الحاضرين (<span id="present-count">0</span>)</h3>
+        <div class="student-list" id="present-list">
+            <div style="text-align: center; color: var(--text-sub);">لا توجد تسجيلات حية الآن</div>
+        </div>
+
+        <div id="tch-alert" class="alert"></div>
+    </div>
+</div>
+
+<script>
+    // ==================== إعدادات Firebase الخاصة بك ====================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBja36JoyQuVrOtwwjATqLO9hVE-VG5ShQ",
+      authDomain: "mramir-a454d.firebaseapp.com",
+      databaseURL: "https://mramir-a454d-default-rtdb.firebaseio.com",
+      projectId: "mramir-a454d",
+      storageBucket: "mramir-a454d.firebasestorage.app",
+      messagingSenderId: "436223138839",
+      appId: "1:436223138839:web:f620692d4fdf095cf59052",
+      measurementId: "G-SGHS36BYN3"
+    };
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.database();
+
+    // ==================== إدارة حالة الأستاذ ====================
+    let isTeacherAuthenticated = false;
+
+    function switchRole(role) {
+        const btnStudent = document.getElementById('btn-student-view');
+        const btnTeacher = document.getElementById('btn-teacher-view');
+
+        if (role === 'student') {
+            btnStudent.style.backgroundColor = '#38bdf8';
+            btnStudent.style.color = '#0f172a';
+            btnTeacher.style.backgroundColor = '#475569';
+            btnTeacher.style.color = 'white';
+
+            document.getElementById('student-section').style.display = 'block';
+            document.getElementById('teacher-auth-section').style.display = 'none';
+            document.getElementById('teacher-section').style.display = 'none';
+            checkLocalStudentData();
+        } else {
+            btnTeacher.style.backgroundColor = '#38bdf8';
+            btnTeacher.style.color = '#0f172a';
+            btnStudent.style.backgroundColor = '#475569';
+            btnStudent.style.color = 'white';
+
+            document.getElementById('student-section').style.display = 'none';
+            if (isTeacherAuthenticated) {
+                document.getElementById('teacher-section').style.display = 'block';
+                document.getElementById('teacher-auth-section').style.display = 'none';
+            } else {
+                document.getElementById('teacher-auth-section').style.display = 'block';
+                document.getElementById('teacher-section').style.display = 'none';
+            }
+        }
+    }
+
+    function verifyTeacherPassword() {
+        const pass = document.getElementById('teacher-pass-input').value.trim();
+        if (pass === '1234') {
+            isTeacherAuthenticated = true;
+            document.getElementById('teacher-auth-section').style.display = 'none';
+            document.getElementById('teacher-section').style.display = 'block';
+            showAlert('tch-alert', 'تم تسجيل الدخول بنجاح', 'success');
+        } else {
+            showAlert('auth-alert', 'كلمة السر غير صحيحة!', 'danger');
+        }
+    }
+
+    const stagesMap = {
+        "1_prep": "الأول الإعدادي",
+        "2_prep": "الثاني الإعدادي",
+        "3_prep": "الثالث الإعدادي",
+        "1_sec": "الأول الثانوي",
+        "2_sec_gen": "الثاني الثانوي (عام)",
+        "2_sec_bac": "الثاني الثانوي (بكالوريا)",
+        "3_sec": "الثالث الثانوي"
+    };
+
+    // ==================== منطق الطالب ====================
+    function checkLocalStudentData() {
+        const localData = JSON.parse(localStorage.getItem('student_info'));
+        if (localData && localData.name && localData.phone) {
+            document.getElementById('first-time-form').style.display = 'none';
+            document.getElementById('quick-attendance-form').style.display = 'block';
+            document.getElementById('saved-name').innerText = localData.name;
+            document.getElementById('saved-phone').innerText = localData.phone;
+            document.getElementById('saved-stage-title').innerText = stagesMap[localData.stage] || localData.stage;
+        } else {
+            document.getElementById('first-time-form').style.display = 'block';
+            document.getElementById('quick-attendance-form').style.display = 'none';
+        }
+    }
+
+    function saveStudentDeviceData() {
+        const name = document.getElementById('std-name').value.trim();
+        const phone = document.getElementById('std-phone').value.trim();
+        const stage = document.getElementById('std-stage').value;
+
+        if (!name || !phone) {
+            showAlert('std-alert', 'يرجى كتابة الاسم ورقم الهاتف بشكل صحيح', 'danger');
+            return;
+        }
+
+        const studentInfo = { name, phone, stage };
+        localStorage.setItem('student_info', JSON.stringify(studentInfo));
+        showAlert('std-alert', 'تم حفظ بياناتك بنجاح على الجهاز', 'success');
+        setTimeout(() => checkLocalStudentData(), 1000);
+    }
+
+    function resetDeviceData() {
+        if (confirm('هل تريد مسح البيانات المسجلة على هذا الجهاز وإعادة إدخالها؟')) {
+            localStorage.removeItem('student_info');
+            checkLocalStudentData();
+        }
+    }
+
+    function submitAttendance() {
+        const code = document.getElementById('session-code-input').value.trim();
+        const studentInfo = JSON.parse(localStorage.getItem('student_info'));
+
+        if (!code) {
+            showAlert('std-alert', 'يرجى إدخال رمز الحصة', 'danger');
+            return;
+        }
+
+        const sessionRef = db.ref(`sessions/${studentInfo.stage}/${code}`);
+        sessionRef.once('value', (snapshot) => {
+            const sessionData = snapshot.val();
+            if (!sessionData) {
+                showAlert('std-alert', 'رمز الحصة غير صحيح أو غير متاح لمرحلتك الدراسية', 'danger');
+                return;
+            }
+
+            const now = Date.now();
+            if (now > sessionData.expiresAt) {
+                showAlert('std-alert', 'انتهت المهلة المحددة لتسجيل الحضور', 'danger');
+                return;
+            }
+
+            const cleanPhone = studentInfo.phone.replace(/[^0-9]/g, '');
+            db.ref(`attendance/${studentInfo.stage}/${code}/${cleanPhone}`).set({
+                name: studentInfo.name,
+                phone: studentInfo.phone,
+                stage: studentInfo.stage,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            }).then(() => {
+                showAlert('std-alert', 'تم تسجيل حضورك بنجاح!', 'success');
+                document.getElementById('session-code-input').value = '';
+            }).catch(err => {
+                showAlert('std-alert', 'حدث خطأ أثناء التسجيل: ' + err.message, 'danger');
+            });
+        });
+    }
+
+    // ==================== منطق الأستاذ (متعدد المراحل) ====================
+    let timerInterval = null;
+
+    function getSelectedStages() {
+        const checkboxes = document.querySelectorAll('.stage-cb:checked');
+        const stages = [];
+        checkboxes.forEach(cb => stages.push(cb.value));
+        return stages;
+    }
+
+    function startSession() {
+        const selectedStages = getSelectedStages();
+        const code = document.getElementById('tch-session-code').value.trim();
+        const durationMin = parseInt(document.getElementById('tch-duration').value);
+
+        if (selectedStages.length === 0) {
+            showAlert('tch-alert', 'يرجى اختيار مرحلة دراسية واحدة على الأقل!', 'danger');
+            return;
+        }
+
+        if (!code) {
+            showAlert('tch-alert', 'يرجى إدخال رمز الحصة أولاً', 'danger');
+            return;
+        }
+
+        const expiresAt = Date.now() + (durationMin * 60 * 1000);
+        const updates = {};
+
+        // إضافة الحصة في كل المراحل المختارة معاً
+        selectedStages.forEach(stage => {
+            updates[`sessions/${stage}/${code}`] = {
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                expiresAt: expiresAt,
+                duration: durationMin
+            };
+        });
+
+        db.ref().update(updates).then(() => {
+            showAlert('tch-alert', `تم فتح الحصة بنجاح لعدد (${selectedStages.length}) مراحل!`, 'success');
+            runTimer(expiresAt);
+            listenForMultiStageAttendance(selectedStages, code);
+        }).catch(err => {
+            showAlert('tch-alert', 'حدث خطأ: ' + err.message, 'danger');
+        });
+    }
+
+    function runTimer(expiresAt) {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            const remainSec = Math.floor((expiresAt - Date.now()) / 1000);
+            if (remainSec <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('timer-display').innerText = "انتهى وقت الحصة";
+                showAlert('tch-alert', 'انتهت المهلة المحددة لتسجيل الحضور', 'danger');
+            } else {
+                const min = Math.floor(remainSec / 60);
+                const sec = remainSec % 60;
+                document.getElementById('timer-display').innerText = 
+                    `${min < 10 ? '0' + min : min}:${sec < 10 ? '0' + sec : sec}`;
+            }
+        }, 1000);
+    }
+
+    function listenForMultiStageAttendance(stages, code) {
+        const listEl = document.getElementById('present-list');
+        listEl.innerHTML = '';
+        let totalCount = 0;
+        const allStudents = {};
+
+        stages.forEach(stage => {
+            const listRef = db.ref(`attendance/${stage}/${code}`);
+            listRef.on('value', (snapshot) => {
+                allStudents[stage] = [];
+                snapshot.forEach(child => {
+                    allStudents[stage].push(child.val());
+                });
+
+                // إعادة رسم القائمة المجمعة
+                renderCombinedAttendance(allStudents);
+            });
+        });
+    }
+
+    function renderCombinedAttendance(allStudents) {
+        const listEl = document.getElementById('present-list');
+        listEl.innerHTML = '';
+        let total = 0;
+
+        for (const stage in allStudents) {
+            allStudents[stage].forEach(std => {
+                total++;
+                const item = document.createElement('div');
+                item.className = 'student-item';
+                item.innerHTML = `
+                    <div>
+                        <span class="stage-badge">${stagesMap[std.stage] || std.stage}</span>
+                        <strong>${std.name}</strong>
+                    </div>
+                    <span style="color:var(--text-sub)">${std.phone}</span>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        document.getElementById('present-count').innerText = total;
+    }
+
+    function showAlert(elemId, msg, type) {
+        const el = document.getElementById(elemId);
+        el.innerText = msg;
+        el.className = `alert alert-${type}`;
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 4000);
+    }
+
+    checkLocalStudentData();
+</script>
+</body>
+</html>
