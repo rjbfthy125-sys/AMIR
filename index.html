@@ -11,6 +11,7 @@
   <!-- Firebase SDK (v10 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
   <style>
     :root {
@@ -180,6 +181,12 @@
       transform: translateY(-2px);
     }
 
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), #dc2626);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+    }
+
     .btn-subtle {
       background-color: #f1f5f9;
       color: var(--primary);
@@ -195,6 +202,22 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .student-avatar-lg {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent);
+    }
+
+    .student-avatar-sm {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--border-color);
     }
 
     .sub-nav {
@@ -234,6 +257,8 @@
       background-color: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 14px;
+      gap: 15px;
+      flex-wrap: wrap;
     }
 
     .badge {
@@ -289,14 +314,22 @@
           </select>
         </div>
 
-        <button class="btn btn-primary" onclick="loginOrRegisterStudent()">الدخول والإنضمام للمنصة 🚀</button>
+        <div class="form-group">
+          <label for="reg-photo">📸 الصورة الشخصية للطالب (إجباري):</label>
+          <input type="file" id="reg-photo" accept="image/*">
+        </div>
+
+        <button class="btn btn-primary" id="btn-register-submit" onclick="loginOrRegisterStudent()">الدخول والإنضمام للمنصة 🚀</button>
       </div>
 
       <div id="student-step-2" class="card hidden">
         <div class="user-welcome-box">
-          <div>
-            <h3 id="welcome-student-name">أهلاً بك يا طالب</h3>
-            <p id="welcome-student-info">المرحلة: - | الهاتف: -</p>
+          <div style="display: flex; align-items: center; gap: 15px;">
+            <img id="welcome-student-img" src="" alt="صورة الطالب" class="student-avatar-lg">
+            <div>
+              <h3 id="welcome-student-name">أهلاً بك يا طالب</h3>
+              <p id="welcome-student-info">المرحلة: - | الهاتف: -</p>
+            </div>
           </div>
           <button class="btn btn-subtle" style="width: auto; padding: 6px 14px; font-size: 0.8rem;" onclick="logoutStudent()">تغيير الحساب</button>
         </div>
@@ -305,7 +338,7 @@
         
         <div class="form-group">
           <label for="session-code">كود الحصة المعطى لك:</label>
-          <input type="text" id="session-code" placeholder="أدخل كود الحصة">
+          <input type="text" id="session-code" placeholder="أدخل كود الحصة الخاص بمرحلتك">
         </div>
 
         <button class="btn btn-primary" onclick="submitSessionCode()">تأكيد وتسجيل الحضور ✨</button>
@@ -329,15 +362,29 @@
       <div id="teacher-content" class="card hidden">
         <h2 class="card-title">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
 
-        <div style="background: #f1f5f9; padding: 20px; border-radius: 14px; margin-bottom: 25px;">
+        <div style="background: #f1f5f9; padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1px solid var(--border-color);">
+          <div class="form-group">
+            <label for="teacher-code-stage">🎯 اختر الصف الدراسي لإدارة كود الحصة الخاص به:</label>
+            <select id="teacher-code-stage" onchange="fetchActiveSessionCode()" style="background-color: #ffffff; font-weight: 600; color: var(--accent);">
+              <option value="الأول الإعدادي">الأول الإعدادي</option>
+              <option value="الثاني الإعدادي">الثاني الإعدادي</option>
+              <option value="الثالث الإعدادي">الثالث الإعدادي</option>
+              <option value="الأول الثانوي">الأول الثانوي</option>
+              <option value="الثاني الثانوي عام">الثاني الثانوي عام</option>
+              <option value="الثاني الثانوي بكالوريا">الثاني الثانوي بكالوريا</option>
+              <option value="الثالث الثانوي">الثالث الثانوي</option>
+            </select>
+          </div>
+
           <div class="form-group" style="margin-bottom: 10px;">
-            <label for="teacher-set-code">تحديث كود الحصة الحالي النشط:</label>
-            <div style="display: flex; gap: 10px;">
-              <input type="text" id="teacher-set-code" placeholder="مثال: 2026">
-              <button class="btn btn-primary" style="width: auto; padding: 0 25px;" onclick="saveActiveSessionCode()">حفظ الكود</button>
+            <label for="teacher-set-code">تعيين كود جديد للمرحلة المحددة:</label>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <input type="text" id="teacher-set-code" placeholder="أدخل كود هذه المرحلة" style="flex: 1; min-width: 150px; background-color: #ffffff;">
+              <button class="btn btn-primary" style="width: auto; padding: 0 20px;" onclick="saveActiveSessionCode()">حفظ وتنشيط الكود</button>
+              <button class="btn btn-danger" style="width: auto; padding: 0 20px;" onclick="disableActiveSessionCode()">تعطيل/حذف الكود 🚫</button>
             </div>
           </div>
-          <p id="current-active-code-display" style="font-size: 0.9rem; color: var(--accent); font-weight: 600;">الكود النشط حالياً: جاري التحميل...</p>
+          <p id="current-active-code-display" style="font-size: 0.95rem; color: var(--accent); font-weight: 600; margin-top: 10px;">الكود النشط حالياً: جاري التحميل...</p>
         </div>
 
         <div class="sub-nav">
@@ -346,7 +393,7 @@
         </div>
 
         <div class="form-group">
-          <label for="filter-stage-select">اختر المرحلة لتصفية الطلاب:</label>
+          <label for="filter-stage-select">اختر المرحلة لتصفية قائمة الطلاب:</label>
           <select id="filter-stage-select" onchange="renderTeacherData()">
             <option value="الكل">جميع المراحل الدراسية</option>
             <option value="الأول الإعدادي">الأول الإعدادي</option>
@@ -378,6 +425,7 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const storage = firebase.storage();
 
     let currentStudent = null;
     let isTeacherUnlocked = false;
@@ -411,6 +459,8 @@
       const name = document.getElementById('reg-name').value.trim();
       const phone = document.getElementById('reg-phone').value.trim();
       const stage = document.getElementById('reg-stage').value;
+      const photoInput = document.getElementById('reg-photo');
+      const submitBtn = document.getElementById('btn-register-submit');
 
       if (!name || !phone) {
         alert("يرجى إدخال اسمك ورقم هاتفك بالكامل!");
@@ -424,12 +474,25 @@
         if (doc.exists) {
           currentStudent = doc.data();
         } else {
+          if (!photoInput.files || photoInput.files.length === 0) {
+            alert("⚠️ رفع الصورة الشخصية إجباري للانضمام للمنصة!");
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.innerText = "جاري رفع الصورة والتسجيل... ⏳";
+
+          const file = photoInput.files[0];
+          const storageRef = storage.ref(`student_photos/${phone}_${Date.now()}`);
+          const snapshot = await storageRef.put(file);
+          const photoURL = await snapshot.ref.getDownloadURL();
+
           currentStudent = {
             name: name,
             phone: phone,
             stage: stage,
-            updateCount: 0,
-            lastResetDate: Date.now(),
+            photoURL: photoURL,
+            lastAttendanceTime: 0,
             createdAt: new Date().toISOString()
           };
           await studentRef.set(currentStudent);
@@ -440,7 +503,10 @@
         showStudentStep2();
       } catch (error) {
         console.error("خطأ أثناء تسجيل الطالب:", error);
-        alert("❌ خطأ اتصال بالسيرفر: " + error.message + "\nتأكد من تطبيق Rules في الفايربيس!");
+        alert("❌ خطأ اتصال بالسيرفر: " + error.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "الدخول والإنضمام للمنصة 🚀";
       }
     }
 
@@ -449,6 +515,9 @@
       document.getElementById('student-step-2').classList.remove('hidden');
       document.getElementById('welcome-student-name').innerText = `أهلاً بك: ${currentStudent.name}`;
       document.getElementById('welcome-student-info').innerText = `المرحلة: ${currentStudent.stage} | الهاتف: ${currentStudent.phone}`;
+      
+      const imgEl = document.getElementById('welcome-student-img');
+      imgEl.src = currentStudent.photoURL || 'https://via.placeholder.com/60';
     }
 
     function logoutStudent() {
@@ -456,6 +525,24 @@
       currentStudent = null;
       document.getElementById('student-step-2').classList.add('hidden');
       document.getElementById('student-step-1').classList.remove('hidden');
+    }
+
+    async function getValidActiveCodeData(stage) {
+      if (!stage) return null;
+      const doc = await db.collection('stage_codes').doc(stage).get();
+      if (!doc.exists) return null;
+      
+      const data = doc.data();
+      if (!data.activeCode || !data.createdAt) return null;
+
+      const ONE_HOUR_MS = 60 * 60 * 1000;
+      const now = Date.now();
+
+      if (now - data.createdAt > ONE_HOUR_MS) {
+        return { activeCode: null, isExpired: true };
+      }
+
+      return { activeCode: data.activeCode, createdAt: data.createdAt };
     }
 
     async function submitSessionCode() {
@@ -466,22 +553,48 @@
       }
 
       try {
-        const configDoc = await db.collection('settings').doc('config').get();
-        const activeCode = configDoc.exists ? configDoc.data().activeCode : null;
+        const studentStage = currentStudent.stage;
 
-        if (inputCode !== activeCode) {
-          alert("❌ كود الحصة غير صحيح!");
+        const codeData = await getValidActiveCodeData(studentStage);
+        if (!codeData || !codeData.activeCode) {
+          alert(`❌ لا يوجد كود حصة مفعل حالياً لمرحلتك الدراسية (${studentStage})، أو أن الكود قد انتهت صلاحيته (مرت ساعة عليه)!`);
           return;
         }
 
-        const attendanceId = `${activeCode}_${currentStudent.phone}`;
+        if (inputCode !== codeData.activeCode) {
+          alert(`❌ كود الحصة غير صحيح لمرحلة (${studentStage})!`);
+          return;
+        }
+
+        const studentDoc = await db.collection('students').doc(currentStudent.phone).get();
+        const studentData = studentDoc.data() || {};
+        const lastAtt = studentData.lastAttendanceTime || 0;
+        const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+        const timePassed = Date.now() - lastAtt;
+
+        if (timePassed < TWENTY_FOUR_HOURS) {
+          const hoursLeft = Math.ceil((TWENTY_FOUR_HOURS - timePassed) / (1000 * 60 * 60));
+          alert(`⚠️ لقد قمت بتسجيل الحضور بالفعل! لا يمكنك التسجيل مجدداً إلا بعد مرور 24 ساعة.\n(متبقي لك حوالي ${hoursLeft} ساعة)`);
+          return;
+        }
+
+        const attendanceId = `${studentStage}_${codeData.activeCode}_${currentStudent.phone}`;
         await db.collection('attendance').doc(attendanceId).set({
           phone: currentStudent.phone,
           name: currentStudent.name,
           stage: currentStudent.stage,
-          sessionCode: activeCode,
+          photoURL: currentStudent.photoURL || '',
+          sessionCode: codeData.activeCode,
           timestamp: new Date().toISOString()
         });
+
+        const nowTime = Date.now();
+        await db.collection('students').doc(currentStudent.phone).update({
+          lastAttendanceTime: nowTime
+        });
+
+        currentStudent.lastAttendanceTime = nowTime;
+        localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
 
         alert("✨ تم تسجيل حضورك بنجاح لهذه الحصة!");
         document.getElementById('session-code').value = '';
@@ -518,6 +631,7 @@
     }
 
     async function saveActiveSessionCode() {
+      const stage = document.getElementById('teacher-code-stage').value;
       const codeInput = document.getElementById('teacher-set-code');
       const code = codeInput.value.trim();
       if (!code) {
@@ -526,23 +640,53 @@
       }
 
       try {
-        await db.collection('settings').doc('config').set({ activeCode: code }, { merge: true });
-        alert("✅ تم تحديث كود الحصة بنجاح!");
+        await db.collection('stage_codes').doc(stage).set({ 
+          activeCode: code,
+          createdAt: Date.now()
+        });
+
+        alert(`✅ تم تنشيط كود الحصة لمرحلة (${stage}) بنجاح! سينتهي تفعيله تلقائياً بعد ساعة واحدة.`);
         fetchActiveSessionCode();
         codeInput.value = '';
       } catch (error) {
         console.error("خطأ في حفظ الكود:", error);
-        alert("❌ فشل حفظ الكود: " + error.message + "\nيرجى التأكد من صلاحيات الفايربيس (Rules).");
+        alert("❌ فشل حفظ الكود: " + error.message);
+      }
+    }
+
+    async function disableActiveSessionCode() {
+      const stage = document.getElementById('teacher-code-stage').value;
+      try {
+        await db.collection('stage_codes').doc(stage).set({ 
+          activeCode: null,
+          createdAt: null
+        });
+
+        alert(`🚫 تم تعطيل/حذف كود الحصة لمرحلة (${stage}) بنجاح!`);
+        fetchActiveSessionCode();
+      } catch (error) {
+        console.error("خطأ في تعطيل الكود:", error);
+        alert("❌ تعذر تعطيل الكود: " + error.message);
       }
     }
 
     async function fetchActiveSessionCode() {
+      const stage = document.getElementById('teacher-code-stage').value;
       try {
-        const doc = await db.collection('settings').doc('config').get();
-        if (doc.exists && doc.data().activeCode) {
-          document.getElementById('current-active-code-display').innerText = `الكود النشط حالياً: ${doc.data().activeCode}`;
+        const codeData = await getValidActiveCodeData(stage);
+        const displayEl = document.getElementById('current-active-code-display');
+
+        if (codeData && codeData.activeCode) {
+          const minutesPassed = Math.floor((Date.now() - codeData.createdAt) / (1000 * 60));
+          const minutesLeft = 60 - minutesPassed;
+          displayEl.innerText = `الكود النشط لمرحلة (${stage}): ${codeData.activeCode} (متبقي ${minutesLeft} دقيقة على الانتهاء)`;
+          displayEl.style.color = 'var(--accent)';
+        } else if (codeData && codeData.isExpired) {
+          displayEl.innerText = `الكود المفعل لمرحلة (${stage}): انتهت صلاحيته تلقائياً (مرت ساعة)`;
+          displayEl.style.color = 'var(--danger)';
         } else {
-          document.getElementById('current-active-code-display').innerText = `الكود النشط حالياً: غير محدد`;
+          displayEl.innerText = `الكود المفعل لمرحلة (${stage}): لا يوجد كود مفعل حالياً`;
+          displayEl.style.color = 'var(--text-muted)';
         }
       } catch (error) {
         console.error("خطأ قراءة الكود:", error);
@@ -557,59 +701,105 @@
       renderTeacherData();
     }
 
-    function renderTeacherData() {
+    // دالة حذف الطالب من المنصة نهائياً
+    async function deleteStudent(phone, name) {
+      if (!confirm(`هل أنت متأكد من حذف الطالب (${name}) نهائياً من المنصة؟`)) return;
+
+      try {
+        // 1. حذف الطالب من مجموعة الطلاب
+        await db.collection('students').doc(phone).delete();
+
+        // 2. حذف سجلات الحضور الخاصة بالطالب
+        const attendanceDocs = await db.collection('attendance').where('phone', '==', phone).get();
+        const batch = db.batch();
+        attendanceDocs.forEach(doc => batch.delete(doc.ref));
+        await batch.commit();
+
+        alert(`✅ تم حذف الطالب (${name}) وسجلاته بنجاح.`);
+        renderTeacherData();
+      } catch (error) {
+        console.error("خطأ أثناء حذف الطالب:", error);
+        alert("❌ تعذر حذف الطالب: " + error.message);
+      }
+    }
+
+    async function renderTeacherData() {
       if (!isTeacherUnlocked) return;
 
       const selectedStage = document.getElementById('filter-stage-select').value;
 
-      db.collection('settings').doc('config').get().then(configDoc => {
-        const activeCode = configDoc.exists ? configDoc.data().activeCode : "";
+      try {
+        const stagesDocs = await db.collection('stage_codes').get();
+        const activeCodesMap = {};
+        const ONE_HOUR_MS = 60 * 60 * 1000;
+        const now = Date.now();
 
-        db.collection('students').onSnapshot(studentsSnapshot => {
-          db.collection('attendance').where('sessionCode', '==', activeCode).get().then(attendanceSnapshot => {
-            const attendedPhones = new Set();
-            attendanceSnapshot.forEach(doc => attendedPhones.add(doc.data().phone));
+        stagesDocs.forEach(doc => {
+          const data = doc.data();
+          if (data.activeCode && data.createdAt && (now - data.createdAt <= ONE_HOUR_MS)) {
+            activeCodesMap[doc.id] = data.activeCode;
+          }
+        });
 
-            const container = document.getElementById('students-display-container');
-            container.innerHTML = '';
+        db.collection('students').onSnapshot(async studentsSnapshot => {
+          const attendanceSnapshot = await db.collection('attendance').get();
 
-            let studentsList = [];
-            studentsSnapshot.forEach(doc => studentsList.push(doc.data()));
+          const attendedSet = new Set();
+          attendanceSnapshot.forEach(doc => {
+            const att = doc.data();
+            attendedSet.add(`${att.stage}_${att.sessionCode}_${att.phone}`);
+          });
 
-            if (selectedStage !== "الكل") {
-              studentsList = studentsList.filter(s => s.stage === selectedStage);
-            }
+          const container = document.getElementById('students-display-container');
+          container.innerHTML = '';
 
-            if (studentsList.length === 0) {
-              container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مسجلون في هذه القائمة.</p>`;
-              return;
-            }
+          let studentsList = [];
+          studentsSnapshot.forEach(doc => studentsList.push(doc.data()));
 
-            studentsList.forEach(student => {
-              const hasAttended = attendedPhones.has(student.phone);
+          if (selectedStage !== "الكل") {
+            studentsList = studentsList.filter(s => s.stage === selectedStage);
+          }
 
-              if (activeTeacherSubTab === 'session' && !hasAttended) return;
+          if (studentsList.length === 0) {
+            container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مسجلون في هذه القائمة.</p>`;
+            return;
+          }
 
-              const card = document.createElement('div');
-              card.className = 'student-card-item';
+          studentsList.forEach(student => {
+            const activeCodeForStage = activeCodesMap[student.stage];
+            const hasAttended = activeCodeForStage && attendedSet.has(`${student.stage}_${activeCodeForStage}_${student.phone}`);
 
-              const badgeHTML = hasAttended 
-                ? `<span class="badge badge-success">حضر الحصة 🟢</span>` 
-                : `<span class="badge badge-danger">لم يحضر 🔴</span>`;
+            if (activeTeacherSubTab === 'session' && !hasAttended) return;
 
-              card.innerHTML = `
+            const card = document.createElement('div');
+            card.className = 'student-card-item';
+
+            const badgeHTML = hasAttended 
+              ? `<span class="badge badge-success">حضر الحصة 🟢</span>` 
+              : `<span class="badge badge-danger">لم يحضر 🔴</span>`;
+
+            const photoSrc = student.photoURL || 'https://via.placeholder.com/48';
+
+            card.innerHTML = `
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="${photoSrc}" alt="صورة الطالب" class="student-avatar-sm">
                 <div>
                   <h4 style="color: var(--primary); font-size: 1rem;">${student.name}</h4>
                   <p style="color: var(--text-muted); font-size: 0.85rem;">📱 ${student.phone} | 📚 ${student.stage}</p>
                 </div>
-                <div>${badgeHTML}</div>
-              `;
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                ${badgeHTML}
+                <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="deleteStudent('${student.phone}', '${student.name}')">حذف 🗑️</button>
+              </div>
+            `;
 
-              container.appendChild(card);
-            });
-          }).catch(err => console.error("خطأ جلب سجل الحضور:", err));
-        }, err => console.error("خطأ جلب الطلاب:", err));
-      }).catch(err => console.error("خطأ الإعدادات:", err));
+            container.appendChild(card);
+          });
+        });
+      } catch (err) {
+        console.error("خطأ عرض البيانات:", err);
+      }
     }
   </script>
 </body>
