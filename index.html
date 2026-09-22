@@ -271,18 +271,28 @@
     .badge-danger { background-color: #fee2e2; color: #991b1b; }
     .hidden { display: none !important; }
 
-    /* شريط تنبيه الـ QR Code المميز */
+    /* شريط تنبيه حالة دخول الـ QR Code */
     .qr-banner {
-      background: #d1fae5;
-      border: 1.5px solid #10b981;
-      color: #065f46;
       padding: 14px 18px;
       border-radius: 14px;
       margin-bottom: 20px;
       text-align: center;
       font-weight: 600;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
       animation: fadeIn 0.4s ease-out;
+    }
+
+    .qr-banner.success {
+      background: #d1fae5;
+      border: 1.5px solid #10b981;
+      color: #065f46;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+    }
+
+    .qr-banner.warning {
+      background: #fff7ed;
+      border: 1.5px solid #f97316;
+      color: #9a3412;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.12);
     }
 
     /* كارت الـ QR Code الخاص بالطباعة */
@@ -317,12 +327,12 @@
         
         <div class="form-group">
           <label for="reg-name">اسم الطالب ثلاثي:</label>
-          <input type="text" id="reg-name">
+          <input type="text" id="reg-name" placeholder="مثال: فتحي زكريا">
         </div>
 
         <div class="form-group">
           <label for="reg-phone">رقم الهاتف:</label>
-          <input type="tel" id="reg-phone">
+          <input type="tel" id="reg-phone" placeholder="مثال: 01012345678">
         </div>
 
         <div class="form-group">
@@ -358,11 +368,8 @@
           <button class="btn btn-subtle" style="width: auto; padding: 6px 14px; font-size: 0.8rem;" onclick="logoutStudent()">تغيير الحساب</button>
         </div>
 
-        <!-- شريط التنبيه عند المسح من QR Code -->
-        <div id="qr-welcome-msg" class="qr-banner hidden">
-          🎯 تم مسح الـ QR Code بنجاح! تم تسجيل وصولك للقاعة.<br>
-          <span style="font-size: 0.9rem; font-weight: 400; opacity: 0.95;">باقي لك الآن كتابة كود الحصة الذي سيحدده لك المستر وتأكيد الحضور.</span>
-        </div>
+        <!-- شريط حالة الـ QR Code (يتغير حسب كيفية دخول الطالب) -->
+        <div id="qr-welcome-msg" class="qr-banner hidden"></div>
 
         <h2 class="card-title">🔑 تسجيل حضور الحصة الحالية</h2>
         
@@ -418,12 +425,11 @@
           <p id="current-active-code-display" style="font-size: 0.95rem; color: var(--accent); font-weight: 600; margin-top: 10px;">الكود النشط حالياً: جاري التحميل...</p>
         </div>
 
-        <!-- مولد QR Code القاعة للسنتر المعدل -->
+        <!-- مولد QR Code القاعة للسنتر -->
         <div style="background: #ffffff; padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1.5px solid var(--accent); text-align: center;">
           <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px;">📷 QR Code الخاص بالقاعة / السنتر</h3>
           <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">اطبع هذا الكود وعلقه في القاعة ليمسحه الطلاب بموبايلاتهم عند الدخول:</p>
 
-          <!-- كارت الـ QR Code المعدل بالأعلى والأسفل -->
           <div class="qr-print-card">
             <!-- النص أعلى الـ QR Code -->
             <h2 style="color: var(--accent); font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; letter-spacing: 0.5px;">⭐ الأمير في التاريخ ⭐</h2>
@@ -433,7 +439,7 @@
               <img id="center-qr-image" src="" alt="QR Code السنتر" style="width: 210px; height: 210px; border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; background: #ffffff;">
             </div>
 
-            <!-- النص أسفل الـ QR Code مع اسم المطور ورقم الهاتف -->
+            <!-- النص أسفل الـ QR Code مع المطور ورقم الهاتف -->
             <p style="color: var(--primary); font-size: 0.92rem; font-weight: 700; border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 5px;">
               🛠️ تم الإنشاء بواسطة المطور فتحي: <span dir="ltr" style="color: var(--accent); font-weight: 800;">01063048827</span>
             </p>
@@ -518,7 +524,6 @@
       }
     }
 
-    // دالة لضغط الصورة وتحويلها فورياً إلى Base64 بدون الاعتماد على Storage
     function compressAndConvertToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -621,9 +626,22 @@
       const imgEl = document.getElementById('welcome-student-img');
       imgEl.src = currentStudent.photoURL || 'https://via.placeholder.com/60';
 
-      // إظهار شريط تنبيه الـ QR Code إذا جاء الطالب عن طريق الكود
+      const bannerEl = document.getElementById('qr-welcome-msg');
+      bannerEl.classList.remove('hidden');
+
+      // التحكم في الرسائل الموجهة للطالب بناءً على مسح الـ QR Code
       if (isFromQR) {
-        document.getElementById('qr-welcome-msg').classList.remove('hidden');
+        bannerEl.className = 'qr-banner success';
+        bannerEl.innerHTML = `
+          🎯 تم مسح الـ QR Code بنجاح!<br>
+          <span style="font-size: 0.92rem; font-weight: 500;">باقي لك خطوة واحدة وهي كتابة الكود الذي سيعطيك إياه المستر لتأكيد الحضور.</span>
+        `;
+      } else {
+        bannerEl.className = 'qr-banner warning';
+        bannerEl.innerHTML = `
+          ⚠️ تنبيه: لم تقم بمسح كود الـ QR الخاص بالقاعة!<br>
+          <span style="font-size: 0.92rem; font-weight: 500;">يجب أولاً أن تمسح الـ QR Code لتتمكن من كتابة الكود وتسجيل الحضور.</span>
+        `;
       }
     }
 
@@ -674,9 +692,15 @@
     }
 
     async function submitSessionCode() {
+      // 🔴 منع الطالب من التسجيل إذا لم يكن قادماً من مسح QR Code
+      if (!isFromQR) {
+        alert("🚫 عذراً، يجب أولاً أن تمسح الـ QR Code الخاص بالقاعة لكي تتمكن من كتابة الكود وتسجيل الحضور!");
+        return;
+      }
+
       const inputCode = document.getElementById('session-code').value.trim();
       if (!inputCode) {
-        alert("يرجى إدخال كود الحصة أولاً!");
+        alert("يرجى إدخال كود الحصة المعطى لك أولاً!");
         return;
       }
 
@@ -759,7 +783,6 @@
       }
     }
 
-    // توليد صورة الـ QR Code تلقائياً لرابط المنصة + ?src=qr
     function generateCenterQRCode() {
       const baseUrl = window.location.origin + window.location.pathname;
       const targetUrl = baseUrl + '?src=qr';
