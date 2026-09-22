@@ -284,6 +284,17 @@
       box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
       animation: fadeIn 0.4s ease-out;
     }
+
+    /* كارت الـ QR Code الخاص بالطباعة */
+    .qr-print-card {
+      border: 2px dashed var(--accent);
+      border-radius: 18px;
+      padding: 25px;
+      display: inline-block;
+      background: #fafafa;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
   </style>
 </head>
 <body>
@@ -407,14 +418,30 @@
           <p id="current-active-code-display" style="font-size: 0.95rem; color: var(--accent); font-weight: 600; margin-top: 10px;">الكود النشط حالياً: جاري التحميل...</p>
         </div>
 
-        <!-- مولد QR Code القاعة للسنتر -->
+        <!-- مولد QR Code القاعة للسنتر المعدل -->
         <div style="background: #ffffff; padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1.5px solid var(--accent); text-align: center;">
           <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px;">📷 QR Code الخاص بالقاعة / السنتر</h3>
-          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 15px;">اطبع هذا الكود وعلقه في القاعة ليمسحه الطلاب بموبايلاتهم عند الدخول:</p>
-          <div id="teacher-qr-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 12px;">
-            <img id="center-qr-image" src="" alt="QR Code السنتر" style="width: 200px; height: 200px; border: 2px dashed var(--border-color); border-radius: 12px; padding: 6px;">
+          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">اطبع هذا الكود وعلقه في القاعة ليمسحه الطلاب بموبايلاتهم عند الدخول:</p>
+
+          <!-- كارت الـ QR Code المعدل بالأعلى والأسفل -->
+          <div class="qr-print-card">
+            <!-- النص أعلى الـ QR Code -->
+            <h2 style="color: var(--accent); font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; letter-spacing: 0.5px;">⭐ الأمير في التاريخ ⭐</h2>
+
+            <!-- صورة الـ QR Code -->
+            <div id="teacher-qr-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 15px;">
+              <img id="center-qr-image" src="" alt="QR Code السنتر" style="width: 210px; height: 210px; border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; background: #ffffff;">
+            </div>
+
+            <!-- النص أسفل الـ QR Code مع اسم المطور ورقم الهاتف -->
+            <p style="color: var(--primary); font-size: 0.92rem; font-weight: 700; border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 5px;">
+              🛠️ تم الإنشاء بواسطة المطور فتحي: <span dir="ltr" style="color: var(--accent); font-weight: 800;">01063048827</span>
+            </p>
           </div>
-          <button class="btn btn-subtle" style="width: auto; padding: 8px 20px; font-size: 0.88rem;" onclick="window.print()">🖨️ طباعة الـ QR Code</button>
+
+          <div>
+            <button class="btn btn-subtle" style="width: auto; padding: 10px 24px; font-size: 0.9rem; font-weight: 600;" onclick="window.print()">🖨️ طباعة الـ QR Code</button>
+          </div>
         </div>
 
         <div class="sub-nav">
