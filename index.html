@@ -520,7 +520,32 @@
       imgEl.src = currentStudent.photoURL || 'https://via.placeholder.com/60';
     }
 
+    // دالة تغيير الحساب مع التقييد بحد أقصى 5 مرات شهرياً
     function logoutStudent() {
+      const now = new Date();
+      const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
+
+      let switchData = JSON.parse(localStorage.getItem('history_app_switch_limit')) || { count: 0, month: currentMonthKey };
+
+      // إعادة تصفير العداد إذا بدأ شهر جديد
+      if (switchData.month !== currentMonthKey) {
+        switchData.month = currentMonthKey;
+        switchData.count = 0;
+      }
+
+      // المنع في حال تجاوز 5 مرات في نفس الشهر
+      if (switchData.count >= 5) {
+        alert("🚫 عذراً! لقد تجاوزت الحد الأقصى لتغيير الحساب هذا الشهر (5 مرات).\nتم تثبيت حسابك الحالي ولن تتمكن من تغييره حتى بداية الشهر القادم.");
+        return;
+      }
+
+      // زيادة العداد وحفظه
+      switchData.count += 1;
+      localStorage.setItem('history_app_switch_limit', JSON.stringify(switchData));
+
+      const remainingAttempts = 5 - switchData.count;
+      alert(`⚠️ تنبيه: قمت بتغيير الحساب (${switchData.count} من 5 مرات المتاحة هذا الشهر).\nمتبقي لك ${remainingAttempts} محاولات فقط.`);
+
       localStorage.removeItem('history_app_student');
       currentStudent = null;
       document.getElementById('student-step-2').classList.add('hidden');
@@ -701,15 +726,12 @@
       renderTeacherData();
     }
 
-    // دالة حذف الطالب من المنصة نهائياً
     async function deleteStudent(phone, name) {
       if (!confirm(`هل أنت متأكد من حذف الطالب (${name}) نهائياً من المنصة؟`)) return;
 
       try {
-        // 1. حذف الطالب من مجموعة الطلاب
         await db.collection('students').doc(phone).delete();
 
-        // 2. حذف سجلات الحضور الخاصة بالطالب
         const attendanceDocs = await db.collection('attendance').where('phone', '==', phone).get();
         const batch = db.batch();
         attendanceDocs.forEach(doc => batch.delete(doc.ref));
