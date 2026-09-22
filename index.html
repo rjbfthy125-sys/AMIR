@@ -11,7 +11,6 @@
   <!-- Firebase SDK (v10 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
   <style>
     :root {
@@ -271,6 +270,20 @@
     .badge-success { background-color: #d1fae5; color: #065f46; }
     .badge-danger { background-color: #fee2e2; color: #991b1b; }
     .hidden { display: none !important; }
+
+    /* شريط تنبيه الـ QR Code المميز */
+    .qr-banner {
+      background: #d1fae5;
+      border: 1.5px solid #10b981;
+      color: #065f46;
+      padding: 14px 18px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
+      animation: fadeIn 0.4s ease-out;
+    }
   </style>
 </head>
 <body>
@@ -334,6 +347,12 @@
           <button class="btn btn-subtle" style="width: auto; padding: 6px 14px; font-size: 0.8rem;" onclick="logoutStudent()">تغيير الحساب</button>
         </div>
 
+        <!-- شريط التنبيه عند المسح من QR Code -->
+        <div id="qr-welcome-msg" class="qr-banner hidden">
+          🎯 تم مسح الـ QR Code بنجاح! تم تسجيل وصولك للقاعة.<br>
+          <span style="font-size: 0.9rem; font-weight: 400; opacity: 0.95;">باقي لك الآن كتابة كود الحصة الذي سيحدده لك المستر وتأكيد الحضور.</span>
+        </div>
+
         <h2 class="card-title">🔑 تسجيل حضور الحصة الحالية</h2>
         
         <div class="form-group">
@@ -362,6 +381,7 @@
       <div id="teacher-content" class="card hidden">
         <h2 class="card-title">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
 
+        <!-- كود الحصة النشط -->
         <div style="background: #f1f5f9; padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1px solid var(--border-color);">
           <div class="form-group">
             <label for="teacher-code-stage">🎯 اختر الصف الدراسي لإدارة كود الحصة الخاص به:</label>
@@ -385,6 +405,16 @@
             </div>
           </div>
           <p id="current-active-code-display" style="font-size: 0.95rem; color: var(--accent); font-weight: 600; margin-top: 10px;">الكود النشط حالياً: جاري التحميل...</p>
+        </div>
+
+        <!-- مولد QR Code القاعة للسنتر -->
+        <div style="background: #ffffff; padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1.5px solid var(--accent); text-align: center;">
+          <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px;">📷 QR Code الخاص بالقاعة / السنتر</h3>
+          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 15px;">اطبع هذا الكود وعلقه في القاعة ليمسحه الطلاب بموبايلاتهم عند الدخول:</p>
+          <div id="teacher-qr-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 12px;">
+            <img id="center-qr-image" src="" alt="QR Code السنتر" style="width: 200px; height: 200px; border: 2px dashed var(--border-color); border-radius: 12px; padding: 6px;">
+          </div>
+          <button class="btn btn-subtle" style="width: auto; padding: 8px 20px; font-size: 0.88rem;" onclick="window.print()">🖨️ طباعة الـ QR Code</button>
         </div>
 
         <div class="sub-nav">
@@ -425,13 +455,18 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const storage = firebase.storage();
 
     let currentStudent = null;
     let isTeacherUnlocked = false;
     let activeTeacherSubTab = 'all';
+    let isFromQR = false;
 
     window.onload = function() {
+      // 1. فحص الدخول عبر الـ QR Code من الرابط (?src=qr)
+      const urlParams = new URLSearchParams(window.location.search);
+      isFromQR = (urlParams.get('src') === 'qr');
+
+      // 2. فحص الحساب المسجل سابقاً
       const savedStudent = localStorage.getItem('history_app_student');
       if (savedStudent) {
         try {
@@ -452,7 +487,49 @@
       if (view === 'teacher' && isTeacherUnlocked) {
         fetchActiveSessionCode();
         renderTeacherData();
+        generateCenterQRCode();
       }
+    }
+
+    // دالة لضغط الصورة وتحويلها فورياً إلى Base64 بدون الاعتماد على Storage
+    function compressAndConvertToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const maxDim = 300;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > maxDim) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              }
+            } else {
+              if (height > maxDim) {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            resolve(dataUrl);
+          };
+          img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+      });
     }
 
     async function loginOrRegisterStudent() {
@@ -480,12 +557,10 @@
           }
 
           submitBtn.disabled = true;
-          submitBtn.innerText = "جاري رفع الصورة والتسجيل... ⏳";
+          submitBtn.innerText = "جاري معالجة الصورة والتسجيل... ⏳";
 
           const file = photoInput.files[0];
-          const storageRef = storage.ref(`student_photos/${phone}_${Date.now()}`);
-          const snapshot = await storageRef.put(file);
-          const photoURL = await snapshot.ref.getDownloadURL();
+          const photoURL = await compressAndConvertToBase64(file);
 
           currentStudent = {
             name: name,
@@ -503,7 +578,7 @@
         showStudentStep2();
       } catch (error) {
         console.error("خطأ أثناء تسجيل الطالب:", error);
-        alert("❌ خطأ اتصال بالسيرفر: " + error.message);
+        alert("❌ حدث خطأ أثناء التسجيل: " + error.message);
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = "الدخول والإنضمام للمنصة 🚀";
@@ -518,28 +593,29 @@
       
       const imgEl = document.getElementById('welcome-student-img');
       imgEl.src = currentStudent.photoURL || 'https://via.placeholder.com/60';
+
+      // إظهار شريط تنبيه الـ QR Code إذا جاء الطالب عن طريق الكود
+      if (isFromQR) {
+        document.getElementById('qr-welcome-msg').classList.remove('hidden');
+      }
     }
 
-    // دالة تغيير الحساب مع التقييد بحد أقصى 5 مرات شهرياً
     function logoutStudent() {
       const now = new Date();
       const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
 
       let switchData = JSON.parse(localStorage.getItem('history_app_switch_limit')) || { count: 0, month: currentMonthKey };
 
-      // إعادة تصفير العداد إذا بدأ شهر جديد
       if (switchData.month !== currentMonthKey) {
         switchData.month = currentMonthKey;
         switchData.count = 0;
       }
 
-      // المنع في حال تجاوز 5 مرات في نفس الشهر
       if (switchData.count >= 5) {
         alert("🚫 عذراً! لقد تجاوزت الحد الأقصى لتغيير الحساب هذا الشهر (5 مرات).\nتم تثبيت حسابك الحالي ولن تتمكن من تغييره حتى بداية الشهر القادم.");
         return;
       }
 
-      // زيادة العداد وحفظه
       switchData.count += 1;
       localStorage.setItem('history_app_switch_limit', JSON.stringify(switchData));
 
@@ -650,9 +726,18 @@
         document.getElementById('teacher-content').classList.remove('hidden');
         fetchActiveSessionCode();
         renderTeacherData();
+        generateCenterQRCode();
       } else {
         alert("❌ كلمة السر غير صحيحة!");
       }
+    }
+
+    // توليد صورة الـ QR Code تلقائياً لرابط المنصة + ?src=qr
+    function generateCenterQRCode() {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const targetUrl = baseUrl + '?src=qr';
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(targetUrl)}`;
+      document.getElementById('center-qr-image').src = qrApiUrl;
     }
 
     async function saveActiveSessionCode() {
