@@ -25,6 +25,8 @@
       --border-color: #e2e8f0;
       --success: #10b981;
       --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
       --shadow-lg: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
       --shadow-glow: 0 0 20px rgba(217, 119, 6, 0.2);
     }
@@ -201,11 +203,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
     }
 
     .student-avatar-lg {
-      width: 60px;
-      height: 60px;
+      width: 65px;
+      height: 65px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid var(--accent);
@@ -263,15 +267,20 @@
     .badge {
       padding: 6px 14px;
       border-radius: 30px;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .badge-success { background-color: #d1fae5; color: #065f46; }
     .badge-danger { background-color: #fee2e2; color: #991b1b; }
+    .badge-info { background-color: #e2e8f0; color: #334155; }
+    .badge-warning { background-color: #fef3c7; color: #92400e; }
+
     .hidden { display: none !important; }
 
-    /* شريط تنبيه حالة دخول الـ QR Code */
     .qr-banner {
       padding: 14px 18px;
       border-radius: 14px;
@@ -295,7 +304,6 @@
       box-shadow: 0 4px 12px rgba(249, 115, 22, 0.12);
     }
 
-    /* كارت الـ QR Code الخاص بالطباعة */
     .qr-print-card {
       border: 2px dashed var(--accent);
       border-radius: 18px;
@@ -304,6 +312,26 @@
       background: #fafafa;
       margin-bottom: 15px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+
+    /* جدول سجل الحصص للطالب */
+    .session-history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .session-history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
   </style>
 </head>
@@ -357,28 +385,40 @@
       </div>
 
       <div id="student-step-2" class="card hidden">
+        <!-- كارت بيانات الطالب وزر تعديل الصورة -->
         <div class="user-welcome-box">
-          <div style="display: flex; align-items: center; gap: 15px;">
-            <img id="welcome-student-img" src="" alt="صورة الطالب" class="student-avatar-lg">
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <div style="position: relative;">
+              <img id="welcome-student-img" src="" alt="صورة الطالب" class="student-avatar-lg">
+              <input type="file" id="edit-photo-input" accept="image/*" class="hidden" onchange="handleEditStudentPhoto(event)">
+            </div>
             <div>
               <h3 id="welcome-student-name">أهلاً بك يا طالب</h3>
               <p id="welcome-student-info">المرحلة: - | الهاتف: -</p>
+              <button class="btn btn-subtle" style="width: auto; padding: 4px 12px; font-size: 0.8rem; margin-top: 6px;" onclick="document.getElementById('edit-photo-input').click()">📷 تعديل الصورة الشخصية</button>
             </div>
           </div>
           <button class="btn btn-subtle" style="width: auto; padding: 6px 14px; font-size: 0.8rem;" onclick="logoutStudent()">تغيير الحساب</button>
         </div>
 
-        <!-- شريط حالة الـ QR Code (يتغير حسب كيفية دخول الطالب) -->
+        <!-- شريط حالة الـ QR Code -->
         <div id="qr-welcome-msg" class="qr-banner hidden"></div>
 
         <h2 class="card-title">🔑 تسجيل حضور الحصة الحالية</h2>
         
         <div class="form-group">
-          <label for="session-code">كود الحصة المعطى لك:</label>
+          <label for="session-code">كود الحصة المعطى لك من الأستاذ:</label>
           <input type="text" id="session-code" placeholder="أدخل كود الحصة الخاص بمرحلتك">
         </div>
 
         <button class="btn btn-primary" onclick="submitSessionCode()">تأكيد وتسجيل الحضور ✨</button>
+
+        <!-- سجل حصص الطالب (الحاضرة والغائبة) -->
+        <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border-color);">
+        <h2 class="card-title">📅 سجل حصصك والتزامك بالمرحلة</h2>
+        <div id="student-sessions-history" class="session-history-list">
+          <p style="color: var(--text-muted); font-size: 0.9rem;">جاري تحميل سجل الحصص...</p>
+        </div>
 
         <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border-color);">
 
@@ -399,11 +439,11 @@
       <div id="teacher-content" class="card hidden">
         <h2 class="card-title">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
 
-        <!-- كود الحصة النشط -->
+        <!-- كود الحصة النشط وإنشاء أكواد جديدة -->
         <div style="background: #f1f5f9; padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1px solid var(--border-color);">
           <div class="form-group">
-            <label for="teacher-code-stage">🎯 اختر الصف الدراسي لإدارة كود الحصة الخاص به:</label>
-            <select id="teacher-code-stage" onchange="fetchActiveSessionCode()" style="background-color: #ffffff; font-weight: 600; color: var(--accent);">
+            <label for="teacher-code-stage">🎯 اختر الصف الدراسي لإدارة أو إنشاء كود حصة جديد:</label>
+            <select id="teacher-code-stage" onchange="fetchTeacherStageData()" style="background-color: #ffffff; font-weight: 600; color: var(--accent);">
               <option value="الأول الإعدادي">الأول الإعدادي</option>
               <option value="الثاني الإعدادي">الثاني الإعدادي</option>
               <option value="الثالث الإعدادي">الثالث الإعدادي</option>
@@ -415,31 +455,25 @@
           </div>
 
           <div class="form-group" style="margin-bottom: 10px;">
-            <label for="teacher-set-code">تعيين كود جديد للمرحلة المحددة:</label>
+            <label for="teacher-set-code">تنزيل كود حصة جديد للمرحلة (مثال: حصة 1 ظهراً أو 4 عصراً):</label>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <input type="text" id="teacher-set-code" placeholder="أدخل كود هذه المرحلة" style="flex: 1; min-width: 150px; background-color: #ffffff;">
-              <button class="btn btn-primary" style="width: auto; padding: 0 20px;" onclick="saveActiveSessionCode()">حفظ وتنشيط الكود</button>
-              <button class="btn btn-danger" style="width: auto; padding: 0 20px;" onclick="disableActiveSessionCode()">تعطيل/حذف الكود 🚫</button>
+              <input type="text" id="teacher-set-code" placeholder="أدخل كود الحصة الجديد" style="flex: 1; min-width: 150px; background-color: #ffffff;">
+              <button class="btn btn-primary" style="width: auto; padding: 0 20px;" onclick="saveNewSessionCode()">تنشيط ونشر الكود 🚀</button>
             </div>
           </div>
           <p id="current-active-code-display" style="font-size: 0.95rem; color: var(--accent); font-weight: 600; margin-top: 10px;">الكود النشط حالياً: جاري التحميل...</p>
         </div>
 
-        <!-- مولد QR Code القاعة للسنتر -->
+        <!-- مولد QR Code القاعة -->
         <div style="background: #ffffff; padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1.5px solid var(--accent); text-align: center;">
           <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px;">📷 QR Code الخاص بالقاعة / السنتر</h3>
           <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">اطبع هذا الكود وعلقه في القاعة ليمسحه الطلاب بموبايلاتهم عند الدخول:</p>
 
           <div class="qr-print-card">
-            <!-- النص أعلى الـ QR Code -->
             <h2 style="color: var(--accent); font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; letter-spacing: 0.5px;">⭐ الأمير في التاريخ ⭐</h2>
-
-            <!-- صورة الـ QR Code -->
             <div id="teacher-qr-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 15px;">
               <img id="center-qr-image" src="" alt="QR Code السنتر" style="width: 210px; height: 210px; border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; background: #ffffff;">
             </div>
-
-            <!-- النص أسفل الـ QR Code مع المطور ورقم الهاتف -->
             <p style="color: var(--primary); font-size: 0.92rem; font-weight: 700; border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 5px;">
               🛠️ تم الإنشاء بواسطة المطور فتحي: <span dir="ltr" style="color: var(--accent); font-weight: 800;">01063048827</span>
             </p>
@@ -450,26 +484,35 @@
           </div>
         </div>
 
+        <!-- فلترة عرض الطلاب والحصص -->
         <div class="sub-nav">
-          <button class="sub-nav-btn active" id="subtab-all" onclick="switchTeacherSubTab('all')">📋 لائحة المسجلين بالمنصة</button>
-          <button class="sub-nav-btn" id="subtab-session" onclick="switchTeacherSubTab('session')">🎯 حضور الحصة الحالية</button>
+          <button class="sub-nav-btn active" id="subtab-all" onclick="switchTeacherSubTab('all')">📋 لائحة المسجلين وحالة الحصص</button>
         </div>
 
-        <div class="form-group">
-          <label for="filter-stage-select">اختر المرحلة لتصفية قائمة الطلاب:</label>
-          <select id="filter-stage-select" onchange="renderTeacherData()">
-            <option value="الكل">جميع المراحل الدراسية</option>
-            <option value="الأول الإعدادي">الأول الإعدادي</option>
-            <option value="الثاني الإعدادي">الثاني الإعدادي</option>
-            <option value="الثالث الإعدادي">الثالث الإعدادي</option>
-            <option value="الأول الثانوي">الأول الثانوي</option>
-            <option value="الثاني الثانوي عام">الثاني الثانوي عام</option>
-            <option value="الثاني الثانوي بكالوريا">الثاني الثانوي بكالوريا</option>
-            <option value="الثالث الثانوي">الثالث الثانوي</option>
-          </select>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="filter-stage-select">المرحلة الدراسية:</label>
+            <select id="filter-stage-select" onchange="fetchTeacherStageData()">
+              <option value="الكل">جميع المراحل الدراسية</option>
+              <option value="الأول الإعدادي">الأول الإعدادي</option>
+              <option value="الثاني الإعدادي">الثاني الإعدادي</option>
+              <option value="الثالث الإعدادي">الثالث الإعدادي</option>
+              <option value="الأول الثانوي">الأول الثانوي</option>
+              <option value="الثاني الثانوي عام">الثاني الثانوي عام</option>
+              <option value="الثاني الثانوي بكالوريا">الثاني الثانوي بكالوريا</option>
+              <option value="الثالث الثانوي">الثالث الثانوي</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="filter-session-select">تحديد حصة معينة لمعاينة الحضور:</label>
+            <select id="filter-session-select" onchange="renderTeacherData()">
+              <option value="all">عرض الحالة العامة للمنصة</option>
+            </select>
+          </div>
         </div>
 
-        <h3 id="list-section-title" style="font-size: 1.1rem; color: var(--primary); margin-top: 20px;">قائمة المسجلين بالمنصة</h3>
+        <h3 id="list-section-title" style="font-size: 1.1rem; color: var(--primary); margin-top: 20px;">قائمة الطلاب المسجلين بالمنصة</h3>
         <div class="student-grid" id="students-display-container"></div>
       </div>
     </div>
@@ -493,6 +536,7 @@
     let isTeacherUnlocked = false;
     let activeTeacherSubTab = 'all';
     let isFromQR = false;
+    let cachedSessions = [];
 
     window.onload = function() {
       // 1. فحص الدخول عبر الـ QR Code من الرابط (?src=qr)
@@ -518,8 +562,7 @@
       document.getElementById('teacher-view').classList.toggle('hidden', view !== 'teacher');
 
       if (view === 'teacher' && isTeacherUnlocked) {
-        fetchActiveSessionCode();
-        renderTeacherData();
+        fetchTeacherStageData();
         generateCenterQRCode();
       }
     }
@@ -599,7 +642,6 @@
             phone: phone,
             stage: stage,
             photoURL: photoURL,
-            lastAttendanceTime: 0,
             createdAt: new Date().toISOString()
           };
           await studentRef.set(currentStudent);
@@ -617,6 +659,29 @@
       }
     }
 
+    // تعديل الصورة الشخصية للطالب من حسابه
+    async function handleEditStudentPhoto(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+        const newPhotoURL = await compressAndConvertToBase64(file);
+        currentStudent.photoURL = newPhotoURL;
+
+        await db.collection('students').doc(currentStudent.phone).update({
+          photoURL: newPhotoURL
+        });
+
+        localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
+        document.getElementById('welcome-student-img').src = newPhotoURL;
+
+        alert("✅ تم تحديث صورتك الشخصية بنجاح!");
+      } catch (err) {
+        console.error("خطأ تعديل الصورة:", err);
+        alert("❌ تعذر تحديث الصورة: " + err.message);
+      }
+    }
+
     function showStudentStep2() {
       document.getElementById('student-step-1').classList.add('hidden');
       document.getElementById('student-step-2').classList.remove('hidden');
@@ -624,12 +689,11 @@
       document.getElementById('welcome-student-info').innerText = `المرحلة: ${currentStudent.stage} | الهاتف: ${currentStudent.phone}`;
       
       const imgEl = document.getElementById('welcome-student-img');
-      imgEl.src = currentStudent.photoURL || 'https://via.placeholder.com/60';
+      imgEl.src = currentStudent.photoURL || 'https://via.placeholder.com/65';
 
       const bannerEl = document.getElementById('qr-welcome-msg');
       bannerEl.classList.remove('hidden');
 
-      // التحكم في الرسائل الموجهة للطالب بناءً على مسح الـ QR Code
       if (isFromQR) {
         bannerEl.className = 'qr-banner success';
         bannerEl.innerHTML = `
@@ -642,6 +706,78 @@
           ⚠️ تنبيه: لم تقم بمسح كود الـ QR الخاص بالقاعة!<br>
           <span style="font-size: 0.92rem; font-weight: 500;">يجب أولاً أن تمسح الـ QR Code لتتمكن من كتابة الكود وتسجيل الحضور.</span>
         `;
+      }
+
+      loadStudentSessionsHistory();
+    }
+
+    // تحميل سجل حصص الطالب (الحاضرة والغائبة والجارية)
+    async function loadStudentSessionsHistory() {
+      const historyContainer = document.getElementById('student-sessions-history');
+      if (!currentStudent || !currentStudent.stage) return;
+
+      try {
+        const sessionsSnapshot = await db.collection('sessions')
+          .where('stage', '==', currentStudent.stage)
+          .get();
+
+        const attendanceSnapshot = await db.collection('attendance')
+          .where('phone', '==', currentStudent.phone)
+          .get();
+
+        const attendedSessionIds = new Set();
+        attendanceSnapshot.forEach(doc => {
+          attendedSessionIds.add(doc.data().sessionId);
+        });
+
+        const sessionsList = [];
+        sessionsSnapshot.forEach(doc => {
+          sessionsList.push({ id: doc.id, ...doc.data() });
+        });
+
+        // ترتيب الحصص من الأحدث للأقدم
+        sessionsList.sort((a, b) => b.createdAt - a.createdAt);
+
+        if (sessionsList.length === 0) {
+          historyContainer.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">لا توجد حصص مسجلة لمرحلتك حتى الآن.</p>`;
+          return;
+        }
+
+        historyContainer.innerHTML = '';
+        const now = Date.now();
+
+        sessionsList.forEach(session => {
+          const item = document.createElement('div');
+          item.className = 'session-history-item';
+
+          const sessionDate = new Date(session.createdAt).toLocaleString('ar-EG', {
+            weekday: 'short', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+
+          const isAttended = attendedSessionIds.has(session.id);
+          const isExpired = now > session.expiresAt;
+
+          let badgeHTML = '';
+          if (isAttended) {
+            badgeHTML = `<span class="badge badge-success">تم حضور الحصة 🟢</span>`;
+          } else if (isExpired) {
+            badgeHTML = `<span class="badge badge-danger">لم تحضر هذه الحصة 🔴</span>`;
+          } else {
+            badgeHTML = `<span class="badge badge-warning">حصة جارية الآن ⏳ - أدخل الكود أعلاه</span>`;
+          }
+
+          item.innerHTML = `
+            <div>
+              <strong style="color: var(--primary);">حصة كود: (${session.code})</strong>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">🗓️ ${sessionDate}</div>
+            </div>
+            <div>${badgeHTML}</div>
+          `;
+
+          historyContainer.appendChild(item);
+        });
+      } catch (error) {
+        console.error("خطأ تحميل سجل الحصص:", error);
       }
     }
 
@@ -673,26 +809,7 @@
       document.getElementById('student-step-1').classList.remove('hidden');
     }
 
-    async function getValidActiveCodeData(stage) {
-      if (!stage) return null;
-      const doc = await db.collection('stage_codes').doc(stage).get();
-      if (!doc.exists) return null;
-      
-      const data = doc.data();
-      if (!data.activeCode || !data.createdAt) return null;
-
-      const ONE_HOUR_MS = 60 * 60 * 1000;
-      const now = Date.now();
-
-      if (now - data.createdAt > ONE_HOUR_MS) {
-        return { activeCode: null, isExpired: true };
-      }
-
-      return { activeCode: data.activeCode, createdAt: data.createdAt };
-    }
-
     async function submitSessionCode() {
-      // 🔴 منع الطالب من التسجيل إذا لم يكن قادماً من مسح QR Code
       if (!isFromQR) {
         alert("🚫 عذراً، يجب أولاً أن تمسح الـ QR Code الخاص بالقاعة لكي تتمكن من كتابة الكود وتسجيل الحضور!");
         return;
@@ -707,49 +824,48 @@
       try {
         const studentStage = currentStudent.stage;
 
-        const codeData = await getValidActiveCodeData(studentStage);
-        if (!codeData || !codeData.activeCode) {
-          alert(`❌ لا يوجد كود حصة مفعل حالياً لمرحلتك الدراسية (${studentStage})، أو أن الكود قد انتهت صلاحيته (مرت ساعة عليه)!`);
+        // البحث عن الحصة النشطة الخاصة بهذه المرحلة الكود
+        const now = Date.now();
+        const activeSessionsSnapshot = await db.collection('sessions')
+          .where('stage', '==', studentStage)
+          .where('code', '==', inputCode)
+          .get();
+
+        let validSession = null;
+        activeSessionsSnapshot.forEach(doc => {
+          const data = doc.data();
+          if (now <= data.expiresAt) {
+            validSession = { id: doc.id, ...data };
+          }
+        });
+
+        if (!validSession) {
+          alert(`❌ كود الحصة غير صحيح أو انتهت صلاحية تفعيله (مرت ساعة على نشر الكود)!`);
           return;
         }
 
-        if (inputCode !== codeData.activeCode) {
-          alert(`❌ كود الحصة غير صحيح لمرحلة (${studentStage})!`);
+        // التأكد من عدم تسجيل الحضور لنفس الحصة سابقاً
+        const attendanceId = `${validSession.id}_${currentStudent.phone}`;
+        const attDoc = await db.collection('attendance').doc(attendanceId).get();
+
+        if (attDoc.exists) {
+          alert(`⚠️ لقد قمت بتسجيل الحضور لهذه الحصة بالفعل من قبل!`);
           return;
         }
 
-        const studentDoc = await db.collection('students').doc(currentStudent.phone).get();
-        const studentData = studentDoc.data() || {};
-        const lastAtt = studentData.lastAttendanceTime || 0;
-        const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
-        const timePassed = Date.now() - lastAtt;
-
-        if (timePassed < TWENTY_FOUR_HOURS) {
-          const hoursLeft = Math.ceil((TWENTY_FOUR_HOURS - timePassed) / (1000 * 60 * 60));
-          alert(`⚠️ لقد قمت بتسجيل الحضور بالفعل! لا يمكنك التسجيل مجدداً إلا بعد مرور 24 ساعة.\n(متبقي لك حوالي ${hoursLeft} ساعة)`);
-          return;
-        }
-
-        const attendanceId = `${studentStage}_${codeData.activeCode}_${currentStudent.phone}`;
         await db.collection('attendance').doc(attendanceId).set({
+          sessionId: validSession.id,
+          stage: currentStudent.stage,
+          sessionCode: validSession.code,
           phone: currentStudent.phone,
           name: currentStudent.name,
-          stage: currentStudent.stage,
           photoURL: currentStudent.photoURL || '',
-          sessionCode: codeData.activeCode,
           timestamp: new Date().toISOString()
         });
 
-        const nowTime = Date.now();
-        await db.collection('students').doc(currentStudent.phone).update({
-          lastAttendanceTime: nowTime
-        });
-
-        currentStudent.lastAttendanceTime = nowTime;
-        localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
-
         alert("✨ تم تسجيل حضورك بنجاح لهذه الحصة!");
         document.getElementById('session-code').value = '';
+        loadStudentSessionsHistory();
       } catch (error) {
         console.error("خطأ في تسجيل الحضور:", error);
         alert("❌ تعذر تسجيل الحضور: " + error.message);
@@ -775,8 +891,7 @@
         isTeacherUnlocked = true;
         document.getElementById('teacher-lock-screen').classList.add('hidden');
         document.getElementById('teacher-content').classList.remove('hidden');
-        fetchActiveSessionCode();
-        renderTeacherData();
+        fetchTeacherStageData();
         generateCenterQRCode();
       } else {
         alert("❌ كلمة السر غير صحيحة!");
@@ -790,7 +905,8 @@
       document.getElementById('center-qr-image').src = qrApiUrl;
     }
 
-    async function saveActiveSessionCode() {
+    // تنزيل كود حصة جديد يمتد لساعة كاملة
+    async function saveNewSessionCode() {
       const stage = document.getElementById('teacher-code-stage').value;
       const codeInput = document.getElementById('teacher-set-code');
       const code = codeInput.value.trim();
@@ -800,65 +916,79 @@
       }
 
       try {
-        await db.collection('stage_codes').doc(stage).set({ 
-          activeCode: code,
-          createdAt: Date.now()
+        const now = Date.now();
+        const expiresAt = now + (60 * 60 * 1000); // 1 hour
+
+        await db.collection('sessions').add({
+          stage: stage,
+          code: code,
+          createdAt: now,
+          expiresAt: expiresAt
         });
 
-        alert(`✅ تم تنشيط كود الحصة لمرحلة (${stage}) بنجاح! سينتهي تفعيله تلقائياً بعد ساعة واحدة.`);
-        fetchActiveSessionCode();
+        alert(`✅ تم تنشيط ونشر كود الحصة (${code}) لمرحلة (${stage}) بنجاح! ينتهي الكود تلقائياً بعد ساعة.`);
         codeInput.value = '';
+        fetchTeacherStageData();
       } catch (error) {
-        console.error("خطأ في حفظ الكود:", error);
-        alert("❌ فشل حفظ الكود: " + error.message);
+        console.error("خطأ تنشيط الكود:", error);
+        alert("❌ فشل تنشيط الكود: " + error.message);
       }
     }
 
-    async function disableActiveSessionCode() {
+    // جلب حصص المرحلة وتحديث القوائم في لوحة الأستاذ
+    async function fetchTeacherStageData() {
+      if (!isTeacherUnlocked) return;
+
       const stage = document.getElementById('teacher-code-stage').value;
+      const filterStage = document.getElementById('filter-stage-select').value;
+      const activeDisplay = document.getElementById('current-active-code-display');
+
       try {
-        await db.collection('stage_codes').doc(stage).set({ 
-          activeCode: null,
-          createdAt: null
+        const targetStage = filterStage !== "الكل" ? filterStage : stage;
+
+        const sessionsSnapshot = await db.collection('sessions')
+          .where('stage', '==', targetStage)
+          .get();
+
+        cachedSessions = [];
+        sessionsSnapshot.forEach(doc => {
+          cachedSessions.push({ id: doc.id, ...doc.data() });
         });
 
-        alert(`🚫 تم تعطيل/حذف كود الحصة لمرحلة (${stage}) بنجاح!`);
-        fetchActiveSessionCode();
-      } catch (error) {
-        console.error("خطأ في تعطيل الكود:", error);
-        alert("❌ تعذر تعطيل الكود: " + error.message);
-      }
-    }
+        cachedSessions.sort((a, b) => b.createdAt - a.createdAt);
 
-    async function fetchActiveSessionCode() {
-      const stage = document.getElementById('teacher-code-stage').value;
-      try {
-        const codeData = await getValidActiveCodeData(stage);
-        const displayEl = document.getElementById('current-active-code-display');
+        // تحديث خيارات فلترة الحصص
+        const sessionSelect = document.getElementById('filter-session-select');
+        sessionSelect.innerHTML = `<option value="all">عرض حالة المنصة العامة</option>`;
 
-        if (codeData && codeData.activeCode) {
-          const minutesPassed = Math.floor((Date.now() - codeData.createdAt) / (1000 * 60));
-          const minutesLeft = 60 - minutesPassed;
-          displayEl.innerText = `الكود النشط لمرحلة (${stage}): ${codeData.activeCode} (متبقي ${minutesLeft} دقيقة على الانتهاء)`;
-          displayEl.style.color = 'var(--accent)';
-        } else if (codeData && codeData.isExpired) {
-          displayEl.innerText = `الكود المفعل لمرحلة (${stage}): انتهت صلاحيته تلقائياً (مرت ساعة)`;
-          displayEl.style.color = 'var(--danger)';
+        const now = Date.now();
+        let activeCodeFound = null;
+
+        cachedSessions.forEach(session => {
+          const isExpired = now > session.expiresAt;
+          const statusText = isExpired ? 'انتهت' : 'نشطة 🟢';
+          const sessionDate = new Date(session.createdAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+          
+          sessionSelect.innerHTML += `<option value="${session.id}">حصة كود (${session.code}) - ${sessionDate} [${statusText}]</option>`;
+
+          if (!isExpired && !activeCodeFound) {
+            activeCodeFound = session;
+          }
+        });
+
+        if (activeCodeFound) {
+          const minutesLeft = Math.ceil((activeCodeFound.expiresAt - now) / (1000 * 60));
+          activeDisplay.innerText = `الكود النشط لمرحلة (${targetStage}): ${activeCodeFound.code} (متبقي ${minutesLeft} دقيقة على الانتهاء)`;
+          activeDisplay.style.color = 'var(--accent)';
         } else {
-          displayEl.innerText = `الكود المفعل لمرحلة (${stage}): لا يوجد كود مفعل حالياً`;
-          displayEl.style.color = 'var(--text-muted)';
+          activeDisplay.innerText = `لا يوجد كود حصة نشط حالياً لمرحلة (${targetStage})`;
+          activeDisplay.style.color = 'var(--text-muted)';
         }
-      } catch (error) {
-        console.error("خطأ قراءة الكود:", error);
-      }
-    }
 
-    function switchTeacherSubTab(tab) {
-      activeTeacherSubTab = tab;
-      document.getElementById('subtab-all').classList.toggle('active', tab === 'all');
-      document.getElementById('subtab-session').classList.toggle('active', tab === 'session');
-      document.getElementById('list-section-title').innerText = tab === 'all' ? "📋 لائحة المسجلين بالمنصة" : "🎯 حضور الحصة الحالية";
-      renderTeacherData();
+        renderTeacherData();
+      } catch (err) {
+        console.error("خطأ قراءة بيانات المرحلة:", err);
+      }
     }
 
     async function deleteStudent(phone, name) {
@@ -880,82 +1010,100 @@
       }
     }
 
+    // عرض قائمة الطلاب وحالتهم (مسجل / حضر / لم يحضر كود)
     async function renderTeacherData() {
       if (!isTeacherUnlocked) return;
 
       const selectedStage = document.getElementById('filter-stage-select').value;
+      const selectedSessionId = document.getElementById('filter-session-select').value;
 
       try {
-        const stagesDocs = await db.collection('stage_codes').get();
-        const activeCodesMap = {};
-        const ONE_HOUR_MS = 60 * 60 * 1000;
+        const studentsSnapshot = await db.collection('students').get();
+        const attendanceSnapshot = await db.collection('attendance').get();
+
+        // تجميع الحضور في مجموعة للتأكد السريع
+        const attendanceMap = new Set();
+        attendanceSnapshot.forEach(doc => {
+          const data = doc.data();
+          attendanceMap.add(`${data.sessionId}_${data.phone}`);
+        });
+
+        const container = document.getElementById('students-display-container');
+        container.innerHTML = '';
+
+        let studentsList = [];
+        studentsSnapshot.forEach(doc => studentsList.push(doc.data()));
+
+        if (selectedStage !== "الكل") {
+          studentsList = studentsList.filter(s => s.stage === selectedStage);
+        }
+
+        if (studentsList.length === 0) {
+          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مسجلون في هذه القائمة.</p>`;
+          return;
+        }
+
         const now = Date.now();
 
-        stagesDocs.forEach(doc => {
-          const data = doc.data();
-          if (data.activeCode && data.createdAt && (now - data.createdAt <= ONE_HOUR_MS)) {
-            activeCodesMap[doc.id] = data.activeCode;
+        studentsList.forEach(student => {
+          let badgeHTML = '';
+
+          // تجميع حصص طالب المحددة
+          const studentStageSessions = cachedSessions.filter(s => s.stage === student.stage);
+
+          if (selectedSessionId !== "all") {
+            // عرض حالة حصة معينة
+            const selectedSession = cachedSessions.find(s => s.id === selectedSessionId);
+            const key = `${selectedSessionId}_${student.phone}`;
+            const hasAttended = attendanceMap.has(key);
+
+            if (hasAttended) {
+              badgeHTML = `<span class="badge badge-success">حضر الحصة 🟢</span>`;
+            } else {
+              badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${selectedSession ? selectedSession.code : ''}) 🔴</span>`;
+            }
+          } else {
+            // المعاينة العامة
+            if (studentStageSessions.length === 0) {
+              badgeHTML = `<span class="badge badge-info">مسجل على المنصة ⚪</span>`;
+            } else {
+              // فحص آخر حصة نزلت لمرحلته
+              const latestSession = studentStageSessions[0];
+              const key = `${latestSession.id}_${student.phone}`;
+              const hasAttended = attendanceMap.has(key);
+
+              if (hasAttended) {
+                badgeHTML = `<span class="badge badge-success">حضر آخر حصة 🟢</span>`;
+              } else if (now > latestSession.expiresAt) {
+                badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${latestSession.code}) 🔴</span>`;
+              } else {
+                badgeHTML = `<span class="badge badge-warning">حصة جارية (كود: ${latestSession.code}) ⏳</span>`;
+              }
+            }
           }
-        });
 
-        db.collection('students').onSnapshot(async studentsSnapshot => {
-          const attendanceSnapshot = await db.collection('attendance').get();
+          const card = document.createElement('div');
+          card.className = 'student-card-item';
+          const photoSrc = student.photoURL || 'https://via.placeholder.com/48';
 
-          const attendedSet = new Set();
-          attendanceSnapshot.forEach(doc => {
-            const att = doc.data();
-            attendedSet.add(`${att.stage}_${att.sessionCode}_${att.phone}`);
-          });
-
-          const container = document.getElementById('students-display-container');
-          container.innerHTML = '';
-
-          let studentsList = [];
-          studentsSnapshot.forEach(doc => studentsList.push(doc.data()));
-
-          if (selectedStage !== "الكل") {
-            studentsList = studentsList.filter(s => s.stage === selectedStage);
-          }
-
-          if (studentsList.length === 0) {
-            container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مسجلون في هذه القائمة.</p>`;
-            return;
-          }
-
-          studentsList.forEach(student => {
-            const activeCodeForStage = activeCodesMap[student.stage];
-            const hasAttended = activeCodeForStage && attendedSet.has(`${student.stage}_${activeCodeForStage}_${student.phone}`);
-
-            if (activeTeacherSubTab === 'session' && !hasAttended) return;
-
-            const card = document.createElement('div');
-            card.className = 'student-card-item';
-
-            const badgeHTML = hasAttended 
-              ? `<span class="badge badge-success">حضر الحصة 🟢</span>` 
-              : `<span class="badge badge-danger">لم يحضر 🔴</span>`;
-
-            const photoSrc = student.photoURL || 'https://via.placeholder.com/48';
-
-            card.innerHTML = `
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="${photoSrc}" alt="صورة الطالب" class="student-avatar-sm">
-                <div>
-                  <h4 style="color: var(--primary); font-size: 1rem;">${student.name}</h4>
-                  <p style="color: var(--text-muted); font-size: 0.85rem;">📱 ${student.phone} | 📚 ${student.stage}</p>
-                </div>
+          card.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <img src="${photoSrc}" alt="صورة الطالب" class="student-avatar-sm">
+              <div>
+                <h4 style="color: var(--primary); font-size: 1rem;">${student.name}</h4>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">📱 ${student.phone} | 📚 ${student.stage}</p>
               </div>
-              <div style="display: flex; align-items: center; gap: 10px;">
-                ${badgeHTML}
-                <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="deleteStudent('${student.phone}', '${student.name}')">حذف 🗑️</button>
-              </div>
-            `;
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              ${badgeHTML}
+              <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="deleteStudent('${student.phone}', '${student.name}')">حذف 🗑️</button>
+            </div>
+          `;
 
-            container.appendChild(card);
-          });
+          container.appendChild(card);
         });
       } catch (err) {
-        console.error("خطأ عرض البيانات:", err);
+        console.error("خطأ عرض بيانات الجدول:", err);
       }
     }
   </script>
