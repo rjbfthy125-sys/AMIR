@@ -23,6 +23,7 @@
       --text-main: #0f172a;
       --text-muted: #64748b;
       --border-color: #e2e8f0;
+      --input-bg: #ffffff;
       --success: #10b981;
       --danger: #ef4444;
       --warning: #f59e0b;
@@ -31,11 +32,27 @@
       --shadow-glow: 0 0 20px rgba(217, 119, 6, 0.2);
     }
 
+    /* 🌙 ثيم الوضع الليلي (Dark Mode) */
+    body.dark-mode {
+      --primary: #f8fafc;
+      --primary-light: #e2e8f0;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --bg-body: #0b0f19;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --input-bg: #0f172a;
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       font-family: 'Readex Pro', 'Tajawal', sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
 
     body {
@@ -57,8 +74,9 @@
 
     header {
       text-align: center;
-      margin-bottom: 35px;
+      margin-bottom: 25px;
       padding-top: 10px;
+      position: relative;
     }
 
     header h1 {
@@ -77,6 +95,25 @@
       font-size: 1.05rem;
     }
 
+    /* زر تبديل الوضع الليلي */
+    .theme-toggle-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .view-switcher {
       display: flex;
       justify-content: center;
@@ -93,12 +130,11 @@
       font-size: 0.95rem;
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.3s ease;
     }
 
     .tab-btn.active {
       background: var(--primary);
-      color: #ffffff;
+      color: var(--bg-body);
       border-color: var(--primary);
       box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.3);
     }
@@ -126,7 +162,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      border-bottom: 2px solid #f1f5f9;
+      border-bottom: 2px solid var(--border-color);
       padding-bottom: 12px;
     }
 
@@ -149,7 +185,8 @@
       border-radius: 12px;
       font-size: 1rem;
       outline: none;
-      transition: all 0.25s ease;
+      background-color: var(--input-bg);
+      color: var(--text-main);
     }
 
     .form-group input:focus, .form-group select:focus {
@@ -165,7 +202,6 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
       display: inline-flex;
       justify-content: center;
       align-items: center;
@@ -188,8 +224,14 @@
       box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
     }
 
+    .btn-info {
+      background: linear-gradient(135deg, var(--info), #2563eb);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+    }
+
     .btn-subtle {
-      background-color: #f1f5f9;
+      background-color: var(--bg-body);
       color: var(--primary);
       border: 1px solid var(--border-color);
     }
@@ -242,7 +284,7 @@
     }
 
     .sub-nav-btn.active {
-      background: #f1f5f9;
+      background: var(--bg-body);
       color: var(--accent);
     }
 
@@ -257,7 +299,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 16px 20px;
-      background-color: #ffffff;
+      background-color: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 14px;
       gap: 15px;
@@ -309,12 +351,11 @@
       border-radius: 18px;
       padding: 25px;
       display: inline-block;
-      background: #fafafa;
+      background: var(--card-bg);
       margin-bottom: 15px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.03);
     }
 
-    /* جدول سجل الحصص للطالب */
     .session-history-list {
       display: flex;
       flex-direction: column;
@@ -327,11 +368,63 @@
       justify-content: space-between;
       align-items: center;
       padding: 14px 18px;
-      background: #f8fafc;
+      background: var(--bg-body);
       border: 1px solid var(--border-color);
       border-radius: 12px;
       flex-wrap: wrap;
       gap: 10px;
+    }
+
+    /* 🪟 النافذة المنبثقة (Modal) لسجل الطالب */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      padding: 15px;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-card {
+      background: var(--card-bg);
+      color: var(--text-main);
+      width: 100%;
+      max-width: 650px;
+      max-height: 85vh;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-color);
+      overflow-y: auto;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      color: var(--primary);
+    }
+
+    .close-modal-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
     }
   </style>
 </head>
@@ -339,6 +432,10 @@
 
   <div class="container">
     <header>
+      <button class="theme-toggle-btn" onclick="toggleDarkMode()">
+        <span id="theme-icon">🌙</span> <span id="theme-text">الوضع الليلي</span>
+      </button>
+
       <h1>منصة <span>التاريخ</span> التعليمية</h1>
       <p>مع الأستاذ أمير — تجربة تعليمية وتفاعلية عصرية</p>
     </header>
@@ -385,7 +482,6 @@
       </div>
 
       <div id="student-step-2" class="card hidden">
-        <!-- كارت بيانات الطالب وزر تعديل الصورة -->
         <div class="user-welcome-box">
           <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
             <div style="position: relative;">
@@ -401,7 +497,6 @@
           <button class="btn btn-subtle" style="width: auto; padding: 6px 14px; font-size: 0.8rem;" onclick="logoutStudent()">تغيير الحساب</button>
         </div>
 
-        <!-- شريط حالة الـ QR Code -->
         <div id="qr-welcome-msg" class="qr-banner hidden"></div>
 
         <h2 class="card-title">🔑 تسجيل حضور الحصة الحالية</h2>
@@ -413,7 +508,6 @@
 
         <button class="btn btn-primary" onclick="submitSessionCode()">تأكيد وتسجيل الحضور ✨</button>
 
-        <!-- سجل حصص الطالب (الحاضرة والغائبة) -->
         <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border-color);">
         <h2 class="card-title">📅 سجل حصصك والتزامك بالمرحلة</h2>
         <div id="student-sessions-history" class="session-history-list">
@@ -439,11 +533,10 @@
       <div id="teacher-content" class="card hidden">
         <h2 class="card-title">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
 
-        <!-- كود الحصة النشط وإنشاء أكواد جديدة -->
-        <div style="background: #f1f5f9; padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1px solid var(--border-color);">
+        <div style="background: var(--bg-body); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1px solid var(--border-color);">
           <div class="form-group">
             <label for="teacher-code-stage">🎯 اختر الصف الدراسي لإدارة أو إنشاء كود حصة جديد:</label>
-            <select id="teacher-code-stage" onchange="fetchTeacherStageData()" style="background-color: #ffffff; font-weight: 600; color: var(--accent);">
+            <select id="teacher-code-stage" onchange="fetchTeacherStageData()" style="font-weight: 600; color: var(--accent);">
               <option value="الأول الإعدادي">الأول الإعدادي</option>
               <option value="الثاني الإعدادي">الثاني الإعدادي</option>
               <option value="الثالث الإعدادي">الثالث الإعدادي</option>
@@ -457,7 +550,7 @@
           <div class="form-group" style="margin-bottom: 10px;">
             <label for="teacher-set-code">تنزيل كود حصة جديد للمرحلة (مثال: حصة 1 ظهراً أو 4 عصراً):</label>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <input type="text" id="teacher-set-code" placeholder="أدخل كود الحصة الجديد" style="flex: 1; min-width: 150px; background-color: #ffffff;">
+              <input type="text" id="teacher-set-code" placeholder="أدخل كود الحصة الجديد" style="flex: 1; min-width: 150px;">
               <button class="btn btn-primary" style="width: auto; padding: 0 20px;" onclick="saveNewSessionCode()">تنشيط ونشر الكود 🚀</button>
             </div>
           </div>
@@ -465,7 +558,7 @@
         </div>
 
         <!-- مولد QR Code القاعة -->
-        <div style="background: #ffffff; padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1.5px solid var(--accent); text-align: center;">
+        <div style="background: var(--card-bg); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1.5px solid var(--accent); text-align: center;">
           <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px;">📷 QR Code الخاص بالقاعة / السنتر</h3>
           <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">اطبع هذا الكود وعلقه في القاعة ليمسحه الطلاب بموبايلاتهم عند الدخول:</p>
 
@@ -484,7 +577,6 @@
           </div>
         </div>
 
-        <!-- فلترة عرض الطلاب والحصص -->
         <div class="sub-nav">
           <button class="sub-nav-btn active" id="subtab-all" onclick="switchTeacherSubTab('all')">📋 لائحة المسجلين وحالة الحصص</button>
         </div>
@@ -518,6 +610,19 @@
     </div>
   </div>
 
+  <!-- 🪟 النافذة المنبثقة لسجل الطالب التفصيلي للأستاذ -->
+  <div id="student-report-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="report-modal-title">📊 سجل حضور الطالب</h3>
+        <button class="close-modal-btn" onclick="closeStudentReport()">✖</button>
+      </div>
+      <div id="report-modal-body">
+        <p style="text-align:center; color: var(--text-muted);">جاري تحميل السجل...</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBja36JoyQuVrOtwwjATqLO9hVE-VG5ShQ",
@@ -539,11 +644,19 @@
     let cachedSessions = [];
 
     window.onload = function() {
-      // 1. فحص الدخول عبر الـ QR Code من الرابط (?src=qr)
+      // 1. استرجاع الوضع الليلي المُحفظ
+      const savedTheme = localStorage.getItem('history_app_theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('theme-icon').innerText = '☀️';
+        document.getElementById('theme-text').innerText = 'الوضع النهاري';
+      }
+
+      // 2. فحص الدخول عبر الـ QR Code من الرابط (?src=qr)
       const urlParams = new URLSearchParams(window.location.search);
       isFromQR = (urlParams.get('src') === 'qr');
 
-      // 2. فحص الحساب المسجل سابقاً
+      // 3. فحص الحساب المسجل سابقاً
       const savedStudent = localStorage.getItem('history_app_student');
       if (savedStudent) {
         try {
@@ -554,6 +667,14 @@
         }
       }
     };
+
+    // تبديل الوضع الليلي والنهاري
+    function toggleDarkMode() {
+      const isDark = document.body.classList.toggle('dark-mode');
+      document.getElementById('theme-icon').innerText = isDark ? '☀️' : '🌙';
+      document.getElementById('theme-text').innerText = isDark ? 'الوضع النهاري' : 'الوضع الليلي';
+      localStorage.setItem('history_app_theme', isDark ? 'dark' : 'light');
+    }
 
     function switchMainView(view) {
       document.getElementById('tab-student').classList.toggle('active', view === 'student');
@@ -659,7 +780,6 @@
       }
     }
 
-    // تعديل الصورة الشخصية للطالب من حسابه
     async function handleEditStudentPhoto(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -711,7 +831,6 @@
       loadStudentSessionsHistory();
     }
 
-    // تحميل سجل حصص الطالب (الحاضرة والغائبة والجارية)
     async function loadStudentSessionsHistory() {
       const historyContainer = document.getElementById('student-sessions-history');
       if (!currentStudent || !currentStudent.stage) return;
@@ -735,7 +854,6 @@
           sessionsList.push({ id: doc.id, ...doc.data() });
         });
 
-        // ترتيب الحصص من الأحدث للأقدم
         sessionsList.sort((a, b) => b.createdAt - a.createdAt);
 
         if (sessionsList.length === 0) {
@@ -824,7 +942,6 @@
       try {
         const studentStage = currentStudent.stage;
 
-        // البحث عن الحصة النشطة الخاصة بهذه المرحلة الكود
         const now = Date.now();
         const activeSessionsSnapshot = await db.collection('sessions')
           .where('stage', '==', studentStage)
@@ -844,7 +961,6 @@
           return;
         }
 
-        // التأكد من عدم تسجيل الحضور لنفس الحصة سابقاً
         const attendanceId = `${validSession.id}_${currentStudent.phone}`;
         const attDoc = await db.collection('attendance').doc(attendanceId).get();
 
@@ -905,7 +1021,6 @@
       document.getElementById('center-qr-image').src = qrApiUrl;
     }
 
-    // تنزيل كود حصة جديد يمتد لساعة كاملة
     async function saveNewSessionCode() {
       const stage = document.getElementById('teacher-code-stage').value;
       const codeInput = document.getElementById('teacher-set-code');
@@ -917,7 +1032,7 @@
 
       try {
         const now = Date.now();
-        const expiresAt = now + (60 * 60 * 1000); // 1 hour
+        const expiresAt = now + (60 * 60 * 1000);
 
         await db.collection('sessions').add({
           stage: stage,
@@ -935,7 +1050,6 @@
       }
     }
 
-    // جلب حصص المرحلة وتحديث القوائم في لوحة الأستاذ
     async function fetchTeacherStageData() {
       if (!isTeacherUnlocked) return;
 
@@ -957,7 +1071,6 @@
 
         cachedSessions.sort((a, b) => b.createdAt - a.createdAt);
 
-        // تحديث خيارات فلترة الحصص
         const sessionSelect = document.getElementById('filter-session-select');
         sessionSelect.innerHTML = `<option value="all">عرض حالة المنصة العامة</option>`;
 
@@ -1010,7 +1123,104 @@
       }
     }
 
-    // عرض قائمة الطلاب وحالتهم (مسجل / حضر / لم يحضر كود)
+    // 🔍 فتح النافذة المنبثقة لمعاينة تقرير وسجل الطالب الخاص
+    async function showStudentReport(phone, name, stage, photoURL) {
+      const modal = document.getElementById('student-report-modal');
+      const modalTitle = document.getElementById('report-modal-title');
+      const modalBody = document.getElementById('report-modal-body');
+
+      modalTitle.innerText = `📊 سجل انضباط الطالب: ${name}`;
+      modalBody.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">جاري تجميع سجل الحضور...</p>`;
+      modal.classList.remove('hidden');
+
+      try {
+        // جلب جميع حصص مرحلة الطالب
+        const sessionsSnapshot = await db.collection('sessions')
+          .where('stage', '==', stage)
+          .get();
+
+        // جلب سجل حضور هذا الطالب تحديداً
+        const attendanceSnapshot = await db.collection('attendance')
+          .where('phone', '==', phone)
+          .get();
+
+        const attendedMap = {};
+        attendanceSnapshot.forEach(doc => {
+          const data = doc.data();
+          attendedMap[data.sessionId] = data.timestamp;
+        });
+
+        const studentSessions = [];
+        sessionsSnapshot.forEach(doc => {
+          studentSessions.push({ id: doc.id, ...doc.data() });
+        });
+
+        studentSessions.sort((a, b) => b.createdAt - a.createdAt);
+
+        let totalSessions = studentSessions.length;
+        let attendedCount = 0;
+
+        let sessionsHTML = '';
+        const now = Date.now();
+
+        studentSessions.forEach(session => {
+          const isAttended = !!attendedMap[session.id];
+          if (isAttended) attendedCount++;
+
+          const sessionDate = new Date(session.createdAt).toLocaleString('ar-EG', {
+            weekday: 'short', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+
+          let statusBadge = '';
+          if (isAttended) {
+            const timeAtt = new Date(attendedMap[session.id]).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            statusBadge = `<span class="badge badge-success">حضر 🟢 (${timeAtt})</span>`;
+          } else if (now > session.expiresAt) {
+            statusBadge = `<span class="badge badge-danger">غائب 🔴</span>`;
+          } else {
+            statusBadge = `<span class="badge badge-warning">جارية ⏳</span>`;
+          }
+
+          sessionsHTML += `
+            <div class="session-history-item">
+              <div>
+                <strong>حصة كود: (${session.code})</strong>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">🗓️ ${sessionDate}</div>
+              </div>
+              <div>${statusBadge}</div>
+            </div>
+          `;
+        });
+
+        const attendancePercentage = totalSessions > 0 ? Math.round((attendedCount / totalSessions) * 100) : 100;
+
+        modalBody.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; background: var(--bg-body); padding: 15px; border-radius: 14px; border: 1px solid var(--border-color);">
+            <img src="${photoURL || 'https://via.placeholder.com/60'}" class="student-avatar-lg" alt="صورة الطالب">
+            <div>
+              <h4 style="font-size: 1.1rem; color: var(--primary);">${name}</h4>
+              <p style="font-size: 0.88rem; color: var(--text-muted);">📱 ${phone} | 📚 ${stage}</p>
+              <p style="font-size: 0.9rem; font-weight: 700; color: var(--accent); margin-top: 4px;">
+                نسبة الحضور: ${attendancePercentage}% (${attendedCount} من إجمالي ${totalSessions} حصة)
+              </p>
+            </div>
+          </div>
+
+          <h4 style="font-size: 1rem; color: var(--primary); margin-bottom: 10px;">تفاصيل جميع الحصص والمواعيد:</h4>
+          <div class="session-history-list">
+            ${sessionsHTML || '<p style="text-align:center; color: var(--text-muted);">لا توجد حصص مسجلة لهذه المرحلة حتى الآن.</p>'}
+          </div>
+        `;
+      } catch (err) {
+        console.error("خطأ عرض تقرير الطالب:", err);
+        modalBody.innerHTML = `<p style="color: var(--danger); text-align: center;">❌ تعذر تحميل تقرير الطالب: ${err.message}</p>`;
+      }
+    }
+
+    function closeStudentReport() {
+      document.getElementById('student-report-modal').classList.add('hidden');
+    }
+
     async function renderTeacherData() {
       if (!isTeacherUnlocked) return;
 
@@ -1021,7 +1231,6 @@
         const studentsSnapshot = await db.collection('students').get();
         const attendanceSnapshot = await db.collection('attendance').get();
 
-        // تجميع الحضور في مجموعة للتأكد السريع
         const attendanceMap = new Set();
         attendanceSnapshot.forEach(doc => {
           const data = doc.data();
@@ -1048,11 +1257,9 @@
         studentsList.forEach(student => {
           let badgeHTML = '';
 
-          // تجميع حصص طالب المحددة
           const studentStageSessions = cachedSessions.filter(s => s.stage === student.stage);
 
           if (selectedSessionId !== "all") {
-            // عرض حالة حصة معينة
             const selectedSession = cachedSessions.find(s => s.id === selectedSessionId);
             const key = `${selectedSessionId}_${student.phone}`;
             const hasAttended = attendanceMap.has(key);
@@ -1063,11 +1270,9 @@
               badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${selectedSession ? selectedSession.code : ''}) 🔴</span>`;
             }
           } else {
-            // المعاينة العامة
             if (studentStageSessions.length === 0) {
               badgeHTML = `<span class="badge badge-info">مسجل على المنصة ⚪</span>`;
             } else {
-              // فحص آخر حصة نزلت لمرحلته
               const latestSession = studentStageSessions[0];
               const key = `${latestSession.id}_${student.phone}`;
               const hasAttended = attendanceMap.has(key);
@@ -1094,8 +1299,9 @@
                 <p style="color: var(--text-muted); font-size: 0.85rem;">📱 ${student.phone} | 📚 ${student.stage}</p>
               </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
               ${badgeHTML}
+              <button class="btn btn-info" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="showStudentReport('${student.phone}', '${student.name}', '${student.stage}', '${photoSrc}')">👁️ سجل الطالب</button>
               <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="deleteStudent('${student.phone}', '${student.name}')">حذف 🗑️</button>
             </div>
           `;
