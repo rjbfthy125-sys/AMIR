@@ -375,7 +375,6 @@
       gap: 10px;
     }
 
-    /* 🪟 النافذة المنبثقة (Modal) لسجل الطالب */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -425,6 +424,28 @@
       font-size: 1.5rem;
       color: var(--text-muted);
       cursor: pointer;
+    }
+
+    /* أنماط الحقوق وتوقيع المطور أسفل الصفحة */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 22px 0 10px 0;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .whatsapp-icon-link {
+      color: #25D366;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
+
+    .whatsapp-icon-link:hover {
+      transform: scale(1.15);
     }
   </style>
 </head>
@@ -548,10 +569,11 @@
           </div>
 
           <div class="form-group" style="margin-bottom: 10px;">
-            <label for="teacher-set-code">تنزيل كود حصة جديد للمرحلة (مثال: حصة 1 ظهراً أو 4 عصراً):</label>
+            <label for="teacher-set-code">تنزيل كود حصة جديد للمرحلة (أو تعطيل الكود المفعل حالياً):</label>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
               <input type="text" id="teacher-set-code" placeholder="أدخل كود الحصة الجديد" style="flex: 1; min-width: 150px;">
               <button class="btn btn-primary" style="width: auto; padding: 0 20px;" onclick="saveNewSessionCode()">تنشيط ونشر الكود 🚀</button>
+              <button class="btn btn-danger" style="width: auto; padding: 0 20px;" onclick="disableActiveSessionCode()">تعطيل/حذف الكود المفعل 🚫</button>
             </div>
           </div>
           <p id="current-active-code-display" style="font-size: 0.95rem; color: var(--accent); font-weight: 600; margin-top: 10px;">الكود النشط حالياً: جاري التحميل...</p>
@@ -567,8 +589,13 @@
             <div id="teacher-qr-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 15px;">
               <img id="center-qr-image" src="" alt="QR Code السنتر" style="width: 210px; height: 210px; border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; background: #ffffff;">
             </div>
-            <p style="color: var(--primary); font-size: 0.92rem; font-weight: 700; border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 5px;">
-              🛠️ تم الإنشاء بواسطة المطور فتحي: <span dir="ltr" style="color: var(--accent); font-weight: 800;">01063048827</span>
+            <p style="color: var(--primary); font-size: 0.92rem; font-weight: 700; border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+              Created by Fathy
+              <a href="https://wa.me/201063048827" target="_blank" class="whatsapp-icon-link" title="تواصل عبر الواتساب">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.57 6.57 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.17-.478 1.338-.94.166-.462.166-.856.116-.94-.048-.083-.182-.133-.379-.232"/>
+                </svg>
+              </a>
             </p>
           </div>
 
@@ -608,6 +635,19 @@
         <div class="student-grid" id="students-display-container"></div>
       </div>
     </div>
+
+    <!-- 📜 الفوتر السفلي للحقوق والمطور -->
+    <footer>
+      <p style="margin-bottom: 6px; font-weight: 700; color: var(--primary);">جميع الحقوق محفوظة لمستر أمير ©</p>
+      <p style="display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600;">
+        Created by Fathy
+        <a href="https://wa.me/201063048827" target="_blank" class="whatsapp-icon-link" title="تواصل عبر الواتساب">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.57 6.57 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.17-.478 1.338-.94.166-.462.166-.856.116-.94-.048-.083-.182-.133-.379-.232"/>
+          </svg>
+        </a>
+      </p>
+    </footer>
   </div>
 
   <!-- 🪟 النافذة المنبثقة لسجل الطالب التفصيلي للأستاذ -->
@@ -668,7 +708,6 @@
       }
     };
 
-    // تبديل الوضع الليلي والنهاري
     function toggleDarkMode() {
       const isDark = document.body.classList.toggle('dark-mode');
       document.getElementById('theme-icon').innerText = isDark ? '☀️' : '🌙';
@@ -1050,6 +1089,38 @@
       }
     }
 
+    // 🚫 دالة تعطيل/حذف الكود المفعل للمرحلة
+    async function disableActiveSessionCode() {
+      const stage = document.getElementById('teacher-code-stage').value;
+      try {
+        const now = Date.now();
+        const activeSessionsSnapshot = await db.collection('sessions')
+          .where('stage', '==', stage)
+          .get();
+
+        const batch = db.batch();
+        let count = 0;
+        activeSessionsSnapshot.forEach(doc => {
+          if (now <= doc.data().expiresAt) {
+            batch.update(doc.ref, { expiresAt: now });
+            count++;
+          }
+        });
+
+        if (count > 0) {
+          await batch.commit();
+          alert(`🚫 تم تعطيل وإلغاء صلاحية كود الحصة المفعل لمرحلة (${stage}) بنجاح!`);
+        } else {
+          alert(`ℹ️ لا يوجد كود حصة نشط حالياً لمرحلة (${stage}) لتعطيله.`);
+        }
+
+        fetchTeacherStageData();
+      } catch (error) {
+        console.error("خطأ في تعطيل الكود:", error);
+        alert("❌ تعذر تعطيل الكود: " + error.message);
+      }
+    }
+
     async function fetchTeacherStageData() {
       if (!isTeacherUnlocked) return;
 
@@ -1123,23 +1194,20 @@
       }
     }
 
-    // 🔍 فتح النافذة المنبثقة لمعاينة تقرير وسجل الطالب الخاص
     async function showStudentReport(phone, name, stage, photoURL) {
       const modal = document.getElementById('student-report-modal');
       const modalTitle = document.getElementById('report-modal-title');
       const modalBody = document.getElementById('report-modal-body');
 
-      modalTitle.innerText = `📊 سجل انضباط الطالب: ${name}`;
+      modalTitle.innerText = `📊 سجل حضور الطالب: ${name}`;
       modalBody.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">جاري تجميع سجل الحضور...</p>`;
       modal.classList.remove('hidden');
 
       try {
-        // جلب جميع حصص مرحلة الطالب
         const sessionsSnapshot = await db.collection('sessions')
           .where('stage', '==', stage)
           .get();
 
-        // جلب سجل حضور هذا الطالب تحديداً
         const attendanceSnapshot = await db.collection('attendance')
           .where('phone', '==', phone)
           .get();
