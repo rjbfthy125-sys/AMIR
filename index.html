@@ -530,14 +530,13 @@
       <div id="student-step-2" class="card hidden">
         <div class="user-welcome-box">
           <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-            <div style="position: relative;">
+            <div>
               <img id="welcome-student-img" src="" alt="صورة الطالب" class="student-avatar-lg">
-              <input type="file" id="edit-photo-input" accept="image/*" class="hidden" onchange="handleEditStudentPhoto(event)">
             </div>
             <div>
               <h3 id="welcome-student-name">أهلاً بك يا طالب</h3>
               <p id="welcome-student-info">المرحلة: - | الهاتف: -</p>
-              <button class="btn btn-subtle" style="width: auto; padding: 4px 12px; font-size: 0.8rem; margin-top: 6px;" onclick="document.getElementById('edit-photo-input').click()">📷 تعديل الصورة الشخصية</button>
+              <button class="btn btn-primary" style="width: auto; padding: 6px 14px; font-size: 0.85rem; margin-top: 8px;" onclick="openEditProfileModal()">✏️ تعديل البيانات والملف الشخصي</button>
             </div>
           </div>
           <button class="btn btn-subtle" style="width: auto; padding: 6px 14px; font-size: 0.8rem;" onclick="logoutStudent()">تغيير الحساب</button>
@@ -559,10 +558,6 @@
         <div id="student-sessions-history" class="session-history-list">
           <p style="color: var(--text-muted); font-size: 0.9rem;">جاري تحميل سجل الحصص...</p>
         </div>
-
-        <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border-color);">
-
-        <button class="btn btn-subtle" onclick="updateStudentStage()">تحديث المرحلة الدراسية 🔄</button>
       </div>
     </div>
 
@@ -614,14 +609,19 @@
             <div id="teacher-qr-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 15px;">
               <img id="center-qr-image" src="" alt="QR Code السنتر" style="width: 210px; height: 210px; border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; background: #ffffff;">
             </div>
-            <p style="color: var(--primary); font-size: 0.92rem; font-weight: 700; border-top: 1px dashed var(--border-color); padding-top: 12px; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 6px;">
-              Created by <a href="https://wa.me/201063048827" target="_blank" class="dev-name-link">Fathy</a>
-              <a href="https://wa.me/201063048827" target="_blank" class="whatsapp-icon-link" title="تواصل مع فتحي عبر الواتساب">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.57 6.57 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.17-.478 1.338-.94.166-.462.166-.856.116-.94-.048-.083-.182-.133-.379-.232"/>
-                </svg>
-              </a>
-            </p>
+            
+            <!-- توقيع كارت الـ QR Code بالاسم الكامل ورقم الهاتف كنص -->
+            <div style="border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 5px;">
+              <p style="color: var(--primary); font-size: 0.92rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                Created by <a href="https://wa.me/201063048827" target="_blank" class="dev-name-link">Fathy Zakaria</a>
+                <a href="https://wa.me/201063048827" target="_blank" class="whatsapp-icon-link" title="تواصل مع فتحي عبر الواتساب">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.57 6.57 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.17-.478 1.338-.94.166-.462.166-.856.116-.94-.048-.083-.182-.133-.379-.232"/>
+                  </svg>
+                </a>
+              </p>
+              <p style="color: var(--accent); font-size: 0.9rem; font-weight: 800; margin-top: 4px;" dir="ltr">01063048827</p>
+            </div>
           </div>
 
           <div>
@@ -676,7 +676,7 @@
 
       <p style="display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; font-size: 0.9rem;">
         Created by 
-        <a href="https://wa.me/201063048827" target="_blank" class="dev-name-link" title="تواصل مع فتحي عبر الواتساب">Fathy</a>
+        <a href="https://wa.me/201063048827" target="_blank" class="dev-name-link" title="تواصل مع فتحي عبر الواتساب">Fathy Zakaria</a>
         <a href="https://wa.me/201063048827" target="_blank" class="whatsapp-icon-link" title="تواصل مع فتحي عبر الواتساب">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
             <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.57 6.57 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.17-.478 1.338-.94.166-.462.166-.856.116-.94-.048-.083-.182-.133-.379-.232"/>
@@ -695,6 +695,47 @@
       </div>
       <div id="report-modal-body">
         <p style="text-align:center; color: var(--text-muted);">جاري تحميل السجل...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🪟 النافذة المنبثقة لتعديل الملف الشخصي للطالب -->
+  <div id="edit-profile-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>✏️ تعديل الملف الشخصي</h3>
+        <button class="close-modal-btn" onclick="closeEditProfileModal()">✖</button>
+      </div>
+      <div>
+        <div class="form-group">
+          <label for="edit-name">الاسم ثلاثي:</label>
+          <input type="text" id="edit-name" placeholder="أدخل اسمك ثلاثي">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-phone">رقم الهاتف:</label>
+          <input type="tel" id="edit-phone" placeholder="أدخل رقم هاتفك">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-stage">المرحلة الدراسية:</label>
+          <select id="edit-stage">
+            <option value="الأول الإعدادي">الأول الإعدادي</option>
+            <option value="الثاني الإعدادي">الثاني الإعدادي</option>
+            <option value="الثالث الإعدادي">الثالث الإعدادي</option>
+            <option value="الأول الثانوي">الأول الثانوي</option>
+            <option value="الثاني الثانوي عام">الثاني الثانوي عام</option>
+            <option value="الثاني الثانوي بكالوريا">الثاني الثانوي بكالوريا</option>
+            <option value="الثالث الثانوي">الثالث الثانوي</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-photo">📸 تغيير الصورة الشخصية (اختياري):</label>
+          <input type="file" id="edit-photo" accept="image/*">
+        </div>
+
+        <button class="btn btn-primary" id="btn-save-profile" onclick="saveEditedProfile()">حفظ التعديلات 💾</button>
       </div>
     </div>
   </div>
@@ -833,11 +874,16 @@
           const file = photoInput.files[0];
           const photoURL = await compressAndConvertToBase64(file);
 
+          const now = new Date();
+          const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
+
           currentStudent = {
             name: name,
             phone: phone,
             stage: stage,
             photoURL: photoURL,
+            editCount: 0,
+            editMonth: currentMonthKey,
             createdAt: new Date().toISOString()
           };
           await studentRef.set(currentStudent);
@@ -855,25 +901,133 @@
       }
     }
 
-    async function handleEditStudentPhoto(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+    function openEditProfileModal() {
+      if (!currentStudent) return;
+
+      const now = new Date();
+      const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
+
+      let editCount = currentStudent.editCount || 0;
+      let editMonth = currentStudent.editMonth || currentMonthKey;
+
+      if (editMonth !== currentMonthKey) {
+        editCount = 0;
+        editMonth = currentMonthKey;
+      }
+
+      if (editCount >= 9) {
+        alert("🚫 عذراً! لقد تجاوزت الحد الأقصى لتعديل البيانات هذا الشهر (9 مرات).\nلن تتمكن من تعديل ملفك الشخصي حتى بداية الشهر القادم.");
+        return;
+      }
+
+      const remaining = 9 - editCount;
+      const confirmProceed = confirm(`⚠️ تنبيه هام:\n\nيحق لك تعديل ملفك الشخصي 9 مرات فقط في الشهر.\nمتبقي لك (${remaining}) محاولات هذا الشهر.\n\nهل ترغب بالبدء في تعديل بيانات ملفك الشخصي؟`);
+
+      if (!confirmProceed) return;
+
+      document.getElementById('edit-name').value = currentStudent.name || '';
+      document.getElementById('edit-phone').value = currentStudent.phone || '';
+      document.getElementById('edit-stage').value = currentStudent.stage || '';
+      document.getElementById('edit-photo').value = '';
+
+      document.getElementById('edit-profile-modal').classList.remove('hidden');
+    }
+
+    function closeEditProfileModal() {
+      document.getElementById('edit-profile-modal').classList.add('hidden');
+    }
+
+    async function saveEditedProfile() {
+      const newName = document.getElementById('edit-name').value.trim();
+      const newPhone = document.getElementById('edit-phone').value.trim();
+      const newStage = document.getElementById('edit-stage').value;
+      const photoInput = document.getElementById('edit-photo');
+      const saveBtn = document.getElementById('btn-save-profile');
+
+      if (!newName || !newPhone) {
+        alert("يرجى ملء كافة البيانات الأساسية (الاسم ورقم الهاتف)!");
+        return;
+      }
+
+      const now = new Date();
+      const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
+
+      let editCount = currentStudent.editCount || 0;
+      let editMonth = currentStudent.editMonth || currentMonthKey;
+
+      if (editMonth !== currentMonthKey) {
+        editCount = 0;
+        editMonth = currentMonthKey;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.innerText = "جاري حفظ التعديلات... ⏳";
 
       try {
-        const newPhotoURL = await compressAndConvertToBase64(file);
-        currentStudent.photoURL = newPhotoURL;
+        let newPhotoURL = currentStudent.photoURL || '';
+        if (photoInput.files && photoInput.files.length > 0) {
+          newPhotoURL = await compressAndConvertToBase64(photoInput.files[0]);
+        }
 
-        await db.collection('students').doc(currentStudent.phone).update({
-          photoURL: newPhotoURL
-        });
+        const oldPhone = currentStudent.phone;
+        editCount += 1;
 
+        const updatedData = {
+          name: newName,
+          phone: newPhone,
+          stage: newStage,
+          photoURL: newPhotoURL,
+          editCount: editCount,
+          editMonth: currentMonthKey,
+          createdAt: currentStudent.createdAt || new Date().toISOString()
+        };
+
+        if (oldPhone !== newPhone) {
+          const checkDoc = await db.collection('students').doc(newPhone).get();
+          if (checkDoc.exists) {
+            alert("❌ رقم الهاتف الجديد مستخدم بالفعل لحساب طالب آخر!");
+            saveBtn.disabled = false;
+            saveBtn.innerText = "حفظ التعديلات 💾";
+            return;
+          }
+
+          await db.collection('students').doc(newPhone).set(updatedData);
+          await db.collection('students').doc(oldPhone).delete();
+
+          const attSnapshot = await db.collection('attendance').where('phone', '==', oldPhone).get();
+          const batch = db.batch();
+          attSnapshot.forEach(doc => {
+            batch.update(doc.ref, { phone: newPhone, name: newName, photoURL: newPhotoURL, stage: newStage });
+          });
+          await batch.commit();
+        } else {
+          await db.collection('students').doc(oldPhone).set(updatedData, { merge: true });
+
+          const attSnapshot = await db.collection('attendance').where('phone', '==', oldPhone).get();
+          const batch = db.batch();
+          attSnapshot.forEach(doc => {
+            batch.update(doc.ref, { name: newName, photoURL: newPhotoURL, stage: newStage });
+          });
+          await batch.commit();
+        }
+
+        currentStudent = updatedData;
         localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
-        document.getElementById('welcome-student-img').src = newPhotoURL;
 
-        alert("✅ تم تحديث صورتك الشخصية بنجاح!");
+        alert(`✅ تم تحديث جميع بياناتك بنجاح لدى المنصة ومستر أمير!\n(متبقي لك ${9 - editCount} محاولات تعديل هذا الشهر).`);
+        closeEditProfileModal();
+        showStudentStep2();
+
+        if (isTeacherUnlocked) {
+          renderTeacherData();
+        }
+
       } catch (err) {
-        console.error("خطأ تعديل الصورة:", err);
-        alert("❌ تعذر تحديث الصورة: " + err.message);
+        console.error("خطأ حفظ التعديلات:", err);
+        alert("❌ تعذر حفظ التعديلات: " + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = "حفظ التعديلات 💾";
       }
     }
 
@@ -1060,19 +1214,6 @@
       } catch (error) {
         console.error("خطأ في تسجيل الحضور:", error);
         alert("❌ تعذر تسجيل الحضور: " + error.message);
-      }
-    }
-
-    async function updateStudentStage() {
-      const newStage = document.getElementById('reg-stage').value;
-      try {
-        currentStudent.stage = newStage;
-        await db.collection('students').doc(currentStudent.phone).update({ stage: newStage });
-        localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
-        showStudentStep2();
-        alert("✅ تم تعديل مرحلتك الدراسية بنجاح.");
-      } catch (err) {
-        alert("تعذر حفظ التعديلات: " + err.message);
       }
     }
 
