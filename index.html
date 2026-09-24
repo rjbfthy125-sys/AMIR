@@ -81,6 +81,17 @@
       position: relative;
     }
 
+    /* صورة الأستاذ في الهيدر */
+    .teacher-header-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3.5px solid var(--accent);
+      box-shadow: 0 8px 20px rgba(217, 119, 6, 0.25);
+      margin-bottom: 12px;
+    }
+
     header h1 {
       font-size: 2.2rem;
       font-weight: 700;
@@ -113,6 +124,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      z-index: 10;
     }
 
     .view-switcher {
@@ -346,6 +358,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      line-height: 1.4;
     }
 
     .badge-success { background-color: #d1fae5; color: #065f46; }
@@ -501,6 +514,108 @@
     .whatsapp-icon-link:hover {
       transform: scale(1.2);
     }
+
+    /* 📱 تحسين التجاوب والاستجابة للهواتف الذكية (CSS Responsive for Mobile) */
+    @media (max-width: 600px) {
+      body {
+        padding: 12px 8px;
+      }
+
+      .theme-toggle-btn {
+        position: relative;
+        top: 0;
+        left: 0;
+        margin: 0 auto 15px auto;
+        width: fit-content;
+      }
+
+      header h1 {
+        font-size: 1.6rem;
+      }
+
+      header p {
+        font-size: 0.9rem;
+      }
+
+      .teacher-header-avatar {
+        width: 80px;
+        height: 80px;
+      }
+
+      .view-switcher {
+        gap: 8px;
+      }
+
+      .tab-btn {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+        flex: 1;
+        text-align: center;
+      }
+
+      .center-tabs-container {
+        gap: 6px;
+      }
+
+      .center-tab-btn {
+        padding: 8px 12px;
+        font-size: 0.82rem;
+        flex: 1 1 45%;
+        justify-content: center;
+      }
+
+      .card {
+        padding: 18px 14px;
+        border-radius: 16px;
+      }
+
+      .card-title {
+        font-size: 1.15rem;
+      }
+
+      .form-group input, .form-group select {
+        padding: 12px;
+        font-size: 0.92rem;
+      }
+
+      .btn {
+        padding: 12px;
+        font-size: 0.92rem;
+      }
+
+      .student-card-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 14px;
+        gap: 12px;
+      }
+
+      .student-card-item > div:last-child {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .qr-print-card {
+        width: 100%;
+        padding: 15px 10px;
+      }
+
+      #center-qr-image {
+        width: 100% !important;
+        max-width: 180px;
+        height: auto !important;
+      }
+
+      .user-welcome-box {
+        padding: 15px;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .modal-card {
+        padding: 18px 14px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -510,6 +625,11 @@
       <button class="theme-toggle-btn" onclick="toggleDarkMode()">
         <span id="theme-icon">🌙</span> <span id="theme-text">الوضع الليلي</span>
       </button>
+
+      <!-- صورة الأستاذ أمير في أعلى الهيدر -->
+      <div>
+        <img src="https://i.ibb.co/68v8T3G/mr-amir.jpg" onError="this.src='https://via.placeholder.com/100?text=Mr+Amir'" alt="الأستاذ أمير" class="teacher-header-avatar">
+      </div>
 
       <h1>منصة <span>التاريخ</span> التعليمية</h1>
       <p>مع الأستاذ أمير — تجربة تعليمية وتفاعلية عصرية</p>
@@ -616,7 +736,7 @@
         <div class="center-tabs-container">
           <button class="center-tab-btn active" id="center-tab-1" onclick="switchTeacherCenter('سنتر كفر رجب')">🏢 سنتر كفر رجب</button>
           <button class="center-tab-btn" id="center-tab-2" onclick="switchTeacherCenter('سنتر كفر تصفا')">🏢 سنتر كفر تصفا</button>
-          <button class="center-tab-btn" id="center-tab-3" onclick="switchTeacherCenter('سنتر التلوين')">🏢 سنتر التلين</button>
+          <button class="center-tab-btn" id="center-tab-3" onclick="switchTeacherCenter('سنتر التلوين')">🏢 سنتر التلوين</button>
         </div>
 
         <div style="background: var(--bg-body); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1px solid var(--border-color);">
@@ -634,7 +754,7 @@
           </div>
 
           <div class="form-group" style="margin-bottom: 10px;">
-            <label for="teacher-set-code">تنزيل كود حصة جديد لهذا السنتر (أو تعطيل الكود المفعل حالياً):</label>
+            <label for="teacher-set-code">تنزيل كود حصة جديد لهذا السنتر (ينتهي بعد 20 دقيقة):</label>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
               <input type="text" id="teacher-set-code" placeholder="أدخل كود الحصة الجديد" style="flex: 1; min-width: 150px;">
               <button class="btn btn-primary" style="width: auto; padding: 0 20px;" onclick="saveNewSessionCode()">تنشيط ونشر الكود 🚀</button>
@@ -781,7 +901,7 @@
           <select id="edit-center">
             <option value="سنتر كفر رجب">سنتر كفر رجب</option>
             <option value="سنتر كفر تصفا">سنتر كفر تصفا</option>
-            <option value="سنتر التلوين">سنتر التلين</option>
+            <option value="سنتر التلوين">سنتر التلوين</option>
           </select>
         </div>
 
@@ -830,17 +950,40 @@
       isFromQR = (urlParams.get('src') === 'qr');
       qrCenterParam = urlParams.get('center') || '';
 
-      // 3. فحص الحساب المسجل سابقاً
+      // 3. فحص الحساب المسجل سابقاً وفحص استمرارية وجوده بالمنصة
       const savedStudent = localStorage.getItem('history_app_student');
       if (savedStudent) {
         try {
           currentStudent = JSON.parse(savedStudent);
-          showStudentStep2();
+          checkStudentStatusAndLoad();
         } catch(e) {
           localStorage.removeItem('history_app_student');
         }
       }
     };
+
+    // 🔔 فحص ما إذا تم حذف الطالب من قبل الأستاذ وإتاحة التسجيل مجدداً
+    async function checkStudentStatusAndLoad() {
+      if (!currentStudent || !currentStudent.phone) return;
+
+      try {
+        const studentDoc = await db.collection('students').doc(currentStudent.phone).get();
+        if (!studentDoc.exists) {
+          alert("⚠️ تنبيه: تم حذف حسابك من المنصة بواسطة الأستاذ!\nيمكنك الآن إعادة التسجيل بنفس الحساب أو بحساب جديد لإنشاء سجل جديد.");
+          localStorage.removeItem('history_app_student');
+          currentStudent = null;
+          document.getElementById('student-step-2').classList.add('hidden');
+          document.getElementById('student-step-1').classList.remove('hidden');
+        } else {
+          currentStudent = studentDoc.data();
+          localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
+          showStudentStep2();
+        }
+      } catch (err) {
+        console.error("خطأ فحص حالة الطالب:", err);
+        showStudentStep2();
+      }
+    }
 
     function toggleDarkMode() {
       const isDark = document.body.classList.toggle('dark-mode');
@@ -858,10 +1001,11 @@
       if (view === 'teacher' && isTeacherUnlocked) {
         fetchTeacherStageData();
         generateCenterQRCode();
+      } else if (view === 'student' && currentStudent) {
+        checkStudentStatusAndLoad();
       }
     }
 
-    // تبديل السنتر المختار في لوحة الأستاذ
     function switchTeacherCenter(centerName) {
       selectedTeacherCenter = centerName;
 
@@ -1271,7 +1415,7 @@
         });
 
         if (!validSession) {
-          alert(`❌ كود الحصة غير صحيح أو غير مخصص لـ (${studentCenter}) أو انتهت صلاحيته!`);
+          alert(`❌ كود الحصة غير صحيح أو غير مخصص لـ (${studentCenter}) أو انتهت مدة تفعيله (20 دقيقة)!`);
           return;
         }
 
@@ -1323,6 +1467,7 @@
       document.getElementById('center-qr-image').src = qrApiUrl;
     }
 
+    // ⏱️ حفظ كود الحصة الجديد بمهلة تفعيل 20 دقيقة فقط
     async function saveNewSessionCode() {
       const stage = document.getElementById('teacher-code-stage').value;
       const codeInput = document.getElementById('teacher-set-code');
@@ -1334,7 +1479,7 @@
 
       try {
         const now = Date.now();
-        const expiresAt = now + (60 * 60 * 1000);
+        const expiresAt = now + (20 * 60 * 1000); // ⏱️ مدة تفعيل الكود 20 دقيقة
 
         await db.collection('sessions').add({
           stage: stage,
@@ -1344,7 +1489,7 @@
           expiresAt: expiresAt
         });
 
-        alert(`✅ تم تنشيط ونشر كود الحصة (${code}) لمرحلة (${stage}) بـ (${selectedTeacherCenter}) بنجاح! ينتهي الكود تلقائياً بعد ساعة.`);
+        alert(`✅ تم تنشيط ونشر كود الحصة (${code}) لمرحلة (${stage}) بـ (${selectedTeacherCenter}) بنجاح!\n(ينتهي الكود تلقائياً بعد 20 دقيقة).`);
         codeInput.value = '';
         fetchTeacherStageData();
       } catch (error) {
@@ -1443,8 +1588,9 @@
       }
     }
 
+    // 🗑️ حذف الطالب وتمكينه من إعادة التسجيل بنفس الحساب
     async function deleteStudent(phone, name) {
-      if (!confirm(`هل أنت متأكد من حذف الطالب (${name}) نهائياً من المنصة؟`)) return;
+      if (!confirm(`هل أنت متأكد من حذف الطالب (${name}) نهائياً من المنصة؟\nسيتمكن الطالب من التسجيل من جديد بالمنصة بنفس الحساب وبسجل جديد.`)) return;
 
       try {
         await db.collection('students').doc(phone).delete();
@@ -1454,7 +1600,7 @@
         attendanceDocs.forEach(doc => batch.delete(doc.ref));
         await batch.commit();
 
-        alert(`✅ تم حذف الطالب (${name}) وسجلاته بنجاح.`);
+        alert(`✅ تم حذف الطالب (${name}) وسجلاته القديمة بنجاح، ويمكنه الآن التسجيل من جديد.`);
         renderTeacherData();
       } catch (error) {
         console.error("خطأ أثناء حذف الطالب:", error);
@@ -1584,7 +1730,6 @@
         let studentsList = [];
         studentsSnapshot.forEach(doc => {
           const data = doc.data();
-          // تصفية الطلاب حسب السنتر المختار في تبويب الأستاذ
           if (data.center === selectedTeacherCenter || (!data.center && selectedTeacherCenter === 'سنتر كفر رجب')) {
             studentsList.push(data);
           }
@@ -1598,8 +1743,7 @@
           container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مسجلون في (${selectedTeacherCenter}) لهذه القائمة.</p>`;
           return;
         }
-
-        const now = Date.now();
+const now = Date.now();
 
         studentsList.forEach(student => {
           let badgeHTML = '';
