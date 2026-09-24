@@ -97,7 +97,6 @@
       font-size: 1.05rem;
     }
 
-    /* زر تبديل الوضع الليلي */
     .theme-toggle-btn {
       position: absolute;
       top: 10px;
@@ -120,7 +119,7 @@
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .tab-btn {
@@ -139,6 +138,37 @@
       color: var(--bg-body);
       border-color: var(--primary);
       box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.3);
+    }
+
+    /* تبويبات السناتر لسهولة استخدام الأستاذ */
+    .center-tabs-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .center-tab-btn {
+      padding: 10px 20px;
+      border: 1.5px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-main);
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.25s ease;
+    }
+
+    .center-tab-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
     }
 
     .card {
@@ -428,7 +458,6 @@
       cursor: pointer;
     }
 
-    /* أنماط الحقوق وتنسيقات الأسماء */
     footer {
       text-align: center;
       margin-top: 40px;
@@ -520,6 +549,15 @@
         </div>
 
         <div class="form-group">
+          <label for="reg-center">🏢 السنتر / القاعة التي تحضر بها:</label>
+          <select id="reg-center">
+            <option value="سنتر كفر رجب">سنتر كفر رجب</option>
+            <option value="سنتر كفر تصفا">سنتر كفر تصفا</option>
+            <option value="سنتر التلوين">سنتر التلوين</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label for="reg-photo">📸 الصورة الشخصية للطالب (إجباري):</label>
           <input type="file" id="reg-photo" accept="image/*">
         </div>
@@ -535,7 +573,7 @@
             </div>
             <div>
               <h3 id="welcome-student-name">أهلاً بك يا طالب</h3>
-              <p id="welcome-student-info">المرحلة: - | الهاتف: -</p>
+              <p id="welcome-student-info">المرحلة: - | السنتر: - | الهاتف: -</p>
               <button class="btn btn-primary" style="width: auto; padding: 6px 14px; font-size: 0.85rem; margin-top: 8px;" onclick="openEditProfileModal()">✏️ تعديل البيانات والملف الشخصي</button>
             </div>
           </div>
@@ -548,13 +586,13 @@
         
         <div class="form-group">
           <label for="session-code">كود الحصة المعطى لك من الأستاذ:</label>
-          <input type="text" id="session-code" placeholder="أدخل كود الحصة الخاص بمرحلتك">
+          <input type="text" id="session-code" placeholder="أدخل كود الحصة الخاص بمرحلتك وسنترك">
         </div>
 
         <button class="btn btn-primary" onclick="submitSessionCode()">تأكيد وتسجيل الحضور ✨</button>
 
         <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border-color);">
-        <h2 class="card-title">📅 سجل حصصك والتزامك بالمرحلة</h2>
+        <h2 class="card-title">📅 سجل حصصك والتزامك بالمرحلة والسنتر</h2>
         <div id="student-sessions-history" class="session-history-list">
           <p style="color: var(--text-muted); font-size: 0.9rem;">جاري تحميل سجل الحصص...</p>
         </div>
@@ -574,9 +612,16 @@
       <div id="teacher-content" class="card hidden">
         <h2 class="card-title">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
 
+        <!-- تبويبات إختيار السنتر للأستاذ -->
+        <div class="center-tabs-container">
+          <button class="center-tab-btn active" id="center-tab-1" onclick="switchTeacherCenter('سنتر كفر رجب')">🏢 سنتر كفر رجب</button>
+          <button class="center-tab-btn" id="center-tab-2" onclick="switchTeacherCenter('سنتر كفر تصفا')">🏢 سنتر كفر تصفا</button>
+          <button class="center-tab-btn" id="center-tab-3" onclick="switchTeacherCenter('سنتر التلوين')">🏢 سنتر التلين</button>
+        </div>
+
         <div style="background: var(--bg-body); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1px solid var(--border-color);">
           <div class="form-group">
-            <label for="teacher-code-stage">🎯 اختر الصف الدراسي لإدارة أو إنشاء كود حصة جديد:</label>
+            <label for="teacher-code-stage">🎯 اختر الصف الدراسي لإدارة كود الحصة بـ (<span id="active-center-label" style="color: var(--accent);">سنتر كفر رجب</span>):</label>
             <select id="teacher-code-stage" onchange="fetchTeacherStageData()" style="font-weight: 600; color: var(--accent);">
               <option value="الأول الإعدادي">الأول الإعدادي</option>
               <option value="الثاني الإعدادي">الثاني الإعدادي</option>
@@ -589,7 +634,7 @@
           </div>
 
           <div class="form-group" style="margin-bottom: 10px;">
-            <label for="teacher-set-code">تنزيل كود حصة جديد للمرحلة (أو تعطيل الكود المفعل حالياً):</label>
+            <label for="teacher-set-code">تنزيل كود حصة جديد لهذا السنتر (أو تعطيل الكود المفعل حالياً):</label>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
               <input type="text" id="teacher-set-code" placeholder="أدخل كود الحصة الجديد" style="flex: 1; min-width: 150px;">
               <button class="btn btn-primary" style="width: auto; padding: 0 20px;" onclick="saveNewSessionCode()">تنشيط ونشر الكود 🚀</button>
@@ -599,18 +644,19 @@
           <p id="current-active-code-display" style="font-size: 0.95rem; color: var(--accent); font-weight: 600; margin-top: 10px;">الكود النشط حالياً: جاري التحميل...</p>
         </div>
 
-        <!-- مولد QR Code القاعة -->
+        <!-- مولد QR Code القاعة الخاص بالسنتر المختار -->
         <div style="background: var(--card-bg); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1.5px solid var(--accent); text-align: center;">
-          <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px;">📷 QR Code الخاص بالقاعة / السنتر</h3>
+          <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px;">📷 QR Code الخاص بـ (<span id="qr-center-title">سنتر كفر رجب</span>)</h3>
           <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">اطبع هذا الكود وعلقه في القاعة ليمسحه الطلاب بموبايلاتهم عند الدخول:</p>
 
           <div class="qr-print-card">
-            <h2 style="color: var(--accent); font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; letter-spacing: 0.5px;">⭐ الأمير في التاريخ ⭐</h2>
+            <h2 style="color: var(--accent); font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; letter-spacing: 0.5px;">⭐ الأمير في التاريخ ⭐</h2>
+            <h4 id="qr-card-center-subtitle" style="color: var(--primary); font-size: 1rem; margin-bottom: 15px;">سنتر كفر رجب</h4>
+
             <div id="teacher-qr-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 15px;">
               <img id="center-qr-image" src="" alt="QR Code السنتر" style="width: 210px; height: 210px; border: 1px solid var(--border-color); border-radius: 12px; padding: 6px; background: #ffffff;">
             </div>
             
-            <!-- توقيع كارت الـ QR Code بالاسم الكامل ورقم الهاتف كنص -->
             <div style="border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 5px;">
               <p style="color: var(--primary); font-size: 0.92rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 Created by <a href="https://wa.me/201063048827" target="_blank" class="dev-name-link">Fathy Zakaria</a>
@@ -656,7 +702,7 @@
           </div>
         </div>
 
-        <h3 id="list-section-title" style="font-size: 1.1rem; color: var(--primary); margin-top: 20px;">قائمة الطلاب المسجلين بالمنصة</h3>
+        <h3 id="list-section-title" style="font-size: 1.1rem; color: var(--primary); margin-top: 20px;">قائمة الطلاب المسجلين بالسنتر</h3>
         <div class="student-grid" id="students-display-container"></div>
       </div>
     </div>
@@ -731,6 +777,15 @@
         </div>
 
         <div class="form-group">
+          <label for="edit-center">🏢 السنتر / القاعة:</label>
+          <select id="edit-center">
+            <option value="سنتر كفر رجب">سنتر كفر رجب</option>
+            <option value="سنتر كفر تصفا">سنتر كفر تصفا</option>
+            <option value="سنتر التلوين">سنتر التلين</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label for="edit-photo">📸 تغيير الصورة الشخصية (اختياري):</label>
           <input type="file" id="edit-photo" accept="image/*">
         </div>
@@ -756,8 +811,9 @@
 
     let currentStudent = null;
     let isTeacherUnlocked = false;
-    let activeTeacherSubTab = 'all';
     let isFromQR = false;
+    let qrCenterParam = '';
+    let selectedTeacherCenter = 'سنتر كفر رجب'; // السنتر المختار افتراضياً باللوحة
     let cachedSessions = [];
 
     window.onload = function() {
@@ -772,6 +828,7 @@
       // 2. فحص الدخول عبر الـ QR Code من الرابط (?src=qr)
       const urlParams = new URLSearchParams(window.location.search);
       isFromQR = (urlParams.get('src') === 'qr');
+      qrCenterParam = urlParams.get('center') || '';
 
       // 3. فحص الحساب المسجل سابقاً
       const savedStudent = localStorage.getItem('history_app_student');
@@ -802,6 +859,22 @@
         fetchTeacherStageData();
         generateCenterQRCode();
       }
+    }
+
+    // تبديل السنتر المختار في لوحة الأستاذ
+    function switchTeacherCenter(centerName) {
+      selectedTeacherCenter = centerName;
+
+      document.getElementById('center-tab-1').classList.toggle('active', centerName === 'سنتر كفر رجب');
+      document.getElementById('center-tab-2').classList.toggle('active', centerName === 'سنتر كفر تصفا');
+      document.getElementById('center-tab-3').classList.toggle('active', centerName === 'سنتر التلوين');
+
+      document.getElementById('active-center-label').innerText = centerName;
+      document.getElementById('qr-center-title').innerText = centerName;
+      document.getElementById('qr-card-center-subtitle').innerText = centerName;
+
+      fetchTeacherStageData();
+      generateCenterQRCode();
     }
 
     function compressAndConvertToBase64(file) {
@@ -848,6 +921,7 @@
       const name = document.getElementById('reg-name').value.trim();
       const phone = document.getElementById('reg-phone').value.trim();
       const stage = document.getElementById('reg-stage').value;
+      const center = document.getElementById('reg-center').value;
       const photoInput = document.getElementById('reg-photo');
       const submitBtn = document.getElementById('btn-register-submit');
 
@@ -881,6 +955,7 @@
             name: name,
             phone: phone,
             stage: stage,
+            center: center,
             photoURL: photoURL,
             editCount: 0,
             editMonth: currentMonthKey,
@@ -890,7 +965,7 @@
         }
 
         localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
-        alert(`أهلاً بك يا ${currentStudent.name}! تم تسجيل دخولك بنجاح بالمنصة.`);
+        alert(`أهلاً بك يا ${currentStudent.name}! تم تسجيل دخولك بنجاح بـ (${currentStudent.center}).`);
         showStudentStep2();
       } catch (error) {
         console.error("خطأ أثناء تسجيل الطالب:", error);
@@ -928,6 +1003,7 @@
       document.getElementById('edit-name').value = currentStudent.name || '';
       document.getElementById('edit-phone').value = currentStudent.phone || '';
       document.getElementById('edit-stage').value = currentStudent.stage || '';
+      document.getElementById('edit-center').value = currentStudent.center || 'سنتر كفر رجب';
       document.getElementById('edit-photo').value = '';
 
       document.getElementById('edit-profile-modal').classList.remove('hidden');
@@ -941,6 +1017,7 @@
       const newName = document.getElementById('edit-name').value.trim();
       const newPhone = document.getElementById('edit-phone').value.trim();
       const newStage = document.getElementById('edit-stage').value;
+      const newCenter = document.getElementById('edit-center').value;
       const photoInput = document.getElementById('edit-photo');
       const saveBtn = document.getElementById('btn-save-profile');
 
@@ -976,6 +1053,7 @@
           name: newName,
           phone: newPhone,
           stage: newStage,
+          center: newCenter,
           photoURL: newPhotoURL,
           editCount: editCount,
           editMonth: currentMonthKey,
@@ -997,7 +1075,7 @@
           const attSnapshot = await db.collection('attendance').where('phone', '==', oldPhone).get();
           const batch = db.batch();
           attSnapshot.forEach(doc => {
-            batch.update(doc.ref, { phone: newPhone, name: newName, photoURL: newPhotoURL, stage: newStage });
+            batch.update(doc.ref, { phone: newPhone, name: newName, photoURL: newPhotoURL, stage: newStage, center: newCenter });
           });
           await batch.commit();
         } else {
@@ -1006,7 +1084,7 @@
           const attSnapshot = await db.collection('attendance').where('phone', '==', oldPhone).get();
           const batch = db.batch();
           attSnapshot.forEach(doc => {
-            batch.update(doc.ref, { name: newName, photoURL: newPhotoURL, stage: newStage });
+            batch.update(doc.ref, { name: newName, photoURL: newPhotoURL, stage: newStage, center: newCenter });
           });
           await batch.commit();
         }
@@ -1035,7 +1113,7 @@
       document.getElementById('student-step-1').classList.add('hidden');
       document.getElementById('student-step-2').classList.remove('hidden');
       document.getElementById('welcome-student-name').innerText = `أهلاً بك: ${currentStudent.name}`;
-      document.getElementById('welcome-student-info').innerText = `المرحلة: ${currentStudent.stage} | الهاتف: ${currentStudent.phone}`;
+      document.getElementById('welcome-student-info').innerText = `المرحلة: ${currentStudent.stage} | السنتر: ${currentStudent.center || 'غير محدد'} | الهاتف: ${currentStudent.phone}`;
       
       const imgEl = document.getElementById('welcome-student-img');
       imgEl.src = currentStudent.photoURL || 'https://via.placeholder.com/65';
@@ -1044,9 +1122,10 @@
       bannerEl.classList.remove('hidden');
 
       if (isFromQR) {
+        const centerText = qrCenterParam ? ` بـ (${decodeURIComponent(qrCenterParam)})` : '';
         bannerEl.className = 'qr-banner success';
         bannerEl.innerHTML = `
-          🎯 تم مسح الـ QR Code بنجاح!<br>
+          🎯 تم مسح الـ QR Code الخاصة${centerText} بنجاح!<br>
           <span style="font-size: 0.92rem; font-weight: 500;">باقي لك خطوة واحدة وهي كتابة الكود الذي سيعطيك إياه المستر لتأكيد الحضور.</span>
         `;
       } else {
@@ -1065,6 +1144,8 @@
       if (!currentStudent || !currentStudent.stage) return;
 
       try {
+        const studentCenter = currentStudent.center || 'سنتر كفر رجب';
+
         const sessionsSnapshot = await db.collection('sessions')
           .where('stage', '==', currentStudent.stage)
           .get();
@@ -1078,15 +1159,18 @@
           attendedSessionIds.add(doc.data().sessionId);
         });
 
-        const sessionsList = [];
+        let sessionsList = [];
         sessionsSnapshot.forEach(doc => {
-          sessionsList.push({ id: doc.id, ...doc.data() });
+          const data = doc.data();
+          if (data.center === studentCenter || !data.center) {
+            sessionsList.push({ id: doc.id, ...data });
+          }
         });
 
         sessionsList.sort((a, b) => b.createdAt - a.createdAt);
 
         if (sessionsList.length === 0) {
-          historyContainer.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">لا توجد حصص مسجلة لمرحلتك حتى الآن.</p>`;
+          historyContainer.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">لا توجد حصص مسجلة لمرحلتك بـ (${studentCenter}) حتى الآن.</p>`;
           return;
         }
 
@@ -1097,9 +1181,9 @@
           const item = document.createElement('div');
           item.className = 'session-history-item';
 
-          const sessionDate = new Date(session.createdAt).toLocaleString('ar-EG', {
-            weekday: 'short', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
-          });
+          const sessDateObj = new Date(session.createdAt);
+          const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });
+          const formattedTime = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
 
           const isAttended = attendedSessionIds.has(session.id);
           const isExpired = now > session.expiresAt;
@@ -1108,7 +1192,7 @@
           if (isAttended) {
             badgeHTML = `<span class="badge badge-success">تم حضور الحصة 🟢</span>`;
           } else if (isExpired) {
-            badgeHTML = `<span class="badge badge-danger">لم تحضر هذه الحصة 🔴</span>`;
+            badgeHTML = `<span class="badge badge-danger">لم تحضر كود (${session.code}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
           } else {
             badgeHTML = `<span class="badge badge-warning">حصة جارية الآن ⏳ - أدخل الكود أعلاه</span>`;
           }
@@ -1116,7 +1200,7 @@
           item.innerHTML = `
             <div>
               <strong style="color: var(--primary);">حصة كود: (${session.code})</strong>
-              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">🗓️ ${sessionDate}</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">🗓️ ${formattedDate} - ⏰ ${formattedTime}</div>
             </div>
             <div>${badgeHTML}</div>
           `;
@@ -1170,6 +1254,7 @@
 
       try {
         const studentStage = currentStudent.stage;
+        const studentCenter = currentStudent.center || 'سنتر كفر رجب';
 
         const now = Date.now();
         const activeSessionsSnapshot = await db.collection('sessions')
@@ -1180,13 +1265,13 @@
         let validSession = null;
         activeSessionsSnapshot.forEach(doc => {
           const data = doc.data();
-          if (now <= data.expiresAt) {
+          if (now <= data.expiresAt && (data.center === studentCenter || !data.center)) {
             validSession = { id: doc.id, ...data };
           }
         });
 
         if (!validSession) {
-          alert(`❌ كود الحصة غير صحيح أو انتهت صلاحية تفعيله (مرت ساعة على نشر الكود)!`);
+          alert(`❌ كود الحصة غير صحيح أو غير مخصص لـ (${studentCenter}) أو انتهت صلاحيته!`);
           return;
         }
 
@@ -1201,6 +1286,7 @@
         await db.collection('attendance').doc(attendanceId).set({
           sessionId: validSession.id,
           stage: currentStudent.stage,
+          center: studentCenter,
           sessionCode: validSession.code,
           phone: currentStudent.phone,
           name: currentStudent.name,
@@ -1232,7 +1318,7 @@
 
     function generateCenterQRCode() {
       const baseUrl = window.location.origin + window.location.pathname;
-      const targetUrl = baseUrl + '?src=qr';
+      const targetUrl = `${baseUrl}?src=qr&center=${encodeURIComponent(selectedTeacherCenter)}`;
       const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(targetUrl)}`;
       document.getElementById('center-qr-image').src = qrApiUrl;
     }
@@ -1252,12 +1338,13 @@
 
         await db.collection('sessions').add({
           stage: stage,
+          center: selectedTeacherCenter,
           code: code,
           createdAt: now,
           expiresAt: expiresAt
         });
 
-        alert(`✅ تم تنشيط ونشر كود الحصة (${code}) لمرحلة (${stage}) بنجاح! ينتهي الكود تلقائياً بعد ساعة.`);
+        alert(`✅ تم تنشيط ونشر كود الحصة (${code}) لمرحلة (${stage}) بـ (${selectedTeacherCenter}) بنجاح! ينتهي الكود تلقائياً بعد ساعة.`);
         codeInput.value = '';
         fetchTeacherStageData();
       } catch (error) {
@@ -1277,7 +1364,8 @@
         const batch = db.batch();
         let count = 0;
         activeSessionsSnapshot.forEach(doc => {
-          if (now <= doc.data().expiresAt) {
+          const data = doc.data();
+          if (now <= data.expiresAt && (data.center === selectedTeacherCenter || !data.center)) {
             batch.update(doc.ref, { expiresAt: now });
             count++;
           }
@@ -1285,9 +1373,9 @@
 
         if (count > 0) {
           await batch.commit();
-          alert(`🚫 تم تعطيل وإلغاء صلاحية كود الحصة المفعل لمرحلة (${stage}) بنجاح!`);
+          alert(`🚫 تم تعطيل وإلغاء صلاحية كود الحصة المفعل لمرحلة (${stage}) بـ (${selectedTeacherCenter}) بنجاح!`);
         } else {
-          alert(`ℹ️ لا يوجد كود حصة نشط حالياً لمرحلة (${stage}) لتعطيله.`);
+          alert(`ℹ️ لا يوجد كود حصة نشط حالياً لمرحلة (${stage}) بـ (${selectedTeacherCenter}) لتعطيله.`);
         }
 
         fetchTeacherStageData();
@@ -1313,7 +1401,10 @@
 
         cachedSessions = [];
         sessionsSnapshot.forEach(doc => {
-          cachedSessions.push({ id: doc.id, ...doc.data() });
+          const data = doc.data();
+          if (data.center === selectedTeacherCenter || !data.center) {
+            cachedSessions.push({ id: doc.id, ...data });
+          }
         });
 
         cachedSessions.sort((a, b) => b.createdAt - a.createdAt);
@@ -1327,9 +1418,10 @@
         cachedSessions.forEach(session => {
           const isExpired = now > session.expiresAt;
           const statusText = isExpired ? 'انتهت' : 'نشطة 🟢';
-          const sessionDate = new Date(session.createdAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+          const sessDateObj = new Date(session.createdAt);
+          const timeText = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
           
-          sessionSelect.innerHTML += `<option value="${session.id}">حصة كود (${session.code}) - ${sessionDate} [${statusText}]</option>`;
+          sessionSelect.innerHTML += `<option value="${session.id}">حصة كود (${session.code}) - ${timeText} [${statusText}]</option>`;
 
           if (!isExpired && !activeCodeFound) {
             activeCodeFound = session;
@@ -1338,10 +1430,10 @@
 
         if (activeCodeFound) {
           const minutesLeft = Math.ceil((activeCodeFound.expiresAt - now) / (1000 * 60));
-          activeDisplay.innerText = `الكود النشط لمرحلة (${targetStage}): ${activeCodeFound.code} (متبقي ${minutesLeft} دقيقة على الانتهاء)`;
+          activeDisplay.innerText = `الكود النشط لـ (${selectedTeacherCenter}) - stage (${targetStage}): ${activeCodeFound.code} (متبقي ${minutesLeft} دقيقة على الانتهاء)`;
           activeDisplay.style.color = 'var(--accent)';
         } else {
-          activeDisplay.innerText = `لا يوجد كود حصة نشط حالياً لمرحلة (${targetStage})`;
+          activeDisplay.innerText = `لا يوجد كود حصة نشط حالياً لمرحلة (${targetStage}) بـ (${selectedTeacherCenter})`;
           activeDisplay.style.color = 'var(--text-muted)';
         }
 
@@ -1370,7 +1462,7 @@
       }
     }
 
-    async function showStudentReport(phone, name, stage, photoURL) {
+    async function showStudentReport(phone, name, stage, center, photoURL) {
       const modal = document.getElementById('student-report-modal');
       const modalTitle = document.getElementById('report-modal-title');
       const modalBody = document.getElementById('report-modal-body');
@@ -1380,6 +1472,8 @@
       modal.classList.remove('hidden');
 
       try {
+        const studentCenter = center || 'سنتر كفر رجب';
+
         const sessionsSnapshot = await db.collection('sessions')
           .where('stage', '==', stage)
           .get();
@@ -1396,7 +1490,10 @@
 
         const studentSessions = [];
         sessionsSnapshot.forEach(doc => {
-          studentSessions.push({ id: doc.id, ...doc.data() });
+          const data = doc.data();
+          if (data.center === studentCenter || !data.center) {
+            studentSessions.push({ id: doc.id, ...data });
+          }
         });
 
         studentSessions.sort((a, b) => b.createdAt - a.createdAt);
@@ -1411,25 +1508,25 @@
           const isAttended = !!attendedMap[session.id];
           if (isAttended) attendedCount++;
 
-          const sessionDate = new Date(session.createdAt).toLocaleString('ar-EG', {
-            weekday: 'short', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
-          });
+          const sessDateObj = new Date(session.createdAt);
+          const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });
+          const formattedTime = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
 
           let statusBadge = '';
           if (isAttended) {
             const timeAtt = new Date(attendedMap[session.id]).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
             statusBadge = `<span class="badge badge-success">حضر 🟢 (${timeAtt})</span>`;
           } else if (now > session.expiresAt) {
-            statusBadge = `<span class="badge badge-danger">غائب 🔴</span>`;
+            statusBadge = `<span class="badge badge-danger">لم يحضر كود (${session.code}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
           } else {
-            statusBadge = `<span class="badge badge-warning">جارية ⏳</span>`;
+            statusBadge = `<span class="badge badge-warning">حصة جارية ⏳</span>`;
           }
 
           sessionsHTML += `
             <div class="session-history-item">
               <div>
                 <strong>حصة كود: (${session.code})</strong>
-                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">🗓️ ${sessionDate}</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">🗓️ ${formattedDate} - ⏰ ${formattedTime}</div>
               </div>
               <div>${statusBadge}</div>
             </div>
@@ -1443,7 +1540,7 @@
             <img src="${photoURL || 'https://via.placeholder.com/60'}" class="student-avatar-lg" alt="صورة الطالب">
             <div>
               <h4 style="font-size: 1.1rem; color: var(--primary);">${name}</h4>
-              <p style="font-size: 0.88rem; color: var(--text-muted);">📱 ${phone} | 📚 ${stage}</p>
+              <p style="font-size: 0.88rem; color: var(--text-muted);">📱 ${phone} | 📚 ${stage} | 🏢 ${studentCenter}</p>
               <p style="font-size: 0.9rem; font-weight: 700; color: var(--accent); margin-top: 4px;">
                 نسبة الحضور: ${attendancePercentage}% (${attendedCount} من إجمالي ${totalSessions} حصة)
               </p>
@@ -1485,14 +1582,20 @@
         container.innerHTML = '';
 
         let studentsList = [];
-        studentsSnapshot.forEach(doc => studentsList.push(doc.data()));
+        studentsSnapshot.forEach(doc => {
+          const data = doc.data();
+          // تصفية الطلاب حسب السنتر المختار في تبويب الأستاذ
+          if (data.center === selectedTeacherCenter || (!data.center && selectedTeacherCenter === 'سنتر كفر رجب')) {
+            studentsList.push(data);
+          }
+        });
 
         if (selectedStage !== "الكل") {
           studentsList = studentsList.filter(s => s.stage === selectedStage);
         }
 
         if (studentsList.length === 0) {
-          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مسجلون في هذه القائمة.</p>`;
+          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مسجلون في (${selectedTeacherCenter}) لهذه القائمة.</p>`;
           return;
         }
 
@@ -1510,8 +1613,11 @@
 
             if (hasAttended) {
               badgeHTML = `<span class="badge badge-success">حضر الحصة 🟢</span>`;
-            } else {
-              badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${selectedSession ? selectedSession.code : ''}) 🔴</span>`;
+            } else if (selectedSession) {
+              const sessDateObj = new Date(selectedSession.createdAt);
+              const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', month: 'numeric', day: 'numeric' });
+              const formattedTime = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+              badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${selectedSession.code}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
             }
           } else {
             if (studentStageSessions.length === 0) {
@@ -1524,7 +1630,11 @@
               if (hasAttended) {
                 badgeHTML = `<span class="badge badge-success">حضر آخر حصة 🟢</span>`;
               } else if (now > latestSession.expiresAt) {
-                badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${latestSession.code}) 🔴</span>`;
+                const sessDateObj = new Date(latestSession.createdAt);
+                const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', month: 'numeric', day: 'numeric' });
+                const formattedTime = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+
+                badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${latestSession.code}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
               } else {
                 badgeHTML = `<span class="badge badge-warning">حصة جارية (كود: ${latestSession.code}) ⏳</span>`;
               }
@@ -1545,7 +1655,7 @@
             </div>
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
               ${badgeHTML}
-              <button class="btn btn-info" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="showStudentReport('${student.phone}', '${student.name}', '${student.stage}', '${photoSrc}')">👁️ سجل الطالب</button>
+              <button class="btn btn-info" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="showStudentReport('${student.phone}', '${student.name}', '${student.stage}', '${student.center}', '${photoSrc}')">👁️ سجل الطالب</button>
               <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="deleteStudent('${student.phone}', '${student.name}')">حذف 🗑️</button>
             </div>
           `;
