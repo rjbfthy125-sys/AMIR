@@ -83,7 +83,7 @@
       position: relative;
     }
 
-    /* صورة الأستاذ في الهيدر */
+    /* صورة الأستاذ أمير */
     .teacher-header-avatar {
       width: 100px;
       height: 100px;
@@ -263,7 +263,7 @@
       transform: translateY(-2px);
     }
 
-    /* 🌐 تنسيق زر تسجيل الدخول بحساب Google */
+    /* 🌐 زر توثيق حساب Google الاختياري */
     .btn-google {
       background-color: #ffffff;
       color: #374151;
@@ -273,13 +273,13 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
       transition: all 0.25s ease;
       width: 100%;
       padding: 14px;
       border-radius: 12px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       cursor: pointer;
     }
 
@@ -554,7 +554,7 @@
       transform: scale(1.2);
     }
 
-    /* 📱 تحسين التجاوب والاستجابة للهواتف الذكية (CSS Responsive for Mobile) */
+    /* 📱 تحسين التجاوب للهواتف الذكية */
     @media (max-width: 600px) {
       body {
         padding: 12px 8px;
@@ -599,7 +599,7 @@
       .center-tab-btn {
         padding: 8px 12px;
         font-size: 0.82rem;
-        flex: 1 1 45%;
+        flex: 1 1 30%;
         justify-content: center;
       }
 
@@ -639,12 +639,6 @@
         padding: 15px 10px;
       }
 
-      #center-qr-image {
-        width: 100% !important;
-        max-width: 180px;
-        height: auto !important;
-      }
-
       .user-welcome-box {
         padding: 15px;
         flex-direction: column;
@@ -659,7 +653,7 @@
 </head>
 <body>
 
-  <!-- 🛑 نافذة حظر الريفريش المتكرر (Anti-Refresh Rate Limiter) -->
+  <!-- 🛑 نافذة حظر الريفريش المتكرر -->
   <div id="refresh-lock-modal" class="modal-overlay hidden" style="z-index: 100000; background: rgba(15, 23, 42, 0.98);">
     <div class="modal-card" style="text-align: center; max-width: 450px; border: 2px solid var(--danger);">
       <h2 style="color: var(--danger); font-size: 1.5rem; margin-bottom: 10px;">⚠️ تم إيقاف الصفحة مؤقتاً</h2>
@@ -676,7 +670,8 @@
       </button>
 
       <div>
-        <img src="123.jpg" onError="this.src='https://via.placeholder.com/100?text=Mr+Amir'" alt="الأستاذ أمير" class="teacher-header-avatar">
+        <!-- صورة الأستاذ باسم 123.jpg -->
+        <img src="123.jpg" onError="this.src='123'" alt="الأستاذ أمير" class="teacher-header-avatar">
       </div>
 
       <h1>منصة <span>التاريخ</span> التعليمية</h1>
@@ -691,11 +686,10 @@
     <!-- 1. بوابة الطالب -->
     <div id="student-view">
       <div id="student-step-1" class="card">
-        <h2 class="card-title">📝 تسجيل الدخول بالمنصة (الخطوة 1 و 2)</h2>
+        <h2 class="card-title">📝 تسجيل الدخول بالمنصة</h2>
         
-        <!-- 🌐 الخطوة الأولي الإجبارية: زر توثيق حساب Google -->
+        <!-- 🌐 توثيق حساب Google الاختياري -->
         <div style="background: var(--bg-body); padding: 15px; border-radius: 14px; margin-bottom: 20px; border: 1px solid var(--border-color);">
-          <label style="display: block; font-weight: 700; margin-bottom: 8px; color: var(--primary);">1️⃣ الخطوة الأولى (إجباري): توثيق حسابك عبر Google</label>
           <button type="button" class="btn btn-google" onclick="loginWithGoogle()">
             <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
@@ -703,12 +697,10 @@
               <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.28-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.55 10.78l7.98-6.19z"/>
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
             </svg>
-            اضغط هنا للتوثيق بـ Google أولاً 🔑
+            تسجيل الدخول عبر Google (اختياري ويفضل انك تسجل) 🔑
           </button>
+          <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">التوثيق عبر جوجل اختياري لتسهيل جلب اسمك وصورتك المعتمدة.</p>
         </div>
-
-        <!-- 📝 الخطوة الثانية: استكمال بيانات المنصة -->
-        <label style="display: block; font-weight: 700; margin-bottom: 12px; color: var(--primary);">2️⃣ الخطوة الثانية: استكمال بياناتك على المنصة</label>
 
         <div class="form-group">
           <label for="reg-name">اسم الطالب ثلاثي:</label>
@@ -720,12 +712,10 @@
           <input type="tel" id="reg-phone" placeholder="مثال: 01012345678" maxlength="11">
         </div>
 
+        <!-- اقتصار المراحل على الثانوية فقط وبكسب الملاحظة -->
         <div class="form-group">
           <label for="reg-stage">المرحلة الدراسية:</label>
           <select id="reg-stage">
-            <option value="الأول الإعدادي">الأول الإعدادي</option>
-            <option value="الثاني الإعدادي">الثاني الإعدادي</option>
-            <option value="الثالث الإعدادي">الثالث الإعدادي</option>
             <option value="الأول الثانوي">الأول الثانوي</option>
             <option value="الثاني الثانوي عام">الثاني الثانوي عام</option>
             <option value="الثاني الثانوي بكالوريا">الثاني الثانوي بكالوريا</option>
@@ -733,15 +723,18 @@
           </select>
         </div>
 
+        <!-- السناتر الثلاثة المطلوبة -->
         <div class="form-group">
           <label for="reg-center">🏢 السنتر / القاعة التي تحضر بها:</label>
           <select id="reg-center">
             <option value="سنتر كفر رجب">سنتر كفر رجب</option>
+            <option value="التلين">التلين</option>
+            <option value="كفر تصفا">كفر تصفا</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="reg-photo">📸 الصورة الشخصية للطالب (اختياري في حال توفر صورة Google):</label>
+          <label for="reg-photo">📸 الصورة الشخصية للطالب (إجبارية إن لم تسجل بـ Google):</label>
           <input type="file" id="reg-photo" accept="image/*">
         </div>
 
@@ -766,16 +759,16 @@
 
         <div id="qr-welcome-msg" class="qr-banner hidden"></div>
 
-        <!-- 📍 صندوق تأكيد الموقع الجغرافي GPS لسنتر كفر رجب (نطاق 15 متر) -->
+        <!-- 📍 صندوق تأكيد الموقع الجغرافي GPS للسنتر (نطاق 50 متر) -->
         <div id="location-verify-box" style="background: var(--bg-body); border: 1.5px dashed var(--accent); padding: 20px; border-radius: 16px; margin-bottom: 25px; text-align: center;">
           <h3 style="color: var(--primary); font-size: 1.15rem; margin-bottom: 8px;">📍 تأكيد التواجد الجغرافي بـ (<span id="verify-center-name-label">سنتر كفر رجب</span>)</h3>
           <p id="location-status-text" style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 15px;">
-            لحماية النظام وموثوقية الحضور، يجب التأكد من وجودك الفعلي داخل السنتر (نطاق 15 متر) عبر الـ GPS لإظهار خانة كود الحضور.
+            لحماية النظام وموثوقية الحضور، يجب التأكد من وجودك الفعلي داخل السنتر (نطاق 50 متر) عبر الـ GPS لإظهار خانة كود الحضور.
           </p>
           <button class="btn btn-primary" id="btn-verify-location" style="width: auto; padding: 10px 24px;" onclick="verifyStudentLocation()">📍 التحقق من موقعي بالسنتر الآن</button>
         </div>
 
-        <!-- 🔑 حقل كود الحضور (محجوب ومخفي تماماً ولا يظهر إلا بعد التحقق من الـ GPS) -->
+        <!-- 🔑 حقل كود الحضور (محجوب ولا يظهر إلا بعد التحقق من الـ GPS) -->
         <div id="session-code-container" class="hidden">
           <h2 class="card-title">🔑 تسجيل حضور الحصة الحالية</h2>
           
@@ -808,17 +801,17 @@
       <div id="teacher-content" class="card hidden">
         <h2 class="card-title">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
 
+        <!-- تبويبات السناتر الثلاثة -->
         <div class="center-tabs-container">
           <button class="center-tab-btn active" id="center-tab-1" onclick="switchTeacherCenter('سنتر كفر رجب')">🏢 سنتر كفر رجب</button>
+          <button class="center-tab-btn" id="center-tab-2" onclick="switchTeacherCenter('التلين')">🏢 التلين</button>
+          <button class="center-tab-btn" id="center-tab-3" onclick="switchTeacherCenter('كفر تصفا')">🏢 كفر تصفا</button>
         </div>
 
         <div style="background: var(--bg-body); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1px solid var(--border-color);">
           <div class="form-group">
             <label for="teacher-code-stage">🎯 اختر الصف الدراسي لإدارة كود الحصة بـ (<span id="active-center-label" style="color: var(--accent);">سنتر كفر رجب</span>):</label>
             <select id="teacher-code-stage" onchange="fetchTeacherStageData()" style="font-weight: 600; color: var(--accent);">
-              <option value="الأول الإعدادي">الأول الإعدادي</option>
-              <option value="الثاني الإعدادي">الثاني الإعدادي</option>
-              <option value="الثالث الإعدادي">الثالث الإعدادي</option>
               <option value="الأول الثانوي">الأول الثانوي</option>
               <option value="الثاني الثانوي عام">الثاني الثانوي عام</option>
               <option value="الثاني الثانوي بكالوريا">الثاني الثانوي بكالوريا</option>
@@ -874,12 +867,9 @@
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
           <div class="form-group" style="margin-bottom: 0;">
-            <label for="filter-stage-select">المرحلة الدراسية:</label>
-            <select id="filter-stage-select" onchange="fetchTeacherStageData()">
+            <label for="filter-stage-select">المرحلة الدراسية المعروضة:</label>
+            <select id="filter-stage-select" onchange="renderTeacherData()">
               <option value="الكل">جميع المراحل الدراسية</option>
-              <option value="الأول الإعدادي">الأول الإعدادي</option>
-              <option value="الثاني الإعدادي">الثاني الإعدادي</option>
-              <option value="الثالث الإعدادي">الثالث الإعدادي</option>
               <option value="الأول الثانوي">الأول الثانوي</option>
               <option value="الثاني الثانوي عام">الثاني الثانوي عام</option>
               <option value="الثاني الثانوي بكالوريا">الثاني الثانوي بكالوريا</option>
@@ -889,7 +879,7 @@
 
           <div class="form-group" style="margin-bottom: 0;">
             <label for="filter-session-select">تحديد حصة معينة لمعاينة الحضور:</label>
-            <select id="filter-session-select" onchange="renderTeacherData()">
+            <select id="filter-session-select" onchange="autoFilterStageBySession()">
               <option value="all">عرض الحالة العامة للمنصة</option>
             </select>
           </div>
@@ -935,7 +925,7 @@
     </footer>
   </div>
 
-  <!-- 🖥️ نافذة شاشة القاعة والداتا شو الحية (Live Screen Modal) -->
+  <!-- 🖥️ نافذة شاشة القاعة والداتا شو الحية -->
   <div id="live-screen-modal" class="modal-overlay hidden" style="background: rgba(15, 23, 42, 0.95);">
     <div class="modal-card" style="max-width: 800px; text-align: center; border: 2px solid var(--accent);">
       <div class="modal-header">
@@ -996,9 +986,6 @@
         <div class="form-group">
           <label for="edit-stage">المرحلة الدراسية:</label>
           <select id="edit-stage">
-            <option value="الأول الإعدادي">الأول الإعدادي</option>
-            <option value="الثاني الإعدادي">الثاني الإعدادي</option>
-            <option value="الثالث الإعدادي">الثالث الإعدادي</option>
             <option value="الأول الثانوي">الأول الثانوي</option>
             <option value="الثاني الثانوي عام">الثاني الثانوي عام</option>
             <option value="الثاني الثانوي بكالوريا">الثاني الثانوي بكالوريا</option>
@@ -1010,6 +997,8 @@
           <label for="edit-center">🏢 السنتر / القاعة:</label>
           <select id="edit-center">
             <option value="سنتر كفر رجب">سنتر كفر رجب</option>
+            <option value="التلين">التلين</option>
+            <option value="كفر تصفا">كفر تصفا</option>
           </select>
         </div>
 
@@ -1024,6 +1013,7 @@
   </div>
 
   <script>
+    // --- إعدادات الفايربيس الخارجي الخاص بك ---
     const firebaseConfig = {
       apiKey: "AIzaSyBja36JoyQuVrOtwwjATqLO9hVE-VG5ShQ",
       authDomain: "mramir-a454d.firebaseapp.com",
@@ -1038,7 +1028,7 @@
     const db = firebase.firestore();
 
     let currentStudent = null;
-    let currentGoogleUser = null; // 🔑 متغير حفظ توثيق حساب Google
+    let currentGoogleUser = null; 
     let isTeacherUnlocked = false;
     let isFromQR = false;
     let qrCenterParam = '';
@@ -1046,9 +1036,9 @@
     let cachedSessions = [];
     let isLocationVerified = false;
 
-    // 📍 إحداثيات سنتر كفر رجب المحددة على الخريطة (نطاق 15 متر فقط)
+    // 📍 إحداثيات السناتر بنطاق 50 متراً
     const CENTER_COORDINATES = {
-      'سنتر كفر رجب': { lat: 30.5741625, lng: 31.3281118, radiusMeters: 15 }
+      'سنتر كفر رجب': { lat: 30.5741625, lng: 31.3281118, radiusMeters: 50 },
     };
 
     function escapeHTML(str) {
@@ -1109,7 +1099,7 @@
       }, 1000);
     }
 
-    // 🌐 1. دالة توثيق حساب Google
+    // 🌐 توثيق Google الاختياري
     async function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       const googleBtn = document.querySelector('.btn-google');
@@ -1130,7 +1120,7 @@
           nameInput.value = currentGoogleUser.displayName;
         }
 
-        alert(`🟢 تم توثيق حساب Google بنجاح!\nيرجى الآن إكمال باقي البيانات والضغط على زر الانضمام.`);
+        alert(`🟢 تم توثيق حساب Google بنجاح!\nيمكنك الآن إكمال باقي البيانات والضغط على زر الانضمام.`);
       } catch (error) {
         console.error("خطأ تسجيل الدخول بجوجل:", error);
         alert("❌ تعذر تسجيل الدخول بـ Google: " + error.message);
@@ -1170,14 +1160,8 @@
       return { isValid: true, cleanName: cleanName };
     }
 
-    // 📝 2. دالة التسجيل بالمنصة (تشترط وجود توثيق Google)
+    // 📝 التسجيل بـ Firebase
     async function loginOrRegisterStudent() {
-      // ⛔ فحص شرط توثيق Google أولاً قبل أي عملية حفظ بالـ Firebase
-      if (!currentGoogleUser) {
-        alert("⚠️ خطوة إضافية مطلوبة:\nيجب أولاً الضغط على زر (التوثيق بـ Google) للتحقق من هويتك وحسابك قبل الانضمام للمنصة!");
-        return;
-      }
-
       const rawName = document.getElementById('reg-name').value;
       const phone = document.getElementById('reg-phone').value.trim();
       const stage = document.getElementById('reg-stage').value;
@@ -1186,8 +1170,9 @@
       const submitBtn = document.getElementById('btn-register-submit');
 
       const hasUploadedPhoto = photoInput && photoInput.files && photoInput.files.length > 0;
+      const isGoogleLoggedIn = !!currentGoogleUser;
       
-      const validation = validateStudentInput(rawName, phone, photoInput, !currentGoogleUser.photoURL && !hasUploadedPhoto);
+      const validation = validateStudentInput(rawName, phone, photoInput, !isGoogleLoggedIn && !hasUploadedPhoto);
       if (!validation.isValid) {
         alert(validation.message);
         return;
@@ -1205,7 +1190,7 @@
           submitBtn.disabled = true;
           submitBtn.innerText = "جاري الحفظ والتسجيل بـ Firebase... ⏳";
 
-          let finalPhotoURL = currentGoogleUser.photoURL || '';
+          let finalPhotoURL = isGoogleLoggedIn ? currentGoogleUser.photoURL : '';
           if (hasUploadedPhoto) {
             finalPhotoURL = await compressAndConvertToBase64(photoInput.files[0]);
           }
@@ -1219,20 +1204,18 @@
             stage: stage,
             center: center,
             photoURL: finalPhotoURL,
-            googleUid: currentGoogleUser.uid,
-            googleEmail: currentGoogleUser.email,
-            googleVerified: true,
+            googleUid: isGoogleLoggedIn ? currentGoogleUser.uid : null,
+            googleEmail: isGoogleLoggedIn ? currentGoogleUser.email : null,
             editCount: 0,
             editMonth: currentMonthKey,
             createdAt: new Date().toISOString()
           };
 
-          // 💾 حفظ الحساب المدمج والـ Google Auth داخل قاعدة بيانات Firestore
           await studentRef.set(currentStudent);
         }
 
         localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
-        alert(`أهلاً بك يا ${currentStudent.name}! تم التوثيق بحساب Google بنجاح والانضمام للمنصة بـ (${currentStudent.center}).`);
+        alert(`أهلاً بك يا ${currentStudent.name}! تم انضمامك للمنصة بنجاح بـ (${currentStudent.center}).`);
         showStudentStep2();
       } catch (error) {
         console.error("خطأ أثناء تسجيل الطالب:", error);
@@ -1274,7 +1257,7 @@
       try {
         const studentDoc = await db.collection('students').doc(currentStudent.phone).get();
         if (!studentDoc.exists) {
-          alert("⚠️ تنبيه: تم حذف حسابك من المنصة بواسطة الأستاذ!\nيمكنك الآن إعادة التسجيل بنفس الحساب أو بحساب جديد لإنشاء سجل جديد.");
+          alert("⚠️ تنبيه: تم حذف حسابك من المنصة بواسطة الأستاذ!\nيمكنك إعادة التسجيل بنفس الحساب أو بحساب جديد.");
           localStorage.removeItem('history_app_student');
           currentStudent = null;
           document.getElementById('student-step-2').classList.add('hidden');
@@ -1315,6 +1298,8 @@
       selectedTeacherCenter = centerName;
 
       document.getElementById('center-tab-1').classList.toggle('active', centerName === 'سنتر كفر رجب');
+      document.getElementById('center-tab-2').classList.toggle('active', centerName === 'التلين');
+      document.getElementById('center-tab-3').classList.toggle('active', centerName === 'كفر تصفا');
 
       document.getElementById('active-center-label').innerText = centerName;
       document.getElementById('qr-center-title').innerText = centerName;
@@ -1322,6 +1307,14 @@
 
       fetchTeacherStageData();
       generateCenterQRCode();
+    }
+
+    // 🔧 إصلاح وإضافة دالة switchTeacherSubTab المفقودة
+    function switchTeacherSubTab(tab) {
+      document.querySelectorAll('.sub-nav-btn').forEach(btn => btn.classList.remove('active'));
+      const clickedBtn = document.getElementById(`subtab-${tab}`) || document.getElementById('subtab-all');
+      if (clickedBtn) clickedBtn.classList.add('active');
+      renderTeacherData();
     }
 
     function toggleStudentListSection() {
@@ -1406,12 +1399,12 @@
       }
 
       if (editCount >= 9) {
-        alert("🚫 عذراً! لقد تجاوزت الحد الأقصى لتعديل البيانات هذا الشهر (9 مرات).\nلن تتمكن من تعديل ملفك الشخصي حتى بداية الشهر القادم.");
+        alert("🚫 عذراً! لقد تجاوزت الحد الأقصى لتعديل البيانات هذا الشهر (9 مرات).");
         return;
       }
 
       const remaining = 9 - editCount;
-      const confirmProceed = confirm(`⚠️ تنبيه هام:\n\nيحق لك تعديل ملفك الشخصي 9 مرات فقط في الشهر.\nمتبقي لك (${remaining}) محاولات هذا الشهر.\n\nهل ترغب بالبدء في تعديل بيانات ملفك الشخصي؟`);
+      const confirmProceed = confirm(`⚠️ تنبيه:\nمتبقي لك (${remaining}) محاولات تعديل هذا الشهر.\nهل ترغب بالبدء بالتعديل؟`);
 
       if (!confirmProceed) return;
 
@@ -1510,7 +1503,7 @@
         currentStudent = updatedData;
         localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
 
-        alert(`✅ تم تحديث جميع بياناتك بنجاح لدى المنصة ومستر أمير!\n(متبقي لك ${9 - editCount} محاولات تعديل هذا الشهر).`);
+        alert(`✅ تم تحديث بياناتك بنجاح لدى المنصة ومستر أمير!`);
         closeEditProfileModal();
         showStudentStep2();
 
@@ -1531,12 +1524,12 @@
       document.getElementById('student-step-1').classList.add('hidden');
       document.getElementById('student-step-2').classList.remove('hidden');
       document.getElementById('welcome-student-name').innerText = `أهلاً بك: ${currentStudent.name}`;
-      document.getElementById('welcome-student-info').innerText = `المرحلة: ${currentStudent.stage} | السنتر: ${currentStudent.center || 'سنتر كفر رجب'} | الهاتف: ${currentStudent.phone}`;
+      document.getElementById('welcome-student-info').innerText = `المرحلة: ${currentStudent.stage} | السنتر: ${currentStudent.center} | الهاتف: ${currentStudent.phone}`;
       
       const imgEl = document.getElementById('welcome-student-img');
       imgEl.src = currentStudent.photoURL || 'https://via.placeholder.com/65';
 
-      const studentCenter = currentStudent.center || 'سنتر كفر رجب';
+      const studentCenter = currentStudent.center;
       document.getElementById('verify-center-name-label').innerText = studentCenter;
 
       const bannerEl = document.getElementById('qr-welcome-msg');
@@ -1552,8 +1545,7 @@
       } else {
         bannerEl.className = 'qr-banner warning';
         bannerEl.innerHTML = `
-          ⚠️ تنبيه: لم تقم بمسح كود الـ QR الخاص بالقاعة!<br>
-          <span style="font-size: 0.92rem; font-weight: 500;">يجب التواجد بالسنتر ومسح الـ QR Code لتسجيل حضور الحصة.</span>
+          ⚠️ تنبيه: يفضل مسح كود الـ QR الخاص بالقاعة للتأكد من حضورك الحصة.
         `;
       }
 
@@ -1563,6 +1555,7 @@
       loadStudentSessionsHistory();
     }
 
+    // 📐 حساب المسافة الجغرافية بالمتر
     function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
       const φ1 = lat1 * Math.PI / 180;
@@ -1578,12 +1571,8 @@
       return R * c;
     }
 
+    // 📍 التحقق الجغرافي بالنطاق المحدد (50 متراً)
     function verifyStudentLocation() {
-      if (!isFromQR) {
-        alert("🚫 عذراً! يجب أولاً أن تقوم بمسح كود الـ QR المنسوخ والمعلق في السنتر بموبايلك للتأكد من حضورك القاعة!");
-        return;
-      }
-
       if (!navigator.geolocation) {
         alert("❌ جهازك أو متصفحك لا يدعم خاصية تحديد الموقع الجغرافي (GPS)!");
         return;
@@ -1600,12 +1589,12 @@
           const userLat = position.coords.latitude;
           const userLng = position.coords.longitude;
 
-          const studentCenter = currentStudent.center || 'سنتر كفر رجب';
+          const studentCenter = (currentStudent && currentStudent.center) ? currentStudent.center : 'سنتر كفر رجب';
           const targetCoords = CENTER_COORDINATES[studentCenter] || CENTER_COORDINATES['سنتر كفر رجب'];
 
           const distanceMeters = calculateDistanceMeters(userLat, userLng, targetCoords.lat, targetCoords.lng);
 
-          if (distanceMeters <= targetCoords.radiusMeters) {
+          if (distanceMeters <= targetCoords.radiusMeters) { // 50 متر
             isLocationVerified = true;
             statusText.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 تم التأكد من تواجدك الجغرافي بـ (${escapeHTML(studentCenter)}) بنجاح! يمكنك الآن إدخال كود الحصة بالأسفل.</span>`;
             document.getElementById('session-code-container').classList.remove('hidden');
@@ -1615,7 +1604,7 @@
             isLocationVerified = false;
             document.getElementById('session-code-container').classList.add('hidden');
             const distMetersRounded = Math.round(distanceMeters);
-            alert(`🚫 عذراً! أنت تتواجد خارج نطاق 15 متراً لـ (${studentCenter})!\nالمسافة بينك وبين نقطة السنتر حالياً: ${distMetersRounded} متراً.\nيرجى التواجد بداخل السنتر لتتمكن من كتابة كود الحضور.`);
+            alert(`🚫 عذراً! أنت تتواجد خارج نطاق 50 متراً لـ (${studentCenter})!\nالمسافة بينك وبين نقطة السنتر حالياً: ${distMetersRounded} متراً.\nيرجى التواجد بداخل السنتر لتتمكن من كتابة كود الحضور.`);
             statusText.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🔴 أنت خارج نطاق السنتر الجغرافي (على مسافة ${distMetersRounded} متر)! لا يمكن إظهار كود الحضور إلا بداخل السنتر.</span>`;
             verifyBtn.disabled = false;
             verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
@@ -1636,7 +1625,7 @@
       if (!currentStudent || !currentStudent.stage) return;
 
       try {
-        const studentCenter = currentStudent.center || 'سنتر كفر رجب';
+        const studentCenter = currentStudent.center;
 
         const sessionsSnapshot = await db.collection('sessions')
           .where('stage', '==', currentStudent.stage)
@@ -1661,10 +1650,10 @@
           badgesContainer.innerHTML = `<span class="badge badge-info">⭐ طالب مواظب</span>`;
         }
 
-       let sessionsList = [];
+        let sessionsList = [];
         sessionsSnapshot.forEach(doc => {
           const data = doc.data();
-          if (data.center === studentCenter || !data.center) {
+          if (data.center === studentCenter) {
             sessionsList.push({ id: doc.id, ...data });
           }
         });
@@ -1679,7 +1668,7 @@
         historyContainer.innerHTML = '';
         const now = Date.now();
 
-        sessionsList.forEach(session => {
+     sessionsList.forEach(session => {
           const item = document.createElement('div');
           item.className = 'session-history-item';
 
@@ -1694,7 +1683,7 @@
           if (isAttended) {
             badgeHTML = `<span class="badge badge-success">تم حضور الحصة 🟢</span>`;
           } else if (isExpired) {
-            badgeHTML = `<span class="badge badge-danger">لم تحضر كود (${escapeHTML(session.code)}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
+            badgeHTML = `<span class="badge badge-danger">لم تحضر كود (${escapeHTML(session.code)}) - يوم ${formattedDate} 🔴</span>`;
           } else {
             badgeHTML = `<span class="badge badge-warning">حصة جارية الآن ⏳ - أدخل الكود أعلاه</span>`;
           }
@@ -1715,27 +1704,6 @@
     }
 
     function logoutStudent() {
-      const now = new Date();
-      const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
-
-      let switchData = JSON.parse(localStorage.getItem('history_app_switch_limit')) || { count: 0, month: currentMonthKey };
-
-      if (switchData.month !== currentMonthKey) {
-        switchData.month = currentMonthKey;
-        switchData.count = 0;
-      }
-
-      if (switchData.count >= 5) {
-        alert("🚫 عذراً! لقد تجاوزت الحد الأقصى لتغيير الحساب هذا الشهر (5 مرات).\nتم تثبيت حسابك الحالي ولن تتمكن من تغييره حتى بداية الشهر القادم.");
-        return;
-      }
-
-      switchData.count += 1;
-      localStorage.setItem('history_app_switch_limit', JSON.stringify(switchData));
-
-      const remainingAttempts = 5 - switchData.count;
-      alert(`⚠️ تنبيه: قمت بتغيير الحساب (${switchData.count} من 5 مرات المتاحة هذا الشهر).\nمتبقي لك ${remainingAttempts} محاولات فقط.`);
-
       localStorage.removeItem('history_app_student');
       currentStudent = null;
       currentGoogleUser = null;
@@ -1744,11 +1712,6 @@
     }
 
     async function submitSessionCode() {
-      if (!isFromQR) {
-        alert("🚫 عذراً، يجب أولاً أن تمسح الـ QR Code الخاص بالقاعة لكي تتمكن من كتابة الكود وتسجيل الحضور!");
-        return;
-      }
-
       if (!isLocationVerified) {
         alert("🚫 عذراً! يجب أولاً تأكيد تواجدك الجغرافي داخل السنتر بنجاح عبر زر الـ GPS لتتمكن من التسجيل!");
         return;
@@ -1762,7 +1725,7 @@
 
       try {
         const studentStage = currentStudent.stage;
-        const studentCenter = currentStudent.center || 'سنتر كفر رجب';
+        const studentCenter = currentStudent.center;
 
         const now = Date.now();
         const activeSessionsSnapshot = await db.collection('sessions')
@@ -1773,7 +1736,7 @@
         let validSession = null;
         activeSessionsSnapshot.forEach(doc => {
           const data = doc.data();
-          if (now <= data.expiresAt && (data.center === studentCenter || !data.center)) {
+          if (now <= data.expiresAt && data.center === studentCenter) {
             validSession = { id: doc.id, ...data };
           }
         });
@@ -1814,9 +1777,10 @@
       }
     }
 
+    // 🔑 كلمة المرور المطلوبة: amir4211
     function unlockTeacherDashboard() {
       const pass = document.getElementById('teacher-password').value.trim();
-      if (pass === "1234") {
+      if (pass === "amir4211") {
         isTeacherUnlocked = true;
         document.getElementById('teacher-lock-screen').classList.add('hidden');
         document.getElementById('teacher-content').classList.remove('hidden');
@@ -1876,7 +1840,7 @@
         let count = 0;
         activeSessionsSnapshot.forEach(doc => {
           const data = doc.data();
-          if (now <= data.expiresAt && (data.center === selectedTeacherCenter || !data.center)) {
+          if (now <= data.expiresAt && data.center === selectedTeacherCenter) {
             batch.update(doc.ref, { expiresAt: now });
             count++;
           }
@@ -1900,20 +1864,15 @@
       if (!isTeacherUnlocked) return;
 
       const stage = document.getElementById('teacher-code-stage').value;
-      const filterStage = document.getElementById('filter-stage-select').value;
       const activeDisplay = document.getElementById('current-active-code-display');
 
       try {
-        const targetStage = filterStage !== "الكل" ? filterStage : stage;
-
-        const sessionsSnapshot = await db.collection('sessions')
-          .where('stage', '==', targetStage)
-          .get();
+        const sessionsSnapshot = await db.collection('sessions').get();
 
         cachedSessions = [];
         sessionsSnapshot.forEach(doc => {
           const data = doc.data();
-          if (data.center === selectedTeacherCenter || !data.center) {
+          if (data.center === selectedTeacherCenter) {
             cachedSessions.push({ id: doc.id, ...data });
           }
         });
@@ -1921,7 +1880,7 @@
         cachedSessions.sort((a, b) => b.createdAt - a.createdAt);
 
         const sessionSelect = document.getElementById('filter-session-select');
-        sessionSelect.innerHTML = `<option value="all">عرض حالة المنصة العامة</option>`;
+        sessionSelect.innerHTML = `<option value="all">عرض الحالة العامة للمنصة</option>`;
 
         const now = Date.now();
         let activeCodeFound = null;
@@ -1932,19 +1891,19 @@
           const sessDateObj = new Date(session.createdAt);
           const timeText = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
           
-          sessionSelect.innerHTML += `<option value="${escapeHTML(session.id)}">حصة كود (${escapeHTML(session.code)}) - ${timeText} [${statusText}]</option>`;
+          sessionSelect.innerHTML += `<option value="${escapeHTML(session.id)}">حصة كود (${escapeHTML(session.code)}) - ${session.stage} [${statusText}]</option>`;
 
-          if (!isExpired && !activeCodeFound) {
+          if (!isExpired && session.stage === stage && !activeCodeFound) {
             activeCodeFound = session;
           }
         });
 
         if (activeCodeFound) {
           const minutesLeft = Math.ceil((activeCodeFound.expiresAt - now) / (1000 * 60));
-          activeDisplay.innerText = `الكود النشط لـ (${selectedTeacherCenter}) - stage (${targetStage}): ${activeCodeFound.code} (متبقي ${minutesLeft} دقيقة على الانتهاء)`;
+          activeDisplay.innerText = `الكود النشط لـ (${selectedTeacherCenter}) - (${stage}): ${activeCodeFound.code} (متبقي ${minutesLeft} دقيقة)`;
           activeDisplay.style.color = 'var(--accent)';
         } else {
-          activeDisplay.innerText = `لا يوجد كود حصة نشط حالياً لمرحلة (${targetStage}) بـ (${selectedTeacherCenter})`;
+          activeDisplay.innerText = `لا يوجد كود حصة نشط حالياً لمرحلة (${stage}) بـ (${selectedTeacherCenter})`;
           activeDisplay.style.color = 'var(--text-muted)';
         }
 
@@ -1954,8 +1913,20 @@
       }
     }
 
+    // 🎯 الفلترة التلقائية لطلاب المرحلة المعنية فقط عند اختيار كود حصة خاص بها
+    function autoFilterStageBySession() {
+      const selectedSessionId = document.getElementById('filter-session-select').value;
+      if (selectedSessionId !== "all") {
+        const selectedSession = cachedSessions.find(s => s.id === selectedSessionId);
+        if (selectedSession) {
+          document.getElementById('filter-stage-select').value = selectedSession.stage;
+        }
+      }
+      renderTeacherData();
+    }
+
     async function deleteStudent(phone, name) {
-      if (!confirm(`هل أنت متأكد من حذف الطالب (${name}) نهائياً من المنصة؟\nسيتمكن الطالب من التسجيل من جديد بالمنصة بنفس الحساب وبسجل جديد.`)) return;
+      if (!confirm(`هل أنت متأكد من حذف الطالب (${name}) نهائياً من المنصة؟\nسيتمكن الطالب من التسجيل من جديد.`)) return;
 
       try {
         await db.collection('students').doc(phone).delete();
@@ -1965,7 +1936,7 @@
         attendanceDocs.forEach(doc => batch.delete(doc.ref));
         await batch.commit();
 
-        alert(`✅ تم حذف الطالب (${name}) وسجلاته القديمة بنجاح، ويمكنه الآن التسجيل من جديد.`);
+        alert(`✅ تم حذف الطالب (${name}) وسجلاته بنجاح.`);
         renderTeacherData();
       } catch (error) {
         console.error("خطأ أثناء حذف الطالب:", error);
@@ -1983,7 +1954,7 @@
       modal.classList.remove('hidden');
 
       try {
-        const studentCenter = center || 'سنتر كفر رجب';
+        const studentCenter = center;
 
         const sessionsSnapshot = await db.collection('sessions')
           .where('stage', '==', stage)
@@ -2002,7 +1973,7 @@
         const studentSessions = [];
         sessionsSnapshot.forEach(doc => {
           const data = doc.data();
-          if (data.center === studentCenter || !data.center) {
+          if (data.center === studentCenter) {
             studentSessions.push({ id: doc.id, ...data });
           }
         });
@@ -2027,10 +1998,9 @@
           let statusBadge = '';
           if (isAttended) {
             const timeAtt = new Date(attData.timestamp).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-            const speedText = attData.speedMinutes !== undefined && attData.speedMinutes <= 5 ? '⚡ حضور سريّع' : '';
-            statusBadge = `<span class="badge badge-success">حضر 🟢 (${timeAtt}) ${speedText}</span>`;
+            statusBadge = `<span class="badge badge-success">حضر 🟢 (${timeAtt})</span>`;
           } else if (now > session.expiresAt) {
-            statusBadge = `<span class="badge badge-danger">لم يحضر كود (${escapeHTML(session.code)}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
+            statusBadge = `<span class="badge badge-danger">لم يحضر كود (${escapeHTML(session.code)}) 🔴</span>`;
           } else {
             statusBadge = `<span class="badge badge-warning">حصة جارية ⏳</span>`;
           }
@@ -2062,12 +2032,12 @@
 
           <h4 style="font-size: 1rem; color: var(--primary); margin-bottom: 10px;">تفاصيل جميع الحصص والمواعيد:</h4>
           <div class="session-history-list">
-            ${sessionsHTML || '<p style="text-align:center; color: var(--text-muted);">لا توجد حصص مسجلة لهذه المرحلة حتى الآن.</p>'}
+            ${sessionsHTML || '<p style="text-align:center; color: var(--text-muted);">لا توجد حصص مسجلة حتى الآن.</p>'}
           </div>
         `;
       } catch (err) {
         console.error("خطأ عرض تقرير الطالب:", err);
-        modalBody.innerHTML = `<p style="color: var(--danger); text-align: center;">❌ تعذر تحميل تقرير الطالب: ${escapeHTML(err.message)}</p>`;
+        modalBody.innerHTML = `<p style="color: var(--danger); text-align: center;">❌ تعذر تحميل التقرير: ${escapeHTML(err.message)}</p>`;
       }
     }
 
@@ -2105,7 +2075,7 @@
         let studentsList = [];
         studentsSnapshot.forEach(doc => {
           const data = doc.data();
-          if (data.center === selectedTeacherCenter || (!data.center && selectedTeacherCenter === 'سنتر كفر رجب')) {
+          if (data.center === selectedTeacherCenter) {
             studentsList.push(data);
           }
         });
@@ -2124,7 +2094,7 @@
         }
 
         if (studentsList.length === 0) {
-          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مطابقون للبحث في (${escapeHTML(selectedTeacherCenter)}).</p>`;
+          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مطابقون للبحث بـ (${escapeHTML(selectedTeacherCenter)}).</p>`;
           return;
         }
 
@@ -2145,8 +2115,7 @@
             } else if (selectedSession) {
               const sessDateObj = new Date(selectedSession.createdAt);
               const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', month: 'numeric', day: 'numeric' });
-              const formattedTime = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-              badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${escapeHTML(selectedSession.code)}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
+              badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${escapeHTML(selectedSession.code)}) - ${formattedDate} 🔴</span>`;
             }
           } else {
             if (studentStageSessions.length === 0) {
@@ -2161,9 +2130,8 @@
               } else if (now > latestSession.expiresAt) {
                 const sessDateObj = new Date(latestSession.createdAt);
                 const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', month: 'numeric', day: 'numeric' });
-                const formattedTime = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
 
-                badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${escapeHTML(latestSession.code)}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
+                badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${escapeHTML(latestSession.code)}) - ${formattedDate} 🔴</span>`;
               } else {
                 badgeHTML = `<span class="badge badge-warning">حصة جارية (كود: ${escapeHTML(latestSession.code)}) ⏳</span>`;
               }
