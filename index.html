@@ -652,8 +652,8 @@
         </div>
 
         <div class="form-group">
-          <label for="reg-phone">رقم الهاتف:</label>
-          <input type="tel" id="reg-phone" placeholder="مثال: 01012345678">
+          <label for="reg-phone">رقم الهاتف (11 رقم):</label>
+          <input type="tel" id="reg-phone" placeholder="مثال: 01012345678" maxlength="11">
         </div>
 
         <div class="form-group">
@@ -922,8 +922,8 @@
         </div>
 
         <div class="form-group">
-          <label for="edit-phone">رقم الهاتف:</label>
-          <input type="tel" id="edit-phone" placeholder="أدخل رقم هاتفك">
+          <label for="edit-phone">رقم الهاتف (11 رقم):</label>
+          <input type="tel" id="edit-phone" placeholder="أدخل رقم هاتفك" maxlength="11">
         </div>
 
         <div class="form-group">
@@ -978,6 +978,43 @@
     let qrCenterParam = '';
     let selectedTeacherCenter = 'سنتر كفر رجب'; // السنتر المختار افتراضياً باللوحة
     let cachedSessions = [];
+
+    // 🛡️ دالة التحقق من صحة وقواعد البيانات (Validation Utility)
+    function validateStudentInput(name, phone, photoFile, isPhotoRequired = true) {
+      // 1. تنظيف الاسم والتحقق منه
+      const cleanName = name.trim().replace(/\s+/g, ' ');
+      if (!cleanName || cleanName.length < 5) {
+        return { isValid: false, message: "⚠️ يرجى إدخال اسمك الثلاثي بشكل واضح وصحيح (لا يقل عن 5 أحرف)!" };
+      }
+
+      const nameWords = cleanName.split(' ');
+      if (nameWords.length < 3) {
+        return { isValid: false, message: "⚠️ يرجى كتابة الاسم ثلاثي على الأقل (مثال: فتحي زكريا علي)!" };
+      }
+
+      // 2. التحقق من رقم الهاتف المصري (11 رقم ويشمل المفاتيح الرسمية)
+      const phoneRegex = /^01[0125][0-9]{8}$/;
+      if (!phoneRegex.test(phone)) {
+        return { isValid: false, message: "⚠️ يرجى إدخال رقم هاتف مصري صحيح يتكون من 11 رقماً ويبدأ بـ (010, 011, 012, 015)!" };
+      }
+
+      // 3. التحقق من الصورة الشخصية
+      if (isPhotoRequired && (!photoFile || !photoFile.files || photoFile.files.length === 0)) {
+        return { isValid: false, message: "⚠️ رفع الصورة الشخصية إجباري للانضمام للمنصة!" };
+      }
+
+      if (photoFile && photoFile.files && photoFile.files.length > 0) {
+        const file = photoFile.files[0];
+        if (!file.type.startsWith('image/')) {
+          return { isValid: false, message: "⚠️ الملف المرفوع يجب أن يكون صورة فقط (PNG, JPG, JPEG)!" };
+        }
+        if (file.size > 5 * 1024 * 1024) { // 5 Megabytes
+          return { isValid: false, message: "⚠️ حجم الصورة كبير جداً، يرجى اختيار صورة حجمها أقل من 5 ميجابايت!" };
+        }
+      }
+
+      return { isValid: true, cleanName: cleanName };
+    }
 
     window.onload = function() {
       // 1. استرجاع الوضع الليلي المُحفظ
@@ -1134,17 +1171,21 @@
     }
 
     async function loginOrRegisterStudent() {
-      const name = document.getElementById('reg-name').value.trim();
+      const rawName = document.getElementById('reg-name').value;
       const phone = document.getElementById('reg-phone').value.trim();
       const stage = document.getElementById('reg-stage').value;
       const center = document.getElementById('reg-center').value;
       const photoInput = document.getElementById('reg-photo');
       const submitBtn = document.getElementById('btn-register-submit');
 
-      if (!name || !phone) {
-        alert("يرجى إدخال اسمك ورقم هاتفك بالكامل!");
+      // 🛡️ إجراء الفحص الأمني وفحص الصحة (Input Validation)
+      const validation = validateStudentInput(rawName, phone, photoInput, true);
+      if (!validation.isValid) {
+        alert(validation.message);
         return;
       }
+
+      const cleanName = validation.cleanName;
 
       try {
         const studentRef = db.collection('students').doc(phone);
@@ -1153,11 +1194,6 @@
         if (doc.exists) {
           currentStudent = doc.data();
         } else {
-          if (!photoInput.files || photoInput.files.length === 0) {
-            alert("⚠️ رفع الصورة الشخصية إجباري للانضمام للمنصة!");
-            return;
-          }
-
           submitBtn.disabled = true;
           submitBtn.innerText = "جاري معالجة الصورة والتسجيل... ⏳";
 
@@ -1168,7 +1204,7 @@
           const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
 
           currentStudent = {
-            name: name,
+            name: cleanName,
             phone: phone,
             stage: stage,
             center: center,
@@ -1230,17 +1266,21 @@
     }
 
     async function saveEditedProfile() {
-      const newName = document.getElementById('edit-name').value.trim();
+      const rawName = document.getElementById('edit-name').value;
       const newPhone = document.getElementById('edit-phone').value.trim();
       const newStage = document.getElementById('edit-stage').value;
       const newCenter = document.getElementById('edit-center').value;
       const photoInput = document.getElementById('edit-photo');
       const saveBtn = document.getElementById('btn-save-profile');
 
-      if (!newName || !newPhone) {
-        alert("يرجى ملء كافة البيانات الأساسية (الاسم ورقم الهاتف)!");
+      // 🛡️ فحص المداخلات والتأكد من صحتها
+      const validation = validateStudentInput(rawName, newPhone, photoInput, false);
+      if (!validation.isValid) {
+        alert(validation.message);
         return;
       }
+
+      const cleanName = validation.cleanName;
 
       const now = new Date();
       const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
@@ -1266,7 +1306,7 @@
         editCount += 1;
 
         const updatedData = {
-          name: newName,
+          name: cleanName,
           phone: newPhone,
           stage: newStage,
           center: newCenter,
@@ -1291,7 +1331,7 @@
           const attSnapshot = await db.collection('attendance').where('phone', '==', oldPhone).get();
           const batch = db.batch();
           attSnapshot.forEach(doc => {
-            batch.update(doc.ref, { phone: newPhone, name: newName, photoURL: newPhotoURL, stage: newStage, center: newCenter });
+            batch.update(doc.ref, { phone: newPhone, name: cleanName, photoURL: newPhotoURL, stage: newStage, center: newCenter });
           });
           await batch.commit();
         } else {
@@ -1300,7 +1340,7 @@
           const attSnapshot = await db.collection('attendance').where('phone', '==', oldPhone).get();
           const batch = db.batch();
           attSnapshot.forEach(doc => {
-            batch.update(doc.ref, { name: newName, photoURL: newPhotoURL, stage: newStage, center: newCenter });
+            batch.update(doc.ref, { name: cleanName, photoURL: newPhotoURL, stage: newStage, center: newCenter });
           });
           await batch.commit();
         }
@@ -1535,7 +1575,7 @@
     }
 
     function unlockTeacherDashboard() {
-      const pass = document.getElementById('teacher-password').value;
+      const pass = document.getElementById('teacher-password').value.trim();
       if (pass === "1234") {
         isTeacherUnlocked = true;
         document.getElementById('teacher-lock-screen').classList.add('hidden');
@@ -1559,8 +1599,8 @@
       const stage = document.getElementById('teacher-code-stage').value;
       const codeInput = document.getElementById('teacher-set-code');
       const code = codeInput.value.trim();
-      if (!code) {
-        alert("يرجى كتابة كود الحصة أولاً!");
+      if (!code || code.length < 2) {
+        alert("يرجى كتابة كود حصة صحيح يتكون من حرفين أو رقمين على الأقل!");
         return;
       }
 
@@ -1659,8 +1699,7 @@
             activeCodeFound = session;
           }
         });
-
-        if (activeCodeFound) {
+   if (activeCodeFound) {
           const minutesLeft = Math.ceil((activeCodeFound.expiresAt - now) / (1000 * 60));
           activeDisplay.innerText = `الكود النشط لـ (${selectedTeacherCenter}) - stage (${targetStage}): ${activeCodeFound.code} (متبقي ${minutesLeft} دقيقة على الانتهاء)`;
           activeDisplay.style.color = 'var(--accent)';
@@ -1706,6 +1745,7 @@
 
       try {
         const studentCenter = center || 'سنتر كفر رجب';
+
         const sessionsSnapshot = await db.collection('sessions')
           .where('stage', '==', stage)
           .get();
