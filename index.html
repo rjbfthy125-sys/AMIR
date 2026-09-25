@@ -11,7 +11,6 @@
   <!-- Firebase SDK (v10 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <!-- Firebase Auth SDK لتسجيل الدخول بـ Google -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
   <style>
@@ -35,7 +34,6 @@
       --shadow-glow: 0 0 20px rgba(217, 119, 6, 0.2);
     }
 
-    /* 🌙 ثيم الوضع الليلي (Dark Mode) */
     body.dark-mode {
       --primary: #f8fafc;
       --primary-light: #e2e8f0;
@@ -83,7 +81,6 @@
       position: relative;
     }
 
-    /* صورة الأستاذ أمير */
     .teacher-header-avatar {
       width: 100px;
       height: 100px;
@@ -263,7 +260,6 @@
       transform: translateY(-2px);
     }
 
-    /* 🌐 زر توثيق حساب Google الاختياري */
     .btn-google {
       background-color: #ffffff;
       color: #374151;
@@ -287,17 +283,12 @@
       background-color: #f8fafc;
       border-color: #cbd5e1;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     body.dark-mode .btn-google {
       background-color: #1e293b;
       color: #f8fafc;
       border-color: var(--border-color);
-    }
-
-    body.dark-mode .btn-google:hover {
-      background-color: #334155;
     }
 
     .btn-danger {
@@ -423,11 +414,11 @@
       box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12);
     }
 
-    .qr-banner.warning {
-      background: #fff7ed;
-      border: 1.5px solid #f97316;
-      color: #9a3412;
-      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.12);
+    .qr-banner.danger {
+      background: #fee2e2;
+      border: 1.5px solid #ef4444;
+      color: #991b1b;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.12);
     }
 
     .qr-print-card {
@@ -554,100 +545,25 @@
       transform: scale(1.2);
     }
 
-    /* 📱 تحسين التجاوب للهواتف الذكية */
     @media (max-width: 600px) {
-      body {
-        padding: 12px 8px;
-      }
-
-      .theme-toggle-btn {
-        position: relative;
-        top: 0;
-        left: 0;
-        margin: 0 auto 15px auto;
-        width: fit-content;
-      }
-
-      header h1 {
-        font-size: 1.6rem;
-      }
-
-      header p {
-        font-size: 0.9rem;
-      }
-
-      .teacher-header-avatar {
-        width: 80px;
-        height: 80px;
-      }
-
-      .view-switcher {
-        gap: 8px;
-      }
-
-      .tab-btn {
-        padding: 10px 14px;
-        font-size: 0.85rem;
-        flex: 1;
-        text-align: center;
-      }
-
-      .center-tabs-container {
-        gap: 6px;
-      }
-
-      .center-tab-btn {
-        padding: 8px 12px;
-        font-size: 0.82rem;
-        flex: 1 1 30%;
-        justify-content: center;
-      }
-
-      .card {
-        padding: 18px 14px;
-        border-radius: 16px;
-      }
-
-      .card-title {
-        font-size: 1.15rem;
-      }
-
-      .form-group input, .form-group select {
-        padding: 12px;
-        font-size: 0.92rem;
-      }
-
-      .btn {
-        padding: 12px;
-        font-size: 0.92rem;
-      }
-
-      .student-card-item {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 14px;
-        gap: 12px;
-      }
-
-      .student-card-item > div:last-child {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      .qr-print-card {
-        width: 100%;
-        padding: 15px 10px;
-      }
-
-      .user-welcome-box {
-        padding: 15px;
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .modal-card {
-        padding: 18px 14px;
-      }
+      body { padding: 12px 8px; }
+      .theme-toggle-btn { position: relative; top: 0; left: 0; margin: 0 auto 15px auto; width: fit-content; }
+      header h1 { font-size: 1.6rem; }
+      header p { font-size: 0.9rem; }
+      .teacher-header-avatar { width: 80px; height: 80px; }
+      .view-switcher { gap: 8px; }
+      .tab-btn { padding: 10px 14px; font-size: 0.85rem; flex: 1; text-align: center; }
+      .center-tabs-container { gap: 6px; }
+      .center-tab-btn { padding: 8px 12px; font-size: 0.82rem; flex: 1 1 30%; justify-content: center; }
+      .card { padding: 18px 14px; border-radius: 16px; }
+      .card-title { font-size: 1.15rem; }
+      .form-group input, .form-group select { padding: 12px; font-size: 0.92rem; }
+      .btn { padding: 12px; font-size: 0.92rem; }
+      .student-card-item { flex-direction: column; align-items: flex-start; padding: 14px; gap: 12px; }
+      .student-card-item > div:last-child { width: 100%; justify-content: flex-start; }
+      .qr-print-card { width: 100%; padding: 15px 10px; }
+      .user-welcome-box { padding: 15px; flex-direction: column; align-items: flex-start; }
+      .modal-card { padding: 18px 14px; }
     }
   </style>
 </head>
@@ -670,8 +586,7 @@
       </button>
 
       <div>
-        <!-- صورة الأستاذ باسم 123.jpg -->
-        <img src="123.jpg" onError="this.src='123'" alt="الأستاذ أمير" class="teacher-header-avatar">
+        <img src="123.jpg" onError="this.src='https://via.placeholder.com/100?text=Mr+Amir'" alt="الأستاذ أمير" class="teacher-header-avatar">
       </div>
 
       <h1>منصة <span>التاريخ</span> التعليمية</h1>
@@ -688,7 +603,7 @@
       <div id="student-step-1" class="card">
         <h2 class="card-title">📝 تسجيل الدخول بالمنصة</h2>
         
-        <!-- 🌐 توثيق حساب Google الاختياري -->
+        <!-- زر جوجل اختياري -->
         <div style="background: var(--bg-body); padding: 15px; border-radius: 14px; margin-bottom: 20px; border: 1px solid var(--border-color);">
           <button type="button" class="btn btn-google" onclick="loginWithGoogle()">
             <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
@@ -697,9 +612,9 @@
               <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.28-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.55 10.78l7.98-6.19z"/>
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
             </svg>
-            تسجيل الدخول عبر Google (اختياري ويفضل انك تسجل) 🔑
+            تسجيل الدخول باستخدام Google (اختياري ويفضل أن تسجل)
           </button>
-          <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">التوثيق عبر جوجل اختياري لتسهيل جلب اسمك وصورتك المعتمدة.</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">إذا قمت بالتسجيل عبر جوجل سيتم سحب اسمك وصورتك تلقائياً لتسهيل الدخول.</p>
         </div>
 
         <div class="form-group">
@@ -712,7 +627,6 @@
           <input type="tel" id="reg-phone" placeholder="مثال: 01012345678" maxlength="11">
         </div>
 
-        <!-- اقتصار المراحل على الثانوية فقط وبكسب الملاحظة -->
         <div class="form-group">
           <label for="reg-stage">المرحلة الدراسية:</label>
           <select id="reg-stage">
@@ -723,7 +637,6 @@
           </select>
         </div>
 
-        <!-- السناتر الثلاثة المطلوبة -->
         <div class="form-group">
           <label for="reg-center">🏢 السنتر / القاعة التي تحضر بها:</label>
           <select id="reg-center">
@@ -734,7 +647,7 @@
         </div>
 
         <div class="form-group">
-          <label for="reg-photo">📸 الصورة الشخصية للطالب (إجبارية إن لم تسجل بـ Google):</label>
+          <label for="reg-photo">📸 الصورة الشخصية للطالب (إجبارية إذا لم تسجل بجوجل):</label>
           <input type="file" id="reg-photo" accept="image/*">
         </div>
 
@@ -759,8 +672,8 @@
 
         <div id="qr-welcome-msg" class="qr-banner hidden"></div>
 
-        <!-- 📍 صندوق تأكيد الموقع الجغرافي GPS للسنتر (نطاق 50 متر) -->
-        <div id="location-verify-box" style="background: var(--bg-body); border: 1.5px dashed var(--accent); padding: 20px; border-radius: 16px; margin-bottom: 25px; text-align: center;">
+        <!-- 📍 صندوق تأكيد الموقع الجغرافي GPS (يقتصر حصرياً على سنتر كفر رجب) -->
+        <div id="location-verify-box" class="hidden" style="background: var(--bg-body); border: 1.5px dashed var(--accent); padding: 20px; border-radius: 16px; margin-bottom: 25px; text-align: center;">
           <h3 style="color: var(--primary); font-size: 1.15rem; margin-bottom: 8px;">📍 تأكيد التواجد الجغرافي بـ (<span id="verify-center-name-label">سنتر كفر رجب</span>)</h3>
           <p id="location-status-text" style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 15px;">
             لحماية النظام وموثوقية الحضور، يجب التأكد من وجودك الفعلي داخل السنتر (نطاق 50 متر) عبر الـ GPS لإظهار خانة كود الحضور.
@@ -768,7 +681,7 @@
           <button class="btn btn-primary" id="btn-verify-location" style="width: auto; padding: 10px 24px;" onclick="verifyStudentLocation()">📍 التحقق من موقعي بالسنتر الآن</button>
         </div>
 
-        <!-- 🔑 حقل كود الحضور (محجوب ولا يظهر إلا بعد التحقق من الـ GPS) -->
+        <!-- 🔑 حقل كود الحضور (محجوب ولا يظهر إلا بعد تحقق QR والشروط) -->
         <div id="session-code-container" class="hidden">
           <h2 class="card-title">🔑 تسجيل حضور الحصة الحالية</h2>
           
@@ -801,7 +714,6 @@
       <div id="teacher-content" class="card hidden">
         <h2 class="card-title">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
 
-        <!-- تبويبات السناتر الثلاثة -->
         <div class="center-tabs-container">
           <button class="center-tab-btn active" id="center-tab-1" onclick="switchTeacherCenter('سنتر كفر رجب')">🏢 سنتر كفر رجب</button>
           <button class="center-tab-btn" id="center-tab-2" onclick="switchTeacherCenter('التلين')">🏢 التلين</button>
@@ -879,7 +791,7 @@
 
           <div class="form-group" style="margin-bottom: 0;">
             <label for="filter-session-select">تحديد حصة معينة لمعاينة الحضور:</label>
-            <select id="filter-session-select" onchange="autoFilterStageBySession()">
+            <select id="filter-session-select" onchange="autoFilterStageBySession(); renderTeacherData();">
               <option value="all">عرض الحالة العامة للمنصة</option>
             </select>
           </div>
@@ -925,7 +837,7 @@
     </footer>
   </div>
 
-  <!-- 🖥️ نافذة شاشة القاعة والداتا شو الحية -->
+  <!-- 🖥️ نافذة شاشة القاعة والداتا شو الحية بالكامل -->
   <div id="live-screen-modal" class="modal-overlay hidden" style="background: rgba(15, 23, 42, 0.95);">
     <div class="modal-card" style="max-width: 800px; text-align: center; border: 2px solid var(--accent);">
       <div class="modal-header">
@@ -1013,7 +925,7 @@
   </div>
 
   <script>
-    // --- إعدادات الفايربيس الخارجي الخاص بك ---
+    // --- إعدادات قاعدة البيانات (Firebase الحقيقية الخاصة بك) ---
     const firebaseConfig = {
       apiKey: "AIzaSyBja36JoyQuVrOtwwjATqLO9hVE-VG5ShQ",
       authDomain: "mramir-a454d.firebaseapp.com",
@@ -1036,9 +948,9 @@
     let cachedSessions = [];
     let isLocationVerified = false;
 
-    // 📍 إحداثيات السناتر بنطاق 50 متراً
+    // 📍 إحداثيات GPS المعتمدة المقتصرة فقط وحصرياً على سنتر كفر رجب بنطاق 50 متراً
     const CENTER_COORDINATES = {
-      'سنتر كفر رجب': { lat: 30.5741625, lng: 31.3281118, radiusMeters: 50 },
+      'سنتر كفر رجب': { lat: 30.5741625, lng: 31.3281118, radiusMeters: 50 }
     };
 
     function escapeHTML(str) {
@@ -1099,7 +1011,7 @@
       }, 1000);
     }
 
-    // 🌐 توثيق Google الاختياري
+    // 🌐 تسجيل الدخول بواسطة Google (اختياري)
     async function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       const googleBtn = document.querySelector('.btn-google');
@@ -1188,7 +1100,7 @@
           currentStudent = doc.data();
         } else {
           submitBtn.disabled = true;
-          submitBtn.innerText = "جاري الحفظ والتسجيل بـ Firebase... ⏳";
+          submitBtn.innerText = "جاري الحفظ والتسجيل... ⏳";
 
           let finalPhotoURL = isGoogleLoggedIn ? currentGoogleUser.photoURL : '';
           if (hasUploadedPhoto) {
@@ -1257,7 +1169,7 @@
       try {
         const studentDoc = await db.collection('students').doc(currentStudent.phone).get();
         if (!studentDoc.exists) {
-          alert("⚠️ تنبيه: تم حذف حسابك من المنصة بواسطة الأستاذ!\nيمكنك إعادة التسجيل بنفس الحساب أو بحساب جديد.");
+          alert("⚠️ تنبيه: تم حذف حسابك من المنصة بواسطة الأستاذ!\nيمكنك إعادة التسجيل من جديد.");
           localStorage.removeItem('history_app_student');
           currentStudent = null;
           document.getElementById('student-step-2').classList.add('hidden');
@@ -1309,7 +1221,6 @@
       generateCenterQRCode();
     }
 
-    // 🔧 إصلاح وإضافة دالة switchTeacherSubTab المفقودة
     function switchTeacherSubTab(tab) {
       document.querySelectorAll('.sub-nav-btn').forEach(btn => btn.classList.remove('active'));
       const clickedBtn = document.getElementById(`subtab-${tab}`) || document.getElementById('subtab-all');
@@ -1503,7 +1414,7 @@
         currentStudent = updatedData;
         localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
 
-        alert(`✅ تم تحديث بياناتك بنجاح لدى المنصة ومستر أمير!`);
+        alert(`✅ تم تحديث بياناتك بنجاح!`);
         closeEditProfileModal();
         showStudentStep2();
 
@@ -1520,6 +1431,7 @@
       }
     }
 
+    // 🎯 منطق العرض الشديد والتأكيد على إجبارية الـ QR والـ GPS
     function showStudentStep2() {
       document.getElementById('student-step-1').classList.add('hidden');
       document.getElementById('student-step-2').classList.remove('hidden');
@@ -1533,29 +1445,49 @@
       document.getElementById('verify-center-name-label').innerText = studentCenter;
 
       const bannerEl = document.getElementById('qr-welcome-msg');
+      const locationBox = document.getElementById('location-verify-box');
+      const sessionCodeBox = document.getElementById('session-code-container');
+
       bannerEl.classList.remove('hidden');
-
-      if (isFromQR) {
-        const centerText = qrCenterParam ? ` بـ (${escapeHTML(decodeURIComponent(qrCenterParam))})` : '';
-        bannerEl.className = 'qr-banner success';
-        bannerEl.innerHTML = `
-          🎯 تم مسح الـ QR Code الخاصة${centerText} بنجاح!<br>
-          <span style="font-size: 0.92rem; font-weight: 500;">باقي لك خطوة واحدة وهي تأكيد موقعك بالسنتر عبر الـ GPS لتسجيل الحضور.</span>
-        `;
-      } else {
-        bannerEl.className = 'qr-banner warning';
-        bannerEl.innerHTML = `
-          ⚠️ تنبيه: يفضل مسح كود الـ QR الخاص بالقاعة للتأكد من حضورك الحصة.
-        `;
-      }
-
       isLocationVerified = false;
-      document.getElementById('session-code-container').classList.add('hidden');
+
+      // 🛑 فحص حاسم لإجبارية مسح الـ QR Code
+      if (!isFromQR) {
+        bannerEl.className = 'qr-banner danger';
+        bannerEl.innerHTML = `
+          🔴 <strong>تنبيه إجباري: لا يمكن تسجيل الحضور من هذه الشاشة مباشرة!</strong><br>
+          <span style="font-size: 0.9rem; font-weight: 500;">يجب عليك مسح كود الـ QR المعلق بداخل القاعة بواسطة كاميرا موبايلك أولاً ليفتح لك النظام خانة تسجيل الحضور.</span>
+        `;
+        locationBox.classList.add('hidden');
+        sessionCodeBox.classList.add('hidden');
+      } else {
+        // تم مسح الـ QR Code بنجاح
+        const centerText = qrCenterParam ? ` بـ (${escapeHTML(decodeURIComponent(qrCenterParam))})` : '';
+        
+        if (studentCenter === 'سنتر كفر رجب') {
+          bannerEl.className = 'qr-banner success';
+          bannerEl.innerHTML = `
+            🎯 تم مسح الـ QR Code الخاصة${centerText} بنجاح!<br>
+            <span style="font-size: 0.92rem; font-weight: 500;">باقي لك خطوة واحدة وهي تأكيد موقعك الجغرافي بالسنتر عبر الـ GPS بالأسفل لتسجيل الحضور.</span>
+          `;
+          locationBox.classList.remove('hidden'); // إظهار الـ GPS لكفر رجب فقط
+          sessionCodeBox.classList.add('hidden');  // محجوب لحين فحص الـ GPS
+        } else {
+          // السناتر الأخرى (التلين وكفر تصفا): بدون GPS
+          bannerEl.className = 'qr-banner success';
+          bannerEl.innerHTML = `
+            🎯 تم مسح الـ QR Code الخاصة${centerText} بنجاح!<br>
+            <span style="font-size: 0.92rem; font-weight: 500;">أدخل كود الحصة المعطى لك من الأستاذ بالأسفل لتأكيد الحضور.</span>
+          `;
+          locationBox.classList.add('hidden');      // إخفاء الـ GPS للسناتر الأخرى
+          sessionCodeBox.classList.remove('hidden'); // إظهار خانة الكود فوراً بعد الـ QR
+        }
+      }
 
       loadStudentSessionsHistory();
     }
 
-    // 📐 حساب المسافة الجغرافية بالمتر
+    // 📐 حساب المسافة بدقة (Haversine Formula)
     function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
       const φ1 = lat1 * Math.PI / 180;
@@ -1571,8 +1503,13 @@
       return R * c;
     }
 
-    // 📍 التحقق الجغرافي بالنطاق المحدد (50 متراً)
-    function verifyStudentLocation() {
+    // 📍 فحص الـ GPS المخصص حصرياً لـ (سنتر كفر رجب)
+  function verifyStudentLocation() {
+      if (!isFromQR) {
+        alert("🚫 يجب مسح كود الـ QR المطبوع بالقاعة أولاً عبر الكاميرا!");
+        return;
+      }
+
       if (!navigator.geolocation) {
         alert("❌ جهازك أو متصفحك لا يدعم خاصية تحديد الموقع الجغرافي (GPS)!");
         return;
@@ -1589,14 +1526,12 @@
           const userLat = position.coords.latitude;
           const userLng = position.coords.longitude;
 
-          const studentCenter = (currentStudent && currentStudent.center) ? currentStudent.center : 'سنتر كفر رجب';
-          const targetCoords = CENTER_COORDINATES[studentCenter] || CENTER_COORDINATES['سنتر كفر رجب'];
-
+          const targetCoords = CENTER_COORDINATES['سنتر كفر رجب'];
           const distanceMeters = calculateDistanceMeters(userLat, userLng, targetCoords.lat, targetCoords.lng);
 
           if (distanceMeters <= targetCoords.radiusMeters) { // 50 متر
             isLocationVerified = true;
-            statusText.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 تم التأكد من تواجدك الجغرافي بـ (${escapeHTML(studentCenter)}) بنجاح! يمكنك الآن إدخال كود الحصة بالأسفل.</span>`;
+            statusText.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 تم التأكد من تواجدك الجغرافي بـ (سنتر كفر رجب) بنجاح! يمكنك الآن إدخال كود الحصة بالأسفل.</span>`;
             document.getElementById('session-code-container').classList.remove('hidden');
             document.getElementById('location-verify-box').style.borderColor = 'var(--success)';
             verifyBtn.innerText = "✅ تم التحقق الجغرافي بنجاح";
@@ -1604,8 +1539,8 @@
             isLocationVerified = false;
             document.getElementById('session-code-container').classList.add('hidden');
             const distMetersRounded = Math.round(distanceMeters);
-            alert(`🚫 عذراً! أنت تتواجد خارج نطاق 50 متراً لـ (${studentCenter})!\nالمسافة بينك وبين نقطة السنتر حالياً: ${distMetersRounded} متراً.\nيرجى التواجد بداخل السنتر لتتمكن من كتابة كود الحضور.`);
-            statusText.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🔴 أنت خارج نطاق السنتر الجغرافي (على مسافة ${distMetersRounded} متر)! لا يمكن إظهار كود الحضور إلا بداخل السنتر.</span>`;
+            alert(`🚫 عذراً! أنت تتواجد خارج نطاق 50 متراً لـ (سنتر كفر رجب)!\nالمسافة بينك وبين نقطة السنتر حالياً: ${distMetersRounded} متراً.`);
+            statusText.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🔴 أنت خارج نطاق السنتر الجغرافي (على مسافة ${distMetersRounded} متر)!</span>`;
             verifyBtn.disabled = false;
             verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
           }
@@ -1614,7 +1549,7 @@
           console.error("GPS Error:", error);
           verifyBtn.disabled = false;
           verifyBtn.innerText = "📍 التحقق من موقعي بالسنتر الآن";
-          alert("❌ تعذر الوصول لـ GPS الموبايل! يرجى السماح بتحديد الموقع (Location Permission) في متصفحك والمحاولة مجدداً.");
+          alert("❌ تعذر الوصول لـ GPS الموبايل! يرجى السماح بتحديد الموقع في متصفحك والمحاولة مجدداً.");
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
@@ -1668,7 +1603,7 @@
         historyContainer.innerHTML = '';
         const now = Date.now();
 
-     sessionsList.forEach(session => {
+        sessionsList.forEach(session => {
           const item = document.createElement('div');
           item.className = 'session-history-item';
 
@@ -1711,9 +1646,19 @@
       document.getElementById('student-step-1').classList.remove('hidden');
     }
 
+    // 🔒 دالة حفظ الحضور المؤمنة ضد أي ثغرة أو اختراق
     async function submitSessionCode() {
-      if (!isLocationVerified) {
-        alert("🚫 عذراً! يجب أولاً تأكيد تواجدك الجغرافي داخل السنتر بنجاح عبر زر الـ GPS لتتمكن من التسجيل!");
+      // 🛡️ فحص أمني 1: التأكد الجبري من مسح الـ QR
+      if (!isFromQR) {
+        alert("🚫 خطأ أمني: مسح كود الـ QR الخاص بالقاعة إجباري لتتمكن من الحضور!");
+        return;
+      }
+
+      const studentCenter = currentStudent.center;
+
+      // 🛡️ فحص أمني 2: التأكد الجبري من الـ GPS إذا كان الطالب يتبع سنتر كفر رجب
+      if (studentCenter === 'سنتر كفر رجب' && !isLocationVerified) {
+        alert("🚫 خطأ أمني: يجب أولاً تأكيد تواجدك الجغرافي داخل سنتر كفر رجب عبر الـ GPS!");
         return;
       }
 
@@ -1725,7 +1670,6 @@
 
       try {
         const studentStage = currentStudent.stage;
-        const studentCenter = currentStudent.center;
 
         const now = Date.now();
         const activeSessionsSnapshot = await db.collection('sessions')
@@ -1777,7 +1721,7 @@
       }
     }
 
-    // 🔑 كلمة المرور المطلوبة: amir4211
+    // 🔑 كلمة المرور المعينة: amir4211
     function unlockTeacherDashboard() {
       const pass = document.getElementById('teacher-password').value.trim();
       if (pass === "amir4211") {
@@ -1913,7 +1857,6 @@
       }
     }
 
-    // 🎯 الفلترة التلقائية لطلاب المرحلة المعنية فقط عند اختيار كود حصة خاص بها
     function autoFilterStageBySession() {
       const selectedSessionId = document.getElementById('filter-session-select').value;
       if (selectedSessionId !== "all") {
@@ -1922,7 +1865,6 @@
           document.getElementById('filter-stage-select').value = selectedSession.stage;
         }
       }
-      renderTeacherData();
     }
 
     async function deleteStudent(phone, name) {
