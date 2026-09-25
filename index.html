@@ -621,6 +621,16 @@
 </head>
 <body>
 
+  <!-- 🛑 نافذة حظر الريفريش المتكرر (Anti-Refresh Rate Limiter) -->
+  <div id="refresh-lock-modal" class="modal-overlay hidden" style="z-index: 100000; background: rgba(15, 23, 42, 0.98);">
+    <div class="modal-card" style="text-align: center; max-width: 450px; border: 2px solid var(--danger);">
+      <h2 style="color: var(--danger); font-size: 1.5rem; margin-bottom: 10px;">⚠️ تم إيقاف الصفحة مؤقتاً</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">قم بإعادة تحديث الصفحة أكثر من 3 مرات متتالية بسرعة. يرجى الانتظار بضع ثوانٍ لحماية سيرفر المنصة.</p>
+      <div id="refresh-countdown" style="font-size: 3.5rem; font-weight: 800; color: var(--accent); margin-bottom: 15px;">15</div>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">ستفتح الصفحة تلقائياً فور انتهاء العد التنازلي...</p>
+    </div>
+  </div>
+
   <div class="container">
     <header>
       <button class="theme-toggle-btn" onclick="toggleDarkMode()">
@@ -704,14 +714,26 @@
 
         <div id="qr-welcome-msg" class="qr-banner hidden"></div>
 
-        <h2 class="card-title">🔑 تسجيل حضور الحصة الحالية</h2>
-        
-        <div class="form-group">
-          <label for="session-code">كود الحصة المعطى لك من الأستاذ:</label>
-          <input type="text" id="session-code" placeholder="أدخل كود الحصة الخاص بمرحلتك وسنترك">
+        <!-- 📍 صندوق تأكيد الموقع الجغرافي GPS للسنتر (يتحكم بإظهار كود الحضور) -->
+        <div id="location-verify-box" style="background: var(--bg-body); border: 1.5px dashed var(--accent); padding: 20px; border-radius: 16px; margin-bottom: 25px; text-align: center;">
+          <h3 style="color: var(--primary); font-size: 1.15rem; margin-bottom: 8px;">📍 تأكيد التواجد الجغرافي بـ (<span id="verify-center-name-label">سنتر كفر رجب</span>)</h3>
+          <p id="location-status-text" style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 15px;">
+            لحماية النظام وموثوقية الحضور، يجب التأكد من وجودك الفعلي داخل السنتر عبر الـ GPS لإظهار خانة كود الحضور.
+          </p>
+          <button class="btn btn-primary" id="btn-verify-location" style="width: auto; padding: 10px 24px;" onclick="verifyStudentLocation()">📍 التحقق من موقعي بالسنتر الآن</button>
         </div>
 
-        <button class="btn btn-primary" onclick="submitSessionCode()">تأكيد وتسجيل الحضور ✨</button>
+        <!-- 🔑 حقل كود الحضور (محجوب ومخفي تماماً ولا يظهر إلا بعد التحقق الصح من الـ GPS) -->
+        <div id="session-code-container" class="hidden">
+          <h2 class="card-title">🔑 تسجيل حضور الحصة الحالية</h2>
+          
+          <div class="form-group">
+            <label for="session-code">كود الحصة المعطى لك من الأستاذ:</label>
+            <input type="text" id="session-code" placeholder="أدخل كود الحصة الخاص بمرحلتك وسنترك">
+          </div>
+
+          <button class="btn btn-primary" onclick="submitSessionCode()">تأكيد وتسجيل الحضور ✨</button>
+        </div>
 
         <hr style="margin: 25px 0; border: none; border-top: 1px solid var(--border-color);">
         <h2 class="card-title">📅 سجل حصصك والتزامك بالمرحلة والسنتر</h2>
@@ -978,6 +1000,14 @@
     let qrCenterParam = '';
     let selectedTeacherCenter = 'سنتر كفر رجب'; // السنتر المختار افتراضياً باللوحة
     let cachedSessions = [];
+    let isLocationVerified = false; // حالة التحقق الجغرافي للـ GPS
+
+    // 📍 إحداثيات السناتر المحددة على الخريطة (سنتر كفر رجب بناءً على الرابط المرفق)
+    const CENTER_COORDINATES = {
+      'سنتر كفر رجب': { lat: 30.4735, lng: 31.2000, radiusMeters: 300 }, // 300 متر نطاق السنتر
+      'سنتر كفر تصفا': { lat: 30.4850, lng: 31.2200, radiusMeters: 300 },
+      'سنتر التلين': { lat: 30.4500, lng: 31.2500, radiusMeters: 300 }
+    };
 
     // 🛡️ دالة تطهير النصوص لمنع ثغرات XSS بدرجة حماية قصوى عند العرض بـ innerHTML
     function escapeHTML(str) {
@@ -990,9 +1020,58 @@
         .replace(/'/g, '&#039;');
     }
 
+    // 🛑 حماية السيرفر من الريفريش المتكرر (Rate Limiter - 3 مرات متتالية)
+    function handleAntiRefresh() {
+      const NOW = Date.now();
+      let refreshData = JSON.parse(sessionStorage.getItem('history_app_refresh_tracker') || '{"count": 0, "last": 0, "lockUntil": 0}');
+
+      if (refreshData.lockUntil && NOW < refreshData.lockUntil) {
+        startRefreshLockTimer(Math.ceil((refreshData.lockUntil - NOW) / 1000));
+        return;
+      }
+
+      // إذا كانت إعادة التحميل في غضون 10 ثوانٍ
+      if (NOW - refreshData.last < 10000) {
+        refreshData.count += 1;
+      } else {
+        refreshData.count = 1;
+      }
+      refreshData.last = NOW;
+
+      if (refreshData.count > 3) {
+        refreshData.lockUntil = NOW + 15000; // قفل الشاشة 15 ثانية
+        refreshData.count = 0;
+        sessionStorage.setItem('history_app_refresh_tracker', JSON.stringify(refreshData));
+        startRefreshLockTimer(15);
+        return;
+      }
+
+      sessionStorage.setItem('history_app_refresh_tracker', JSON.stringify(refreshData));
+    }
+
+    function startRefreshLockTimer(seconds) {
+      const modal = document.getElementById('refresh-lock-modal');
+      const countdownEl = document.getElementById('refresh-countdown');
+      modal.classList.remove('hidden');
+
+      let remaining = seconds;
+      countdownEl.innerText = remaining;
+
+      const timer = setInterval(() => {
+        remaining--;
+        countdownEl.innerText = remaining;
+        if (remaining <= 0) {
+          clearInterval(timer);
+          modal.classList.add('hidden');
+          const data = JSON.parse(sessionStorage.getItem('history_app_refresh_tracker') || '{}');
+          delete data.lockUntil;
+          sessionStorage.setItem('history_app_refresh_tracker', JSON.stringify(data));
+        }
+      }, 1000);
+    }
+
     // 🛡️ دالة التحقق من صحة وقواعد البيانات (Validation Utility)
     function validateStudentInput(name, phone, photoFile, isPhotoRequired = true) {
-      // 1. تنظيف الاسم والتحقق منه
       const cleanName = name.trim().replace(/\s+/g, ' ');
       if (!cleanName || cleanName.length < 5) {
         return { isValid: false, message: "⚠️ يرجى إدخال اسمك الثلاثي بشكل واضح وصحيح (لا يقل عن 5 أحرف)!" };
@@ -1003,13 +1082,11 @@
         return { isValid: false, message: "⚠️ يرجى كتابة الاسم ثلاثي على الأقل (مثال: فتحي زكريا علي)!" };
       }
 
-      // 2. التحقق من رقم الهاتف المصري (11 رقم ويشمل المفاتيح الرسمية)
       const phoneRegex = /^01[0125][0-9]{8}$/;
       if (!phoneRegex.test(phone)) {
         return { isValid: false, message: "⚠️ يرجى إدخال رقم هاتف مصري صحيح يتكون من 11 رقماً ويبدأ بـ (010, 011, 012, 015)!" };
       }
 
-      // 3. التحقق من الصورة الشخصية
       if (isPhotoRequired && (!photoFile || !photoFile.files || photoFile.files.length === 0)) {
         return { isValid: false, message: "⚠️ رفع الصورة الشخصية إجباري للانضمام للمنصة!" };
       }
@@ -1019,7 +1096,7 @@
         if (!file.type.startsWith('image/')) {
           return { isValid: false, message: "⚠️ الملف المرفوع يجب أن يكون صورة فقط (PNG, JPG, JPEG)!" };
         }
-        if (file.size > 5 * 1024 * 1024) { // 5 Megabytes
+        if (file.size > 5 * 1024 * 1024) {
           return { isValid: false, message: "⚠️ حجم الصورة كبير جداً، يرجى اختيار صورة حجمها أقل من 5 ميجابايت!" };
         }
       }
@@ -1028,7 +1105,10 @@
     }
 
     window.onload = function() {
-      // 1. استرجاع الوضع الليلي المُحفظ
+      // 1. تفعيل نظام حظر الريفريش المتكرر
+      handleAntiRefresh();
+
+      // 2. استرجاع الوضع الليلي المُحفظ
       const savedTheme = localStorage.getItem('history_app_theme');
       if (savedTheme === 'dark') {
         document.body.classList.add('dark-mode');
@@ -1036,12 +1116,12 @@
         document.getElementById('theme-text').innerText = 'الوضع النهاري';
       }
 
-      // 2. فحص الدخول عبر الـ QR Code من الرابط (?src=qr)
+      // 3. فحص الدخول عبر الـ QR Code من الرابط (?src=qr)
       const urlParams = new URLSearchParams(window.location.search);
       isFromQR = (urlParams.get('src') === 'qr');
       qrCenterParam = urlParams.get('center') || '';
 
-      // 3. فحص الحساب المسجل سابقاً وفحص استمرارية وجوده بالمنصة
+      // 4. فحص الحساب المسجل سابقاً وفحص استمرارية وجوده بالمنصة
       const savedStudent = localStorage.getItem('history_app_student');
       if (savedStudent) {
         try {
@@ -1189,7 +1269,6 @@
       const photoInput = document.getElementById('reg-photo');
       const submitBtn = document.getElementById('btn-register-submit');
 
-      // 🛡️ إجراء الفحص الأمني وفحص الصحة (Input Validation)
       const validation = validateStudentInput(rawName, phone, photoInput, true);
       if (!validation.isValid) {
         alert(validation.message);
@@ -1284,7 +1363,6 @@
       const photoInput = document.getElementById('edit-photo');
       const saveBtn = document.getElementById('btn-save-profile');
 
-      // 🛡️ فحص المداخلات والتأكد من صحتها
       const validation = validateStudentInput(rawName, newPhone, photoInput, false);
       if (!validation.isValid) {
         alert(validation.message);
@@ -1380,10 +1458,13 @@
       document.getElementById('student-step-1').classList.add('hidden');
       document.getElementById('student-step-2').classList.remove('hidden');
       document.getElementById('welcome-student-name').innerText = `أهلاً بك: ${currentStudent.name}`;
-      document.getElementById('welcome-student-info').innerText = `المرحلة: ${currentStudent.stage} | السنتر: ${currentStudent.center || 'غير محدد'} | الهاتف: ${currentStudent.phone}`;
+      document.getElementById('welcome-student-info').innerText = `المرحلة: ${currentStudent.stage} | السنتر: ${currentStudent.center || 'سنتر كفر رجب'} | الهاتف: ${currentStudent.phone}`;
       
       const imgEl = document.getElementById('welcome-student-img');
       imgEl.src = currentStudent.photoURL || 'https://via.placeholder.com/65';
+
+      const studentCenter = currentStudent.center || 'سنتر كفر رجب';
+      document.getElementById('verify-center-name-label').innerText = studentCenter;
 
       const bannerEl = document.getElementById('qr-welcome-msg');
       bannerEl.classList.remove('hidden');
@@ -1393,17 +1474,91 @@
         bannerEl.className = 'qr-banner success';
         bannerEl.innerHTML = `
           🎯 تم مسح الـ QR Code الخاصة${centerText} بنجاح!<br>
-          <span style="font-size: 0.92rem; font-weight: 500;">باقي لك خطوة واحدة وهي كتابة الكود الذي سيعطيك إياه المستر لتأكيد الحضور.</span>
+          <span style="font-size: 0.92rem; font-weight: 500;">باقي لك خطوة واحدة وهي تأكيد موقعك بالسنتر عبر الـ GPS لتسجيل الحضور.</span>
         `;
       } else {
         bannerEl.className = 'qr-banner warning';
         bannerEl.innerHTML = `
           ⚠️ تنبيه: لم تقم بمسح كود الـ QR الخاص بالقاعة!<br>
-          <span style="font-size: 0.92rem; font-weight: 500;">يجب أولاً أن تمسح الـ QR Code لتتمكن من كتابة الكود وتسجيل الحضور.</span>
+          <span style="font-size: 0.92rem; font-weight: 500;">يجب التواجد بالسنتر ومسح الـ QR Code لتسجيل حضور الحصة.</span>
         `;
       }
 
+      // إخفاء خانة الكود افتراضياً حتى التأكد من الـ GPS
+      isLocationVerified = false;
+      document.getElementById('session-code-container').classList.add('hidden');
+
       loadStudentSessionsHistory();
+    }
+
+    // 📐 دالة حساب المسافة بالمتر بين نقطتين على الأرض (Haversine Formula)
+    function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371e3; // نصف قطر الأرض بالمتر
+      const φ1 = lat1 * Math.PI / 180;
+      const φ2 = lat2 * Math.PI / 180;
+      const Δφ = (lat2 - lat1) * Math.PI / 180;
+      const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+      const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      return R * c; // المسافة بالمتر
+    }
+
+    // 📍 دالة التحقق من الـ GPS لموقع السنتر المخصص
+    function verifyStudentLocation() {
+      if (!isFromQR) {
+        alert("🚫 عذراً! يجب أولاً أن تقوم بمسح كود الـ QR المنسوخ والمعلق في السنتر بموبايلك للتأكد من حضورك القاعة!");
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        alert("❌ جهازك أو متصفحك لا يدعم خاصية تحديد الموقع الجغرافي (GPS)!");
+        return;
+      }
+
+      const verifyBtn = document.getElementById('btn-verify-location');
+      const statusText = document.getElementById('location-status-text');
+
+      verifyBtn.disabled = true;
+      verifyBtn.innerText = "جاري قراءة الـ GPS والتحقق من التواجد... ⏳";
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+
+          const studentCenter = currentStudent.center || 'سنتر كفر رجب';
+          const targetCoords = CENTER_COORDINATES[studentCenter] || CENTER_COORDINATES['سنتر كفر رجب'];
+
+          const distanceMeters = calculateDistanceMeters(userLat, userLng, targetCoords.lat, targetCoords.lng);
+
+          if (distanceMeters <= targetCoords.radiusMeters) {
+            isLocationVerified = true;
+            statusText.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 تم التأكد من تواجدك الجغرافي بـ (${escapeHTML(studentCenter)}) بنجاح! يمكنك الآن إدخال كود الحصة بالأسفل.</span>`;
+            document.getElementById('session-code-container').classList.remove('hidden');
+            document.getElementById('location-verify-box').style.borderColor = 'var(--success)';
+            verifyBtn.innerText = "✅ تم التحقق الجغرافي بنجاح";
+          } else {
+            isLocationVerified = false;
+            document.getElementById('session-code-container').classList.add('hidden');
+            const distKm = (distanceMeters / 1000).toFixed(1);
+            alert(`🚫 عذراً! أنت تتواجد خارج نطاق (${studentCenter}) برمجياً!\nالمسافة بينك وبين السنتر تقريباً: ${distKm} كم.\nيرجى التواجد بداخل السنتر لتتمكن من كتابة كود الحضور.`);
+            statusText.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🔴 أنت خارج نطاق السنتر الجغرافي! لا يمكن إظهار كود الحضور إلا بداخل السنتر.</span>`;
+            verifyBtn.disabled = false;
+            verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
+          }
+        },
+        (error) => {
+          console.error("GPS Error:", error);
+          verifyBtn.disabled = false;
+          verifyBtn.innerText = "📍 التحقق من موقعي بالسنتر الآن";
+          alert("❌ تعذر الوصول لـ GPS الموبايل! يرجى السماح بتحديد الموقع (Location Permission) في متصفحك والمحاولة مجدداً.");
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
     }
 
     async function loadStudentSessionsHistory() {
@@ -1429,7 +1584,6 @@
           totalAttendedCount++;
         });
 
-        // 🏆 إظهار أوسمة الطالب (الالتزام الماسي)
         const badgesContainer = document.getElementById('student-badges-container');
         if (totalAttendedCount >= 4) {
           badgesContainer.innerHTML = `<span class="badge badge-gold">🎖️ الالتزام الماسي (حضر ${totalAttendedCount} حصة)</span>`;
@@ -1524,6 +1678,11 @@
         return;
       }
 
+      if (!isLocationVerified) {
+        alert("🚫 عذراً! يجب أولاً تأكيد تواجدك الجغرافي داخل السنتر بنجاح عبر زر الـ GPS لتتمكن من التسجيل!");
+        return;
+      }
+
       const inputCode = document.getElementById('session-code').value.trim();
       if (!inputCode) {
         alert("يرجى إدخال كود الحصة المعطى لك أولاً!");
@@ -1561,7 +1720,6 @@
           return;
         }
 
-        // ⏱️ حساب سرعة الحضور (بالدقائق)
         const speedMinutes = Math.round((now - validSession.createdAt) / (1000 * 60));
 
         await db.collection('attendance').doc(attendanceId).set({
@@ -1605,7 +1763,6 @@
       document.getElementById('center-qr-image').src = qrApiUrl;
     }
 
-    // ⏱️ حفظ كود الحصة الجديد بمهلة تفعيل 20 دقيقة فقط
     async function saveNewSessionCode() {
       const stage = document.getElementById('teacher-code-stage').value;
       const codeInput = document.getElementById('teacher-set-code');
@@ -1617,7 +1774,7 @@
 
       try {
         const now = Date.now();
-        const expiresAt = now + (20 * 60 * 1000); // ⏱️ مدة تفعيل الكود 20 دقيقة
+        const expiresAt = now + (20 * 60 * 1000);
 
         await db.collection('sessions').add({
           stage: stage,
@@ -1704,7 +1861,7 @@
           const sessDateObj = new Date(session.createdAt);
           const timeText = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
           
-sessionSelect.innerHTML += `<option value="${escapeHTML(session.id)}">حصة كود (${escapeHTML(session.code)}) - ${timeText} [${statusText}]</option>`;
+          sessionSelect.innerHTML += `<option value="${escapeHTML(session.id)}">حصة كود (${escapeHTML(session.code)}) - ${timeText} [${statusText}]</option>`;
 
           if (!isExpired && !activeCodeFound) {
             activeCodeFound = session;
@@ -1726,7 +1883,6 @@ sessionSelect.innerHTML += `<option value="${escapeHTML(session.id)}">حصة ك�
       }
     }
 
-    // 🗑️ حذف الطالب وتمكينه من إعادة التسجيل بنفس الحساب
     async function deleteStudent(phone, name) {
       if (!confirm(`هل أنت متأكد من حذف الطالب (${name}) نهائياً من المنصة؟\nسيتمكن الطالب من التسجيل من جديد بالمنصة بنفس الحساب وبسجل جديد.`)) return;
 
@@ -1870,7 +2026,6 @@ sessionSelect.innerHTML += `<option value="${escapeHTML(session.id)}">حصة ك�
           }
         });
 
-        // 📊 تحديث عداد الشاشة المباشرة
         document.getElementById('live-attendance-count').innerText = totalLiveCheckIns;
 
         const container = document.getElementById('students-display-container');
@@ -1884,10 +2039,8 @@ sessionSelect.innerHTML += `<option value="${escapeHTML(session.id)}">حصة ك�
           }
         });
 
-        // 📊 تحديث شارة الإجمالي
         document.getElementById('total-students-count-badge').innerText = `إجمالي الطلاب المسجلين بالسنتر: ${studentsList.length} طالب`;
 
-        // 🔎 فلترة البحث بالاسم أو رقم الهاتف
         if (searchQuery) {
           studentsList = studentsList.filter(s => 
             (s.name && s.name.toLowerCase().includes(searchQuery)) || 
