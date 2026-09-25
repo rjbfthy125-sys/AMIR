@@ -154,7 +154,6 @@
       box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.3);
     }
 
-    /* تبويبات السناتر لسهولة استخدام الأستاذ */
     .center-tabs-container {
       display: flex;
       justify-content: center;
@@ -274,7 +273,7 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      margin-top: 12px;
+      margin-bottom: 20px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
       transition: all 0.25s ease;
       width: 100%;
@@ -676,9 +675,8 @@
         <span id="theme-icon">🌙</span> <span id="theme-text">الوضع الليلي</span>
       </button>
 
-      <!-- صورة الأستاذ أمير في أعلى الهيدر -->
       <div>
-        <img src="https://i.ibb.co/68v8T3G/mr-amir.jpg" onError="this.src='https://via.placeholder.com/100?text=Mr+Amir'" alt="الأستاذ أمير" class="teacher-header-avatar">
+        <img src="123.jpg" onError="this.src='https://via.placeholder.com/100?text=Mr+Amir'" alt="الأستاذ أمير" class="teacher-header-avatar">
       </div>
 
       <h1>منصة <span>التاريخ</span> التعليمية</h1>
@@ -693,8 +691,25 @@
     <!-- 1. بوابة الطالب -->
     <div id="student-view">
       <div id="student-step-1" class="card">
-        <h2 class="card-title">📝 تسجيل الدخول بالمنصة أولاً</h2>
+        <h2 class="card-title">📝 تسجيل الدخول بالمنصة (الخطوة 1 و 2)</h2>
         
+        <!-- 🌐 الخطوة الأولي الإجبارية: زر توثيق حساب Google -->
+        <div style="background: var(--bg-body); padding: 15px; border-radius: 14px; margin-bottom: 20px; border: 1px solid var(--border-color);">
+          <label style="display: block; font-weight: 700; margin-bottom: 8px; color: var(--primary);">1️⃣ الخطوة الأولى (إجباري): توثيق حسابك عبر Google</label>
+          <button type="button" class="btn btn-google" onclick="loginWithGoogle()">
+            <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.28-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.55 10.78l7.98-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            اضغط هنا للتوثيق بـ Google أولاً 🔑
+          </button>
+        </div>
+
+        <!-- 📝 الخطوة الثانية: استكمال بيانات المنصة -->
+        <label style="display: block; font-weight: 700; margin-bottom: 12px; color: var(--primary);">2️⃣ الخطوة الثانية: استكمال بياناتك على المنصة</label>
+
         <div class="form-group">
           <label for="reg-name">اسم الطالب ثلاثي:</label>
           <input type="text" id="reg-name" placeholder="مثال: فتحي زكريا">
@@ -726,22 +741,11 @@
         </div>
 
         <div class="form-group">
-          <label for="reg-photo">📸 الصورة الشخصية للطالب (إجباري):</label>
+          <label for="reg-photo">📸 الصورة الشخصية للطالب (اختياري في حال توفر صورة Google):</label>
           <input type="file" id="reg-photo" accept="image/*">
         </div>
 
         <button class="btn btn-primary" id="btn-register-submit" onclick="loginOrRegisterStudent()">الدخول والإنضمام للمنصة 🚀</button>
-
-        <!-- 🌐 زر تسجيل الدخول بواسطة Google -->
-        <button type="button" class="btn btn-google" onclick="loginWithGoogle()">
-          <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.28-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.55 10.78l7.98-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          تسجيل الدخول باستخدام Google
-        </button>
       </div>
 
       <div id="student-step-2" class="card hidden">
@@ -833,7 +837,6 @@
           <p id="current-active-code-display" style="font-size: 0.95rem; color: var(--accent); font-weight: 600; margin-top: 10px;">الكود النشط حالياً: جاري التحميل...</p>
         </div>
 
-        <!-- مولد QR Code وزر شاشة القاعة والداتا شو -->
         <div style="background: var(--card-bg); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1.5px solid var(--accent); text-align: center;">
           <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px;">📷 QR Code الخاص بـ (<span id="qr-center-title">سنتر كفر رجب</span>)</h3>
           <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">اطبع هذا الكود وعلقه في القاعة أو اعرضه حياً على الداتا شو:</p>
@@ -869,7 +872,6 @@
           <button class="sub-nav-btn active" id="subtab-all" onclick="switchTeacherSubTab('all')">📋 لائحة المسجلين وحالة الحصص</button>
         </div>
 
-        <!-- خيارات الفلترة والبحث والإخفاء -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
           <div class="form-group" style="margin-bottom: 0;">
             <label for="filter-stage-select">المرحلة الدراسية:</label>
@@ -893,7 +895,6 @@
           </div>
         </div>
 
-        <!-- 🔎 محرك البحث + زر إخفاء وإظهار السجل + شارة الإجمالي -->
         <div style="background: var(--bg-body); padding: 15px; border-radius: 14px; margin-bottom: 15px; border: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 220px;">
             <input type="text" id="teacher-search-input" placeholder="🔍 بحث باسم الطالب أو رقم الهاتف..." oninput="renderTeacherData()" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 10px; outline: none;">
@@ -910,7 +911,6 @@
       </div>
     </div>
 
-    <!-- 📜 الفوتر السفلي للحقوق والمطور -->
     <footer>
       <p style="margin-bottom: 8px; font-weight: 700; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
         جميع الحقوق محفوظة لـ 
@@ -1038,6 +1038,7 @@
     const db = firebase.firestore();
 
     let currentStudent = null;
+    let currentGoogleUser = null; // 🔑 متغير حفظ توثيق حساب Google
     let isTeacherUnlocked = false;
     let isFromQR = false;
     let qrCenterParam = '';
@@ -1050,7 +1051,6 @@
       'سنتر كفر رجب': { lat: 30.5741625, lng: 31.3281118, radiusMeters: 15 }
     };
 
-    
     function escapeHTML(str) {
       if (str === null || str === undefined) return '';
       return String(str)
@@ -1061,7 +1061,6 @@
         .replace(/'/g, '&#039;');
     }
 
-    // 🛑 حماية السيرفر من الريفريش المتكرر
     function handleAntiRefresh() {
       const NOW = Date.now();
       let refreshData = JSON.parse(sessionStorage.getItem('history_app_refresh_tracker') || '{"count": 0, "last": 0, "lockUntil": 0}');
@@ -1110,21 +1109,28 @@
       }, 1000);
     }
 
-    // 🌐 دالة تسجيل الدخول بواسطة Google
+    // 🌐 1. دالة توثيق حساب Google
     async function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
+      const googleBtn = document.querySelector('.btn-google');
       
       try {
         const result = await firebase.auth().signInWithPopup(provider);
-        const user = result.user;
+        currentGoogleUser = result.user;
 
-        const googleName = user.displayName || 'طالب جديد';
-        const googleEmail = user.email || '';
-        const googlePhoto = user.photoURL || '';
+        if (googleBtn) {
+          googleBtn.style.borderColor = "var(--success)";
+          googleBtn.style.backgroundColor = "#d1fae5";
+          googleBtn.style.color = "#065f46";
+          googleBtn.innerHTML = `✅ تم التوثيق بـ Google (${escapeHTML(currentGoogleUser.displayName || currentGoogleUser.email)})`;
+        }
 
-        // تلقائياً يمكنك اختيار ملء اسم الطالب وصورته من جوجل
-        document.getElementById('reg-name').value = googleName;
-        alert(`✅ أهلاً بك يا ${googleName}! تم التحقق من حساب Google بنجاح. أكمل اختيار مرحلتك وسنترك للإنضمام.`);
+        const nameInput = document.getElementById('reg-name');
+        if (nameInput && !nameInput.value.trim() && currentGoogleUser.displayName) {
+          nameInput.value = currentGoogleUser.displayName;
+        }
+
+        alert(`🟢 تم توثيق حساب Google بنجاح!\nيرجى الآن إكمال باقي البيانات والضغط على زر الانضمام.`);
       } catch (error) {
         console.error("خطأ تسجيل الدخول بجوجل:", error);
         alert("❌ تعذر تسجيل الدخول بـ Google: " + error.message);
@@ -1162,6 +1168,79 @@
       }
 
       return { isValid: true, cleanName: cleanName };
+    }
+
+    // 📝 2. دالة التسجيل بالمنصة (تشترط وجود توثيق Google)
+    async function loginOrRegisterStudent() {
+      // ⛔ فحص شرط توثيق Google أولاً قبل أي عملية حفظ بالـ Firebase
+      if (!currentGoogleUser) {
+        alert("⚠️ خطوة إضافية مطلوبة:\nيجب أولاً الضغط على زر (التوثيق بـ Google) للتحقق من هويتك وحسابك قبل الانضمام للمنصة!");
+        return;
+      }
+
+      const rawName = document.getElementById('reg-name').value;
+      const phone = document.getElementById('reg-phone').value.trim();
+      const stage = document.getElementById('reg-stage').value;
+      const center = document.getElementById('reg-center').value;
+      const photoInput = document.getElementById('reg-photo');
+      const submitBtn = document.getElementById('btn-register-submit');
+
+      const hasUploadedPhoto = photoInput && photoInput.files && photoInput.files.length > 0;
+      
+      const validation = validateStudentInput(rawName, phone, photoInput, !currentGoogleUser.photoURL && !hasUploadedPhoto);
+      if (!validation.isValid) {
+        alert(validation.message);
+        return;
+      }
+
+      const cleanName = validation.cleanName;
+
+      try {
+        const studentRef = db.collection('students').doc(phone);
+        const doc = await studentRef.get();
+
+        if (doc.exists) {
+          currentStudent = doc.data();
+        } else {
+          submitBtn.disabled = true;
+          submitBtn.innerText = "جاري الحفظ والتسجيل بـ Firebase... ⏳";
+
+          let finalPhotoURL = currentGoogleUser.photoURL || '';
+          if (hasUploadedPhoto) {
+            finalPhotoURL = await compressAndConvertToBase64(photoInput.files[0]);
+          }
+
+          const now = new Date();
+          const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
+
+          currentStudent = {
+            name: cleanName,
+            phone: phone,
+            stage: stage,
+            center: center,
+            photoURL: finalPhotoURL,
+            googleUid: currentGoogleUser.uid,
+            googleEmail: currentGoogleUser.email,
+            googleVerified: true,
+            editCount: 0,
+            editMonth: currentMonthKey,
+            createdAt: new Date().toISOString()
+          };
+
+          // 💾 حفظ الحساب المدمج والـ Google Auth داخل قاعدة بيانات Firestore
+          await studentRef.set(currentStudent);
+        }
+
+        localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
+        alert(`أهلاً بك يا ${currentStudent.name}! تم التوثيق بحساب Google بنجاح والانضمام للمنصة بـ (${currentStudent.center}).`);
+        showStudentStep2();
+      } catch (error) {
+        console.error("خطأ أثناء تسجيل الطالب:", error);
+        alert("❌ حدث خطأ أثناء التسجيل: " + error.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "الدخول والإنضمام للمنصة 🚀";
+      }
     }
 
     window.onload = function() {
@@ -1312,63 +1391,6 @@
       });
     }
 
-    async function loginOrRegisterStudent() {
-      const rawName = document.getElementById('reg-name').value;
-      const phone = document.getElementById('reg-phone').value.trim();
-      const stage = document.getElementById('reg-stage').value;
-      const center = document.getElementById('reg-center').value;
-      const photoInput = document.getElementById('reg-photo');
-      const submitBtn = document.getElementById('btn-register-submit');
-
-      const validation = validateStudentInput(rawName, phone, photoInput, true);
-      if (!validation.isValid) {
-        alert(validation.message);
-        return;
-      }
-
-      const cleanName = validation.cleanName;
-
-      try {
-        const studentRef = db.collection('students').doc(phone);
-        const doc = await studentRef.get();
-
-        if (doc.exists) {
-          currentStudent = doc.data();
-        } else {
-          submitBtn.disabled = true;
-          submitBtn.innerText = "جاري معالجة الصورة والتسجيل... ⏳";
-
-          const file = photoInput.files[0];
-          const photoURL = await compressAndConvertToBase64(file);
-
-          const now = new Date();
-          const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
-
-          currentStudent = {
-            name: cleanName,
-            phone: phone,
-            stage: stage,
-            center: center,
-            photoURL: photoURL,
-            editCount: 0,
-            editMonth: currentMonthKey,
-            createdAt: new Date().toISOString()
-          };
-          await studentRef.set(currentStudent);
-        }
-
-        localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
-        alert(`أهلاً بك يا ${currentStudent.name}! تم تسجيل دخولك بنجاح بـ (${currentStudent.center}).`);
-        showStudentStep2();
-      } catch (error) {
-        console.error("خطأ أثناء تسجيل الطالب:", error);
-        alert("❌ حدث خطأ أثناء التسجيل: " + error.message);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "الدخول والإنضمام للمنصة 🚀";
-      }
-    }
-
     function openEditProfileModal() {
       if (!currentStudent) return;
 
@@ -1446,14 +1468,14 @@
         editCount += 1;
 
         const updatedData = {
+          ...currentStudent,
           name: cleanName,
           phone: newPhone,
           stage: newStage,
           center: newCenter,
           photoURL: newPhotoURL,
           editCount: editCount,
-          editMonth: currentMonthKey,
-          createdAt: currentStudent.createdAt || new Date().toISOString()
+          editMonth: currentMonthKey
         };
 
         if (oldPhone !== newPhone) {
@@ -1541,7 +1563,6 @@
       loadStudentSessionsHistory();
     }
 
-    // 📐 دالة حساب المسافة بالمتر بين نقطتين على الأرض (Haversine Formula)
     function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
       const φ1 = lat1 * Math.PI / 180;
@@ -1557,7 +1578,6 @@
       return R * c;
     }
 
-    // 📍 دالة التحقق من الـ GPS لموقع سنتر كفر رجب (نطاق 15 متر)
     function verifyStudentLocation() {
       if (!isFromQR) {
         alert("🚫 عذراً! يجب أولاً أن تقوم بمسح كود الـ QR المنسوخ والمعلق في السنتر بموبايلك للتأكد من حضورك القاعة!");
@@ -1641,7 +1661,7 @@
           badgesContainer.innerHTML = `<span class="badge badge-info">⭐ طالب مواظب</span>`;
         }
 
-        let sessionsList = [];
+       let sessionsList = [];
         sessionsSnapshot.forEach(doc => {
           const data = doc.data();
           if (data.center === studentCenter || !data.center) {
@@ -1670,7 +1690,7 @@
           const isAttended = attendedSessionIds.has(session.id);
           const isExpired = now > session.expiresAt;
 
-        let badgeHTML = '';
+          let badgeHTML = '';
           if (isAttended) {
             badgeHTML = `<span class="badge badge-success">تم حضور الحصة 🟢</span>`;
           } else if (isExpired) {
@@ -1718,6 +1738,7 @@
 
       localStorage.removeItem('history_app_student');
       currentStudent = null;
+      currentGoogleUser = null;
       document.getElementById('student-step-2').classList.add('hidden');
       document.getElementById('student-step-1').classList.remove('hidden');
     }
