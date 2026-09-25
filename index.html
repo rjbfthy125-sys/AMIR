@@ -629,7 +629,7 @@
 
       <!-- صورة الأستاذ أمير في أعلى الهيدر -->
       <div>
-        <img src="123.jpg" onError="this.src='https://via.placeholder.com/100?text=Mr+Amir'" alt="الأستاذ أمير" class="teacher-header-avatar">
+        <img src="https://i.ibb.co/68v8T3G/mr-amir.jpg" onError="this.src='https://via.placeholder.com/100?text=Mr+Amir'" alt="الأستاذ أمير" class="teacher-header-avatar">
       </div>
 
       <h1>منصة <span>التاريخ</span> التعليمية</h1>
@@ -978,6 +978,17 @@
     let qrCenterParam = '';
     let selectedTeacherCenter = 'سنتر كفر رجب'; // السنتر المختار افتراضياً باللوحة
     let cachedSessions = [];
+
+    // 🛡️ دالة تطهير النصوص لمنع ثغرات XSS بدرجة حماية قصوى عند العرض بـ innerHTML
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
     // 🛡️ دالة التحقق من صحة وقواعد البيانات (Validation Utility)
     function validateStudentInput(name, phone, photoFile, isPhotoRequired = true) {
@@ -1378,7 +1389,7 @@
       bannerEl.classList.remove('hidden');
 
       if (isFromQR) {
-        const centerText = qrCenterParam ? ` بـ (${decodeURIComponent(qrCenterParam)})` : '';
+        const centerText = qrCenterParam ? ` بـ (${escapeHTML(decodeURIComponent(qrCenterParam))})` : '';
         bannerEl.className = 'qr-banner success';
         bannerEl.innerHTML = `
           🎯 تم مسح الـ QR Code الخاصة${centerText} بنجاح!<br>
@@ -1437,7 +1448,7 @@
         sessionsList.sort((a, b) => b.createdAt - a.createdAt);
 
         if (sessionsList.length === 0) {
-          historyContainer.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">لا توجد حصص مسجلة لمرحلتك بـ (${studentCenter}) حتى الآن.</p>`;
+          historyContainer.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">لا توجد حصص مسجلة لمرحلتك بـ (${escapeHTML(studentCenter)}) حتى الآن.</p>`;
           return;
         }
 
@@ -1459,14 +1470,14 @@
           if (isAttended) {
             badgeHTML = `<span class="badge badge-success">تم حضور الحصة 🟢</span>`;
           } else if (isExpired) {
-            badgeHTML = `<span class="badge badge-danger">لم تحضر كود (${session.code}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
+            badgeHTML = `<span class="badge badge-danger">لم تحضر كود (${escapeHTML(session.code)}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
           } else {
             badgeHTML = `<span class="badge badge-warning">حصة جارية الآن ⏳ - أدخل الكود أعلاه</span>`;
           }
 
           item.innerHTML = `
             <div>
-              <strong style="color: var(--primary);">حصة كود: (${session.code})</strong>
+              <strong style="color: var(--primary);">حصة كود: (${escapeHTML(session.code)})</strong>
               <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">🗓️ ${formattedDate} - ⏰ ${formattedTime}</div>
             </div>
             <div>${badgeHTML}</div>
@@ -1576,7 +1587,7 @@
 
     function unlockTeacherDashboard() {
       const pass = document.getElementById('teacher-password').value.trim();
-      if (pass === "amir4211") {
+      if (pass === "1234") {
         isTeacherUnlocked = true;
         document.getElementById('teacher-lock-screen').classList.add('hidden');
         document.getElementById('teacher-content').classList.remove('hidden');
@@ -1693,13 +1704,14 @@
           const sessDateObj = new Date(session.createdAt);
           const timeText = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
           
-          sessionSelect.innerHTML += `<option value="${session.id}">حصة كود (${session.code}) - ${timeText} [${statusText}]</option>`;
+sessionSelect.innerHTML += `<option value="${escapeHTML(session.id)}">حصة كود (${escapeHTML(session.code)}) - ${timeText} [${statusText}]</option>`;
 
           if (!isExpired && !activeCodeFound) {
             activeCodeFound = session;
           }
         });
-   if (activeCodeFound) {
+
+        if (activeCodeFound) {
           const minutesLeft = Math.ceil((activeCodeFound.expiresAt - now) / (1000 * 60));
           activeDisplay.innerText = `الكود النشط لـ (${selectedTeacherCenter}) - stage (${targetStage}): ${activeCodeFound.code} (متبقي ${minutesLeft} دقيقة على الانتهاء)`;
           activeDisplay.style.color = 'var(--accent)';
@@ -1791,7 +1803,7 @@
             const speedText = attData.speedMinutes !== undefined && attData.speedMinutes <= 5 ? '⚡ حضور سريّع' : '';
             statusBadge = `<span class="badge badge-success">حضر 🟢 (${timeAtt}) ${speedText}</span>`;
           } else if (now > session.expiresAt) {
-            statusBadge = `<span class="badge badge-danger">لم يحضر كود (${session.code}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
+            statusBadge = `<span class="badge badge-danger">لم يحضر كود (${escapeHTML(session.code)}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
           } else {
             statusBadge = `<span class="badge badge-warning">حصة جارية ⏳</span>`;
           }
@@ -1799,7 +1811,7 @@
           sessionsHTML += `
             <div class="session-history-item">
               <div>
-                <strong>حصة كود: (${session.code})</strong>
+                <strong>حصة كود: (${escapeHTML(session.code)})</strong>
                 <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">🗓️ ${formattedDate} - ⏰ ${formattedTime}</div>
               </div>
               <div>${statusBadge}</div>
@@ -1811,10 +1823,10 @@
 
         modalBody.innerHTML = `
           <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; background: var(--bg-body); padding: 15px; border-radius: 14px; border: 1px solid var(--border-color);">
-            <img src="${photoURL || 'https://via.placeholder.com/60'}" class="student-avatar-lg" alt="صورة الطالب">
+            <img src="${escapeHTML(photoURL) || 'https://via.placeholder.com/60'}" class="student-avatar-lg" alt="صورة الطالب">
             <div>
-              <h4 style="font-size: 1.1rem; color: var(--primary);">${name}</h4>
-              <p style="font-size: 0.88rem; color: var(--text-muted);">📱 ${phone} | 📚 ${stage} | 🏢 ${studentCenter}</p>
+              <h4 style="font-size: 1.1rem; color: var(--primary);">${escapeHTML(name)}</h4>
+              <p style="font-size: 0.88rem; color: var(--text-muted);">📱 ${escapeHTML(phone)} | 📚 ${escapeHTML(stage)} | 🏢 ${escapeHTML(studentCenter)}</p>
               <p style="font-size: 0.9rem; font-weight: 700; color: var(--accent); margin-top: 4px;">
                 نسبة الحضور: ${attendancePercentage}% (${attendedCount} من إجمالي ${totalSessions} حصة)
               </p>
@@ -1828,7 +1840,7 @@
         `;
       } catch (err) {
         console.error("خطأ عرض تقرير الطالب:", err);
-        modalBody.innerHTML = `<p style="color: var(--danger); text-align: center;">❌ تعذر تحميل تقرير الطالب: ${err.message}</p>`;
+        modalBody.innerHTML = `<p style="color: var(--danger); text-align: center;">❌ تعذر تحميل تقرير الطالب: ${escapeHTML(err.message)}</p>`;
       }
     }
 
@@ -1888,7 +1900,7 @@
         }
 
         if (studentsList.length === 0) {
-          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مطابقون للبحث في (${selectedTeacherCenter}).</p>`;
+          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مطابقون للبحث في (${escapeHTML(selectedTeacherCenter)}).</p>`;
           return;
         }
 
@@ -1910,7 +1922,7 @@
               const sessDateObj = new Date(selectedSession.createdAt);
               const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', month: 'numeric', day: 'numeric' });
               const formattedTime = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-              badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${selectedSession.code}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
+              badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${escapeHTML(selectedSession.code)}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
             }
           } else {
             if (studentStageSessions.length === 0) {
@@ -1927,9 +1939,9 @@
                 const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', month: 'numeric', day: 'numeric' });
                 const formattedTime = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
 
-                badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${latestSession.code}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
+                badgeHTML = `<span class="badge badge-danger">لم يحضر كود (${escapeHTML(latestSession.code)}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
               } else {
-                badgeHTML = `<span class="badge badge-warning">حصة جارية (كود: ${latestSession.code}) ⏳</span>`;
+                badgeHTML = `<span class="badge badge-warning">حصة جارية (كود: ${escapeHTML(latestSession.code)}) ⏳</span>`;
               }
             }
           }
@@ -1940,16 +1952,16 @@
 
           card.innerHTML = `
             <div style="display: flex; align-items: center; gap: 12px;">
-              <img src="${photoSrc}" alt="صورة الطالب" class="student-avatar-sm">
+              <img src="${escapeHTML(photoSrc)}" alt="صورة الطالب" class="student-avatar-sm">
               <div>
-                <h4 style="color: var(--primary); font-size: 1rem;">${student.name}</h4>
-                <p style="color: var(--text-muted); font-size: 0.85rem;">📱 ${student.phone} | 📚 ${student.stage}</p>
+                <h4 style="color: var(--primary); font-size: 1rem;">${escapeHTML(student.name)}</h4>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">📱 ${escapeHTML(student.phone)} | 📚 ${escapeHTML(student.stage)}</p>
               </div>
             </div>
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
               ${badgeHTML}
-              <button class="btn btn-info" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="showStudentReport('${student.phone}', '${student.name}', '${student.stage}', '${student.center}', '${photoSrc}')">👁️ سجل الطالب</button>
-              <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="deleteStudent('${student.phone}', '${student.name}')">حذف 🗑️</button>
+              <button class="btn btn-info" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="showStudentReport('${escapeHTML(student.phone)}', '${escapeHTML(student.name)}', '${escapeHTML(student.stage)}', '${escapeHTML(student.center)}', '${escapeHTML(photoSrc)}')">👁️ سجل الطالب</button>
+              <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="deleteStudent('${escapeHTML(student.phone)}', '${escapeHTML(student.name)}')">حذف 🗑️</button>
             </div>
           `;
 
