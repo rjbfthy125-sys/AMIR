@@ -365,6 +365,7 @@
     .badge-danger { background-color: #fee2e2; color: #991b1b; }
     .badge-info { background-color: #e2e8f0; color: #334155; }
     .badge-warning { background-color: #fef3c7; color: #92400e; }
+    .badge-gold { background-color: #fef9c3; color: #854d0e; border: 1px solid #facc15; }
 
     .hidden { display: none !important; }
 
@@ -628,7 +629,7 @@
 
       <!-- صورة الأستاذ أمير في أعلى الهيدر -->
       <div>
-        <img src="123.jpg" onError="this.src='https://via.placeholder.com/100?text=Mr+Amir'" alt="الأستاذ أمير" class="teacher-header-avatar">
+        <img src="https://i.ibb.co/68v8T3G/mr-amir.jpg" onError="this.src='https://via.placeholder.com/100?text=Mr+Amir'" alt="الأستاذ أمير" class="teacher-header-avatar">
       </div>
 
       <h1>منصة <span>التاريخ</span> التعليمية</h1>
@@ -673,7 +674,7 @@
           <select id="reg-center">
             <option value="سنتر كفر رجب">سنتر كفر رجب</option>
             <option value="سنتر كفر تصفا">سنتر كفر تصفا</option>
-            <option value="سنتر التلوين">سنتر التلين</option>
+            <option value="سنتر التلين">سنتر التلين</option>
           </select>
         </div>
 
@@ -694,6 +695,7 @@
             <div>
               <h3 id="welcome-student-name">أهلاً بك يا طالب</h3>
               <p id="welcome-student-info">المرحلة: - | السنتر: - | الهاتف: -</p>
+              <div id="student-badges-container" style="margin-top: 6px;"></div>
               <button class="btn btn-primary" style="width: auto; padding: 6px 14px; font-size: 0.85rem; margin-top: 8px;" onclick="openEditProfileModal()">✏️ تعديل البيانات والملف الشخصي</button>
             </div>
           </div>
@@ -736,7 +738,7 @@
         <div class="center-tabs-container">
           <button class="center-tab-btn active" id="center-tab-1" onclick="switchTeacherCenter('سنتر كفر رجب')">🏢 سنتر كفر رجب</button>
           <button class="center-tab-btn" id="center-tab-2" onclick="switchTeacherCenter('سنتر كفر تصفا')">🏢 سنتر كفر تصفا</button>
-          <button class="center-tab-btn" id="center-tab-3" onclick="switchTeacherCenter('سنتر التلوين')">🏢 سنتر التلوين</button>
+          <button class="center-tab-btn" id="center-tab-3" onclick="switchTeacherCenter('سنتر التلين')">🏢 سنتر التلين</button>
         </div>
 
         <div style="background: var(--bg-body); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1px solid var(--border-color);">
@@ -764,10 +766,10 @@
           <p id="current-active-code-display" style="font-size: 0.95rem; color: var(--accent); font-weight: 600; margin-top: 10px;">الكود النشط حالياً: جاري التحميل...</p>
         </div>
 
-        <!-- مولد QR Code القاعة الخاص بالسنتر المختار -->
+        <!-- مولد QR Code وزر شاشة القاعة والداتا شو -->
         <div style="background: var(--card-bg); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 1.5px solid var(--accent); text-align: center;">
           <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 8px;">📷 QR Code الخاص بـ (<span id="qr-center-title">سنتر كفر رجب</span>)</h3>
-          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">اطبع هذا الكود وعلقه في القاعة ليمسحه الطلاب بموبايلاتهم عند الدخول:</p>
+          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">اطبع هذا الكود وعلقه في القاعة أو اعرضه حياً على الداتا شو:</p>
 
           <div class="qr-print-card">
             <h2 style="color: var(--accent); font-size: 1.4rem; font-weight: 800; margin-bottom: 6px; letter-spacing: 0.5px;">⭐ الأمير في التاريخ ⭐</h2>
@@ -790,8 +792,9 @@
             </div>
           </div>
 
-          <div>
-            <button class="btn btn-subtle" style="width: auto; padding: 10px 24px; font-size: 0.9rem; font-weight: 600;" onclick="window.print()">🖨️ طباعة الـ QR Code</button>
+          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-subtle" style="width: auto; padding: 10px 20px; font-size: 0.9rem; font-weight: 600;" onclick="window.print()">🖨️ طباعة الـ QR Code</button>
+            <button class="btn btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.9rem; font-weight: 600;" onclick="openLiveScreenModal()">🖥️ عرض شاشة القاعة والداتا شو</button>
           </div>
         </div>
 
@@ -799,6 +802,7 @@
           <button class="sub-nav-btn active" id="subtab-all" onclick="switchTeacherSubTab('all')">📋 لائحة المسجلين وحالة الحصص</button>
         </div>
 
+        <!-- خيارات الفلترة والبحث والإخفاء -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
           <div class="form-group" style="margin-bottom: 0;">
             <label for="filter-stage-select">المرحلة الدراسية:</label>
@@ -822,7 +826,19 @@
           </div>
         </div>
 
-        <h3 id="list-section-title" style="font-size: 1.1rem; color: var(--primary); margin-top: 20px;">قائمة الطلاب المسجلين بالسنتر</h3>
+        <!-- 🔎 محرك البحث + زر إخفاء وإظهار السجل + شارة الإجمالي -->
+        <div style="background: var(--bg-body); padding: 15px; border-radius: 14px; margin-bottom: 15px; border: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 220px;">
+            <input type="text" id="teacher-search-input" placeholder="🔍 بحث باسم الطالب أو رقم الهاتف..." oninput="renderTeacherData()" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 10px; outline: none;">
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <span id="total-students-count-badge" class="badge badge-info" style="font-size: 0.9rem; padding: 8px 14px;">إجمالي الطلاب المسجلين بالسنتر: 0 طالب</span>
+            <button class="btn btn-subtle" id="btn-toggle-list" style="width: auto; padding: 8px 16px; font-size: 0.88rem;" onclick="toggleStudentListSection()">👁️ إخفاء قائمة الطلاب</button>
+          </div>
+        </div>
+
+        <h3 id="list-section-title" style="font-size: 1.1rem; color: var(--primary); margin-top: 10px; margin-bottom: 10px;">قائمة الطلاب المسجلين بالسنتر</h3>
+        
         <div class="student-grid" id="students-display-container"></div>
       </div>
     </div>
@@ -850,6 +866,33 @@
         </a>
       </p>
     </footer>
+  </div>
+
+  <!-- 🖥️ نافذة شاشة القاعة والداتا شو الحية (Live Screen Modal) -->
+  <div id="live-screen-modal" class="modal-overlay hidden" style="background: rgba(15, 23, 42, 0.95);">
+    <div class="modal-card" style="max-width: 800px; text-align: center; border: 2px solid var(--accent);">
+      <div class="modal-header">
+        <h3 style="color: var(--accent); font-size: 1.4rem;">⭐ الأمير في التاريخ — شاشة القاعة المباشرة ⭐</h3>
+        <button class="close-modal-btn" onclick="closeLiveScreenModal()">✖</button>
+      </div>
+      <div>
+        <h2 id="live-modal-center-name" style="color: var(--primary); font-size: 1.6rem; margin-bottom: 5px;">سنتر كفر رجب</h2>
+        <p id="live-modal-active-code" style="font-size: 1.2rem; color: var(--accent); font-weight: 800; margin-bottom: 20px;">كود الحصة الجارية: --</p>
+
+        <div style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; margin-bottom: 20px;">
+          <div>
+            <img id="live-qr-image" src="" alt="QR Code" style="width: 220px; height: 220px; border-radius: 16px; border: 2px solid var(--accent); padding: 8px; background: white;">
+          </div>
+          <div style="background: var(--bg-body); padding: 25px 35px; border-radius: 20px; border: 1px solid var(--border-color);">
+            <div style="font-size: 0.95rem; color: var(--text-muted); font-weight: 600;">عدد الطلاب الحاضرين حياً:</div>
+            <div id="live-attendance-count" style="font-size: 3.5rem; font-weight: 800; color: var(--accent); line-height: 1;">0</div>
+            <div style="font-size: 0.85rem; color: var(--success); font-weight: 700; margin-top: 10px;">🟢 جاري التحديث اللحظي...</div>
+          </div>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 0.9rem;">امسح كود الـ QR بموبايلك واكتب كود الحصة لتسجيل حضورك فوراً على الشاشة!</p>
+      </div>
+    </div>
   </div>
 
   <!-- 🪟 النافذة المنبثقة لسجل الطالب التفصيلي للأستاذ -->
@@ -901,7 +944,7 @@
           <select id="edit-center">
             <option value="سنتر كفر رجب">سنتر كفر رجب</option>
             <option value="سنتر كفر تصفا">سنتر كفر تصفا</option>
-            <option value="سنتر التلوين">سنتر التلين</option>
+            <option value="سنتر التلين">سنتر التلين</option>
           </select>
         </div>
 
@@ -1011,7 +1054,7 @@
 
       document.getElementById('center-tab-1').classList.toggle('active', centerName === 'سنتر كفر رجب');
       document.getElementById('center-tab-2').classList.toggle('active', centerName === 'سنتر كفر تصفا');
-      document.getElementById('center-tab-3').classList.toggle('active', centerName === 'سنتر التلوين');
+      document.getElementById('center-tab-3').classList.toggle('active', centerName === 'سنتر التلين');
 
       document.getElementById('active-center-label').innerText = centerName;
       document.getElementById('qr-center-title').innerText = centerName;
@@ -1019,6 +1062,35 @@
 
       fetchTeacherStageData();
       generateCenterQRCode();
+    }
+
+    // 👁️ إخفاء وإظهار قائمة الطلاب بضغطة زر
+    function toggleStudentListSection() {
+      const container = document.getElementById('students-display-container');
+      const btn = document.getElementById('btn-toggle-list');
+      if (container.classList.contains('hidden')) {
+        container.classList.remove('hidden');
+        btn.innerText = '👁️ إخفاء قائمة الطلاب';
+      } else {
+        container.classList.add('hidden');
+        btn.innerText = '👁️ إظهار قائمة الطلاب';
+      }
+    }
+
+    // 🖥️ فتح واجهة شاشة القاعة والداتا شو
+    function openLiveScreenModal() {
+      const modal = document.getElementById('live-screen-modal');
+      document.getElementById('live-modal-center-name').innerText = selectedTeacherCenter;
+
+      const activeDisplay = document.getElementById('current-active-code-display').innerText;
+      document.getElementById('live-modal-active-code').innerText = activeDisplay;
+
+      document.getElementById('live-qr-image').src = document.getElementById('center-qr-image').src;
+      modal.classList.remove('hidden');
+    }
+
+    function closeLiveScreenModal() {
+      document.getElementById('live-screen-modal').classList.add('hidden');
     }
 
     function compressAndConvertToBase64(file) {
@@ -1299,9 +1371,20 @@
           .get();
 
         const attendedSessionIds = new Set();
+        let totalAttendedCount = 0;
+
         attendanceSnapshot.forEach(doc => {
           attendedSessionIds.add(doc.data().sessionId);
+          totalAttendedCount++;
         });
+
+        // 🏆 إظهار أوسمة الطالب (الالتزام الماسي)
+        const badgesContainer = document.getElementById('student-badges-container');
+        if (totalAttendedCount >= 4) {
+          badgesContainer.innerHTML = `<span class="badge badge-gold">🎖️ الالتزام الماسي (حضر ${totalAttendedCount} حصة)</span>`;
+        } else {
+          badgesContainer.innerHTML = `<span class="badge badge-info">⭐ طالب مواظب</span>`;
+        }
 
         let sessionsList = [];
         sessionsSnapshot.forEach(doc => {
@@ -1427,6 +1510,9 @@
           return;
         }
 
+        // ⏱️ حساب سرعة الحضور (بالدقائق)
+        const speedMinutes = Math.round((now - validSession.createdAt) / (1000 * 60));
+
         await db.collection('attendance').doc(attendanceId).set({
           sessionId: validSession.id,
           stage: currentStudent.stage,
@@ -1435,6 +1521,7 @@
           phone: currentStudent.phone,
           name: currentStudent.name,
           photoURL: currentStudent.photoURL || '',
+          speedMinutes: speedMinutes,
           timestamp: new Date().toISOString()
         });
 
@@ -1619,7 +1706,6 @@
 
       try {
         const studentCenter = center || 'سنتر كفر رجب';
-
         const sessionsSnapshot = await db.collection('sessions')
           .where('stage', '==', stage)
           .get();
@@ -1631,7 +1717,7 @@
         const attendedMap = {};
         attendanceSnapshot.forEach(doc => {
           const data = doc.data();
-          attendedMap[data.sessionId] = data.timestamp;
+          attendedMap[data.sessionId] = data;
         });
 
         const studentSessions = [];
@@ -1651,7 +1737,8 @@
         const now = Date.now();
 
         studentSessions.forEach(session => {
-          const isAttended = !!attendedMap[session.id];
+          const attData = attendedMap[session.id];
+          const isAttended = !!attData;
           if (isAttended) attendedCount++;
 
           const sessDateObj = new Date(session.createdAt);
@@ -1660,8 +1747,9 @@
 
           let statusBadge = '';
           if (isAttended) {
-            const timeAtt = new Date(attendedMap[session.id]).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-            statusBadge = `<span class="badge badge-success">حضر 🟢 (${timeAtt})</span>`;
+            const timeAtt = new Date(attData.timestamp).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            const speedText = attData.speedMinutes !== undefined && attData.speedMinutes <= 5 ? '⚡ حضور سريّع' : '';
+            statusBadge = `<span class="badge badge-success">حضر 🟢 (${timeAtt}) ${speedText}</span>`;
           } else if (now > session.expiresAt) {
             statusBadge = `<span class="badge badge-danger">لم يحضر كود (${session.code}) - يوم ${formattedDate} الساعة ${formattedTime} 🔴</span>`;
           } else {
@@ -1713,16 +1801,25 @@
 
       const selectedStage = document.getElementById('filter-stage-select').value;
       const selectedSessionId = document.getElementById('filter-session-select').value;
+      const searchQuery = document.getElementById('teacher-search-input').value.trim().toLowerCase();
 
       try {
         const studentsSnapshot = await db.collection('students').get();
         const attendanceSnapshot = await db.collection('attendance').get();
 
         const attendanceMap = new Set();
+        let totalLiveCheckIns = 0;
+
         attendanceSnapshot.forEach(doc => {
           const data = doc.data();
           attendanceMap.add(`${data.sessionId}_${data.phone}`);
+          if (data.center === selectedTeacherCenter) {
+            totalLiveCheckIns++;
+          }
         });
+
+        // 📊 تحديث عداد الشاشة المباشرة
+        document.getElementById('live-attendance-count').innerText = totalLiveCheckIns;
 
         const container = document.getElementById('students-display-container');
         container.innerHTML = '';
@@ -1735,15 +1832,27 @@
           }
         });
 
+        // 📊 تحديث شارة الإجمالي
+        document.getElementById('total-students-count-badge').innerText = `إجمالي الطلاب المسجلين بالسنتر: ${studentsList.length} طالب`;
+
+        // 🔎 فلترة البحث بالاسم أو رقم الهاتف
+        if (searchQuery) {
+          studentsList = studentsList.filter(s => 
+            (s.name && s.name.toLowerCase().includes(searchQuery)) || 
+            (s.phone && s.phone.includes(searchQuery))
+          );
+        }
+
         if (selectedStage !== "الكل") {
           studentsList = studentsList.filter(s => s.stage === selectedStage);
         }
 
         if (studentsList.length === 0) {
-          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مسجلون في (${selectedTeacherCenter}) لهذه القائمة.</p>`;
+          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مطابقون للبحث في (${selectedTeacherCenter}).</p>`;
           return;
         }
-const now = Date.now();
+
+        const now = Date.now();
 
         studentsList.forEach(student => {
           let badgeHTML = '';
