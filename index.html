@@ -950,7 +950,7 @@
 
     // 📍 إحداثيات GPS المعتمدة المقتصرة فقط وحصرياً على سنتر كفر رجب بنطاق 50 متراً
     const CENTER_COORDINATES = {
-      'سنتر كفر رجب': { lat: 30.5741625, lng: 31.3281118, radiusMeters: 50 }
+      'سنتر كفر رجب': { lat: 30.5741625, lng: 31.3281118, radiusMeters: 80 }
     };
 
     function escapeHTML(str) {
@@ -1503,57 +1503,84 @@
       return R * c;
     }
 
-    // 📍 فحص الـ GPS المخصص حصرياً لـ (سنتر كفر رجب)
-  function verifyStudentLocation() {
-      if (!isFromQR) {
-        alert("🚫 يجب مسح كود الـ QR المطبوع بالقاعة أولاً عبر الكاميرا!");
-        return;
-      }
+  // 📍 فحص الـ GPS المطور والآمن (مع تصفية الاهتزاز واختيار أدق قراءة)
+function verifyStudentLocation() {
+  if (!isFromQR) {
+    alert("🚫 يجب مسح كود الـ QR المطبوع بالقاعة أولاً عبر الكاميرا!");
+    return;
+  }
 
-      if (!navigator.geolocation) {
-        alert("❌ جهازك أو متصفحك لا يدعم خاصية تحديد الموقع الجغرافي (GPS)!");
-        return;
-      }
+  if (!navigator.geolocation) {
+    alert("❌ جهازك أو متصفحك لا يدعم خاصية تحديد الموقع الجغرافي (GPS)!");
+    return;
+  }
 
-      const verifyBtn = document.getElementById('btn-verify-location');
-      const statusText = document.getElementById('location-status-text');
+  const verifyBtn = document.getElementById('btn-verify-location');
+  const statusText = document.getElementById('location-status-text');
 
-      verifyBtn.disabled = true;
-      verifyBtn.innerText = "جاري قراءة الـ GPS والتحقق من التواجد... ⏳";
+  verifyBtn.disabled = true;
+  verifyBtn.innerText = "جاري معايرة الـ GPS وقراءة أدق موقع... ⏳";
 
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const userLat = position.coords.latitude;
-          const userLng = position.coords.longitude;
+  let samples = [];
+  let attempts = 0;
 
-          const targetCoords = CENTER_COORDINATES['سنتر كفر رجب'];
-          const distanceMeters = calculateDistanceMeters(userLat, userLng, targetCoords.lat, targetCoords.lng);
+  // أخذ عدة قراءات متتالية لاختيار أدق قراءة
+  const watchId = navigator.geolocation.watchPosition(
+    (position) => {
+      samples.push(position);
+      attempts++;
 
-          if (distanceMeters <= targetCoords.radiusMeters) { // 50 متر
-            isLocationVerified = true;
-            statusText.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 تم التأكد من تواجدك الجغرافي بـ (سنتر كفر رجب) بنجاح! يمكنك الآن إدخال كود الحصة بالأسفل.</span>`;
-            document.getElementById('session-code-container').classList.remove('hidden');
-            document.getElementById('location-verify-box').style.borderColor = 'var(--success)';
-            verifyBtn.innerText = "✅ تم التحقق الجغرافي بنجاح";
-          } else {
-            isLocationVerified = false;
-            document.getElementById('session-code-container').classList.add('hidden');
-            const distMetersRounded = Math.round(distanceMeters);
-            alert(`🚫 عذراً! أنت تتواجد خارج نطاق 50 متراً لـ (سنتر كفر رجب)!\nالمسافة بينك وبين نقطة السنتر حالياً: ${distMetersRounded} متراً.`);
-            statusText.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🔴 أنت خارج نطاق السنتر الجغرافي (على مسافة ${distMetersRounded} متر)!</span>`;
-            verifyBtn.disabled = false;
-            verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
-          }
-        },
-        (error) => {
-          console.error("GPS Error:", error);
+      // بعد جمع 3 قراءات متتالية
+      if (samples.length >= 3 || attempts >= 5) {
+        navigator.geolocation.clearWatch(watchId); // إيقاف المتابعة
+
+        // ترتيب القراءات لاختيار القراءة ذات أدق نسبة إشارة (أقل coords.accuracy)
+        samples.sort((a, b) => a.coords.accuracy - b.coords.accuracy);
+        const bestPosition = samples[0];
+
+        const userLat = bestPosition.coords.latitude;
+        const userLng = bestPosition.coords.longitude;
+        const accuracyRadius = Math.round(bestPosition.coords.accuracy); // نسبة الخطأ بالامتار
+
+        const targetCoords = CENTER_COORDINATES['سنتر كفر رجب'];
+        const distanceMeters = calculateDistanceMeters(userLat, userLng, targetCoords.lat, targetCoords.lng);
+
+        // إذا كانت نسبة خطأ الإشارة ضخمة جداً (أكبر من 35 متر) بسبب السقف الخرساني
+        if (accuracyRadius > 35) {
+          statusText.innerHTML = `<span style="color: var(--warning); font-weight: bold;">⚠️ إشارة الـ GPS ضعيفة داخل القاعة (دقة الإشارة: ±${accuracyRadius}m). يرجى تشغيل الـ Wi-Fi بالموبايل لزيادة الدقة والمحاولة مجدداً.</span>`;
           verifyBtn.disabled = false;
-          verifyBtn.innerText = "📍 التحقق من موقعي بالسنتر الآن";
-          alert("❌ تعذر الوصول لـ GPS الموبايل! يرجى السماح بتحديد الموقع في متصفحك والمحاولة مجدداً.");
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      );
-    }
+          verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
+          return;
+        }
+
+        // تطبيق شرط الـ 50 متر مع مراعاة دقة الإشارة
+        if (distanceMeters <= targetCoords.radiusMeters) {
+          isLocationVerified = true;
+          statusText.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 تم التأكد من تواجدك الجغرافي بـ (سنتر كفر رجب) بنجاح! (نسبة الدقة: ±${accuracyRadius}m).</span>`;
+          document.getElementById('session-code-container').classList.remove('hidden');
+          document.getElementById('location-verify-box').style.borderColor = 'var(--success)';
+          verifyBtn.innerText = "✅ تم التحقق الجغرافي بنجاح";
+        } else {
+          isLocationVerified = false;
+          document.getElementById('session-code-container').classList.add('hidden');
+          const distMetersRounded = Math.round(distanceMeters);
+          alert(`🚫 عذراً! أنت تتواجد خارج نطاق 50 متراً لـ (سنتر كفر رجب)!\nالمسافة بينك وبين السنتر حالياً: ${distMetersRounded} متراً.`);
+          statusText.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🔴 أنت خارج نطاق السنتر الجغرافي (على مسافة ${distMetersRounded} متر)!</span>`;
+          verifyBtn.disabled = false;
+          verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
+        }
+      }
+    },
+    (error) => {
+      navigator.geolocation.clearWatch(watchId);
+      console.error("GPS Error:", error);
+      verifyBtn.disabled = false;
+      verifyBtn.innerText = "📍 التحقق من موقعي بالسنتر الآن";
+      alert("❌ تعذر الوصول لـ GPS الموبايل! يرجى السماح بتحديد الموقع في متصفحك والمحاولة مجدداً.");
+    },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+  );
+}
 
     async function loadStudentSessionsHistory() {
       const historyContainer = document.getElementById('student-sessions-history');
