@@ -182,6 +182,44 @@
       box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
     }
 
+    .months-bar-container {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 5px;
+      margin-bottom: 20px;
+      scroll-behavior: smooth;
+    }
+
+    .months-bar-container::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .months-bar-container::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 10px;
+    }
+
+    .month-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-main);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .month-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+    }
+
     .card {
       background: var(--card-bg);
       border-radius: 20px;
@@ -512,6 +550,85 @@
       margin-bottom: 15px;
     }
 
+    /* 🎨 شاشة الانتظار والرسومات المتحركة */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--primary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100001;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .animated-graphic {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .graphic-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 4px solid transparent;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    }
+
+    .graphic-inner {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      bottom: 15px;
+      border: 4px solid transparent;
+      border-bottom-color: var(--dev-color);
+      border-radius: 50%;
+      animation: spinReverse 1s linear infinite;
+    }
+
+    .graphic-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.2rem;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes spinReverse { 100% { transform: rotate(-360deg); } }
+    @keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(0.9); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
+
+    .loader-bar {
+      width: 220px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 15px;
+    }
+
+    .loader-progress {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--dev-color));
+      border-radius: 10px;
+      animation: fillBar 2s ease-in-out forwards;
+    }
+
+    @keyframes fillBar { 100% { width: 100%; } }
+
     footer {
       text-align: center;
       margin-top: 40px;
@@ -573,6 +690,20 @@
   </style>
 </head>
 <body>
+
+  <!-- 🎨 شاشة تحضير الحساب والانتظار المتحركة -->
+  <div id="account-loading-screen" class="loading-overlay hidden">
+    <div class="animated-graphic">
+      <div class="graphic-circle"></div>
+      <div class="graphic-inner"></div>
+      <div class="graphic-icon">📚</div>
+    </div>
+    <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 8px;">جاري إعداد تجهيز الحساب بالمنصة...</h2>
+    <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 15px;">لحظات قليلة وتصبح جاهزاً للتعلم والالتزام تفاعلياً ✨</p>
+    <div class="loader-bar">
+      <div class="loader-progress"></div>
+    </div>
+  </div>
 
   <!-- 🛑 نافذة حظر الريفريش المتكرر -->
   <div id="refresh-lock-modal" class="modal-overlay hidden" style="z-index: 100000; background: rgba(15, 23, 42, 0.98);">
@@ -788,6 +919,24 @@
 
         <div class="sub-nav">
           <button class="sub-nav-btn active" id="subtab-all" onclick="switchTeacherSubTab('all')">📋 لائحة المسجلين وحالة الحصص</button>
+        </div>
+
+        <!-- 📅 شريط اختيار الشهور السنوية الشامل -->
+        <label style="font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 5px; display: block;">🗓️ تصفية الحضور حسب الشهر:</label>
+        <div class="months-bar-container" id="months-filter-bar">
+          <button class="month-btn active" onclick="selectMonthFilter('all', this)">كل الشهور</button>
+          <button class="month-btn" onclick="selectMonthFilter('1', this)">شهر 1 (يناير)</button>
+          <button class="month-btn" onclick="selectMonthFilter('2', this)">شهر 2 (فبراير)</button>
+          <button class="month-btn" onclick="selectMonthFilter('3', this)">شهر 3 (مارس)</button>
+          <button class="month-btn" onclick="selectMonthFilter('4', this)">شهر 4 (أبريل)</button>
+          <button class="month-btn" onclick="selectMonthFilter('5', this)">شهر 5 (مايو)</button>
+          <button class="month-btn" onclick="selectMonthFilter('6', this)">شهر 6 (يونيو)</button>
+          <button class="month-btn" onclick="selectMonthFilter('7', this)">شهر 7 (يوليو)</button>
+          <button class="month-btn" onclick="selectMonthFilter('8', this)">شهر 8 (أغسطس)</button>
+          <button class="month-btn" onclick="selectMonthFilter('9', this)">شهر 9 (سبتمبر)</button>
+          <button class="month-btn" onclick="selectMonthFilter('10', this)">شهر 10 (أكتوبر)</button>
+          <button class="month-btn" onclick="selectMonthFilter('11', this)">شهر 11 (نوفمبر)</button>
+          <button class="month-btn" onclick="selectMonthFilter('12', this)">شهر 12 (ديسمبر)</button>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
@@ -1104,6 +1253,7 @@
     let isFromQR = false;
     let qrCenterParam = '';
     let selectedTeacherCenter = 'سنتر كفر رجب';
+    let selectedMonthFilter = 'all';
     let cachedSessions = [];
     let isLocationVerified = false;
     let liveDataShowUnsubscribe = null;
@@ -1122,7 +1272,10 @@
     function loadSettings() {
       const saved = localStorage.getItem('history_app_admin_settings');
       if (saved) {
-        try { DEFAULT_SETTINGS = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) }; } catch(e) {}
+        try { 
+          const parsed = JSON.parse(saved);
+          DEFAULT_SETTINGS = { ...DEFAULT_SETTINGS, ...parsed }; 
+        } catch(e) {}
       }
     }
 
@@ -1278,6 +1431,10 @@
 
       const cleanName = validation.cleanName;
 
+      // 🎨 إظهار شاشة الانتظار مع الأنيميشن
+      const loadingScreen = document.getElementById('account-loading-screen');
+      loadingScreen.classList.remove('hidden');
+
       try {
         const studentRef = db.collection('students').doc(phone);
         const doc = await studentRef.get();
@@ -1285,9 +1442,6 @@
         if (doc.exists) {
           currentStudent = doc.data();
         } else {
-          submitBtn.disabled = true;
-          submitBtn.innerText = "جاري الحفظ والتسجيل... ⏳";
-
           let finalPhotoURL = isGoogleLoggedIn ? currentGoogleUser.photoURL : '';
           if (hasUploadedPhoto) {
             finalPhotoURL = await compressAndConvertToBase64(photoInput.files[0]);
@@ -1313,14 +1467,17 @@
         }
 
         localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
-        alert(`أهلاً بك يا ${currentStudent.name}! تم انضمامك للمنصة بنجاح بـ (${currentStudent.center}).`);
-        showStudentStep2();
+        
+        setTimeout(() => {
+          loadingScreen.classList.add('hidden');
+          alert(`أهلاً بك يا ${currentStudent.name}! تم انضمامك للمنصة بنجاح بـ (${currentStudent.center}).`);
+          showStudentStep2();
+        }, 1800);
+
       } catch (error) {
+        loadingScreen.classList.add('hidden');
         console.error("خطأ أثناء تسجيل الطالب:", error);
         alert("❌ حدث خطأ أثناء التسجيل: " + error.message);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "الدخول والإنضمام للمنصة 🚀";
       }
     }
 
@@ -1408,7 +1565,7 @@
       document.getElementById('admin-section-security').classList.toggle('hidden', tab !== 'security');
     }
 
-    function switchTeacherCenter(centerName) {
+function switchTeacherCenter(centerName) {
       selectedTeacherCenter = centerName;
 
       document.getElementById('center-tab-1').classList.toggle('active', centerName === 'سنتر كفر رجب');
@@ -1427,6 +1584,13 @@
       document.querySelectorAll('#teacher-content .sub-nav-btn').forEach(btn => btn.classList.remove('active'));
       const clickedBtn = document.getElementById(`subtab-${tab}`) || document.getElementById('subtab-all');
       if (clickedBtn) clickedBtn.classList.add('active');
+      renderTeacherData();
+    }
+
+    function selectMonthFilter(month, btnEl) {
+      selectedMonthFilter = month;
+      document.querySelectorAll('#months-filter-bar .month-btn').forEach(btn => btn.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
       renderTeacherData();
     }
 
@@ -1533,7 +1697,7 @@
             .where('sessionId', '==', activeSession.id)
             .onSnapshot((attSnapshot) => {
               countDisplay.innerText = attSnapshot.size;
-            indicatorDisplay.innerHTML = `<span style="color: var(--success);">🟢 جاري التحديث اللحظي (${attSnapshot.size} طالب)</span>`;
+              indicatorDisplay.innerHTML = `<span style="color: var(--success);">🟢 جاري التحديث اللحظي (${attSnapshot.size} طالب)</span>`;
             });
         });
     }
@@ -1715,6 +1879,9 @@
     }
 
     function showStudentStep2() {
+      // إعادة قراءة الإعدادات المحفوظة لحظياً
+      loadSettings();
+
       document.getElementById('student-step-1').classList.add('hidden');
       document.getElementById('student-step-2').classList.remove('hidden');
       document.getElementById('welcome-student-name').innerText = `أهلاً بك: ${currentStudent.name}`;
@@ -1784,6 +1951,8 @@
     }
 
     function verifyStudentLocation() {
+      loadSettings();
+
       if (!isFromQR) {
         alert("🚫 يجب مسح كود الـ QR المطبوع بالقاعة أولاً عبر الكاميرا!");
         return;
@@ -1956,6 +2125,8 @@
     }
 
     async function submitSessionCode() {
+      loadSettings();
+
       if (!isFromQR) {
         alert("🚫 خطأ أمني: مسح كود الـ QR الخاص بالقاعة إجباري لتتمكن من الحضور!");
         return;
@@ -2029,6 +2200,7 @@
     }
 
     function unlockTeacherDashboard() {
+      loadSettings();
       const pass = document.getElementById('teacher-password').value.trim();
       if (pass === DEFAULT_SETTINGS.adminPassword) {
         isTeacherUnlocked = true;
@@ -2042,6 +2214,7 @@
     }
 
     function unlockAdminDashboard() {
+      loadSettings();
       const pass = document.getElementById('admin-password').value.trim();
       if (pass === DEFAULT_SETTINGS.adminPassword) {
         isAdminUnlocked = true;
@@ -2054,6 +2227,8 @@
     }
 
     function populateAdminFields() {
+      loadSettings();
+
       document.getElementById('setting-code-timeout').value = DEFAULT_SETTINGS.codeTimeoutMinutes;
       document.getElementById('setting-admin-pass').value = DEFAULT_SETTINGS.adminPassword;
 
@@ -2133,7 +2308,7 @@
       };
 
       localStorage.setItem('history_app_admin_settings', JSON.stringify(DEFAULT_SETTINGS));
-      alert("✅ تم حفظ الإعدادات الجديدة وتطبيقها على كامل المنصة بنجاح!");
+      alert("✅ تم حفظ الإعدادات الجديدة وتطبيقها فوراً على كامل المنصة والمستخدمين!");
     }
 
     function generateCenterQRCode() {
@@ -2144,6 +2319,7 @@
     }
 
     async function saveNewSessionCode() {
+      loadSettings();
       const stage = document.getElementById('teacher-code-stage').value;
       const codeInput = document.getElementById('teacher-set-code');
       const code = codeInput.value.trim();
@@ -2234,8 +2410,6 @@
         cachedSessions.forEach(session => {
           const isExpired = now > session.expiresAt;
           const statusText = isExpired ? 'انتهت' : 'نشطة 🟢';
-          const sessDateObj = new Date(session.createdAt);
-          const timeText = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
           
           sessionSelect.innerHTML += `<option value="${escapeHTML(session.id)}">حصة كود (${escapeHTML(session.code)}) - ${session.stage} [${statusText}]</option>`;
 
@@ -2400,15 +2574,12 @@
         const studentsSnapshot = await db.collection('students').get();
         const attendanceSnapshot = await db.collection('attendance').get();
 
-        const attendanceMap = new Set();
-        let totalLiveCheckIns = 0;
+        const attendanceMap = new Map();
 
         attendanceSnapshot.forEach(doc => {
           const data = doc.data();
-          attendanceMap.add(`${data.sessionId}_${data.phone}`);
-          if (data.center === selectedTeacherCenter) {
-            totalLiveCheckIns++;
-          }
+          const key = `${data.sessionId}_${data.phone}`;
+          attendanceMap.set(key, data);
         });
 
         const container = document.getElementById('students-display-container');
@@ -2435,8 +2606,21 @@
           studentsList = studentsList.filter(s => s.stage === selectedStage);
         }
 
+        // 🗓️ التصفية حسب الشهر المختار من الشريط
+        if (selectedMonthFilter !== 'all') {
+          studentsList = studentsList.filter(student => {
+            const studentSessions = cachedSessions.filter(s => s.stage === student.stage);
+            return studentSessions.some(session => {
+              const sessDate = new Date(session.createdAt);
+              const sessMonth = (sessDate.getMonth() + 1).toString();
+              const key = `${session.id}_${student.phone}`;
+              return sessMonth === selectedMonthFilter && attendanceMap.has(key);
+            });
+          });
+        }
+
         if (studentsList.length === 0) {
-          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مطابقون للبحث بـ (${escapeHTML(selectedTeacherCenter)}).</p>`;
+          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مطابقون للبحث والتصفية الحالية بـ (${escapeHTML(selectedTeacherCenter)}).</p>`;
           return;
         }
 
