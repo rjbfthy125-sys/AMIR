@@ -672,16 +672,16 @@
 
         <div id="qr-welcome-msg" class="qr-banner hidden"></div>
 
-        <!-- 📍 صندوق تأكيد الموقع الجغرافي GPS (يقتصر حصرياً على سنتر كفر رجب) -->
+        <!-- 📍 صندوق تأكيد الموقع الجغرافي GPS -->
         <div id="location-verify-box" class="hidden" style="background: var(--bg-body); border: 1.5px dashed var(--accent); padding: 20px; border-radius: 16px; margin-bottom: 25px; text-align: center;">
           <h3 style="color: var(--primary); font-size: 1.15rem; margin-bottom: 8px;">📍 تأكيد التواجد الجغرافي بـ (<span id="verify-center-name-label">سنتر كفر رجب</span>)</h3>
           <p id="location-status-text" style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 15px;">
-            لحماية النظام وموثوقية الحضور، يجب التأكد من وجودك الفعلي داخل السنتر (نطاق 50 متر) عبر الـ GPS لإظهار خانة كود الحضور.
+            لحماية النظام وموثوقية الحضور، يجب التأكد من وجودك الفعلي داخل السنتر عبر الـ GPS لإظهار خانة كود الحضور.
           </p>
           <button class="btn btn-primary" id="btn-verify-location" style="width: auto; padding: 10px 24px;" onclick="verifyStudentLocation()">📍 التحقق من موقعي بالسنتر الآن</button>
         </div>
 
-        <!-- 🔑 حقل كود الحضور (محجوب ولا يظهر إلا بعد تحقق QR والشروط) -->
+        <!-- 🔑 حقل كود الحضور -->
         <div id="session-code-container" class="hidden">
           <h2 class="card-title">🔑 تسجيل حضور الحصة الحالية</h2>
           
@@ -837,7 +837,7 @@
     </footer>
   </div>
 
-  <!-- 🖥️ نافذة شاشة القاعة والداتا شو الحية بالكامل -->
+  <!-- 🖥️ نافذة شاشة القاعة والداتا شو الحية بالكامل (منفصلة لكل صف دراسي وسنتر) -->
   <div id="live-screen-modal" class="modal-overlay hidden" style="background: rgba(15, 23, 42, 0.95);">
     <div class="modal-card" style="max-width: 800px; text-align: center; border: 2px solid var(--accent);">
       <div class="modal-header">
@@ -845,8 +845,20 @@
         <button class="close-modal-btn" onclick="closeLiveScreenModal()">✖</button>
       </div>
       <div>
+        <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 15px; flex-wrap: wrap;">
+          <div class="form-group" style="margin-bottom:0; min-width: 180px;">
+            <select id="live-screen-stage-select" onchange="initLiveScreenDataShow()" style="padding: 8px 12px; font-weight: bold; color: var(--accent);">
+              <option value="الأول الثانوي">الأول الثانوي</option>
+              <option value="الثاني الثانوي عام">الثاني الثانوي عام</option>
+              <option value="الثاني الثانوي بكالوريا">الثاني الثانوي بكالوريا</option>
+              <option value="الثالث الثانوي">الثالث الثانوي</option>
+            </select>
+          </div>
+        </div>
+
         <h2 id="live-modal-center-name" style="color: var(--primary); font-size: 1.6rem; margin-bottom: 5px;">سنتر كفر رجب</h2>
-        <p id="live-modal-active-code" style="font-size: 1.2rem; color: var(--accent); font-weight: 800; margin-bottom: 20px;">كود الحصة الجارية: --</p>
+        <p id="live-modal-active-code" style="font-size: 1.2rem; color: var(--accent); font-weight: 800; margin-bottom: 8px;">كود الحصة الجارية: --</p>
+        <p id="live-modal-timer-status" style="font-size: 1rem; color: var(--success); font-weight: 700; margin-bottom: 20px;">🟢 جاري الفحص...</p>
 
         <div style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; margin-bottom: 20px;">
           <div>
@@ -855,7 +867,7 @@
           <div style="background: var(--bg-body); padding: 25px 35px; border-radius: 20px; border: 1px solid var(--border-color);">
             <div style="font-size: 0.95rem; color: var(--text-muted); font-weight: 600;">عدد الطلاب الحاضرين حياً:</div>
             <div id="live-attendance-count" style="font-size: 3.5rem; font-weight: 800; color: var(--accent); line-height: 1;">0</div>
-            <div style="font-size: 0.85rem; color: var(--success); font-weight: 700; margin-top: 10px;">🟢 جاري التحديث اللحظي...</div>
+            <div id="live-status-indicator" style="font-size: 0.85rem; color: var(--success); font-weight: 700; margin-top: 10px;">🟢 جاري التحديث اللحظي...</div>
           </div>
         </div>
 
@@ -947,10 +959,13 @@
     let selectedTeacherCenter = 'سنتر كفر رجب';
     let cachedSessions = [];
     let isLocationVerified = false;
+    let liveDataShowUnsubscribe = null;
+    let liveTimerInterval = null;
 
-    // 📍 إحداثيات GPS المعتمدة المقتصرة فقط وحصرياً على سنتر كفر رجب بنطاق 50 متراً
+    // 📍 إحداثيات GPS المعتمدة الدقيقة
     const CENTER_COORDINATES = {
-      'سنتر كفر رجب': { lat: 30.5741625, lng: 31.3281118, radiusMeters: 80 }
+      'سنتر كفر رجب': { lat: 30.5741625, lng: 31.3281118, radiusMeters: 80 },
+      'كفر تصفا': { lat: 30.570316, lng: 31.304298, radiusMeters: 100 }
     };
 
     function escapeHTML(str) {
@@ -1244,15 +1259,100 @@
       const modal = document.getElementById('live-screen-modal');
       document.getElementById('live-modal-center-name').innerText = selectedTeacherCenter;
 
-      const activeDisplay = document.getElementById('current-active-code-display').innerText;
-      document.getElementById('live-modal-active-code').innerText = activeDisplay;
+      const teacherStage = document.getElementById('teacher-code-stage').value;
+      document.getElementById('live-screen-stage-select').value = teacherStage;
 
       document.getElementById('live-qr-image').src = document.getElementById('center-qr-image').src;
       modal.classList.remove('hidden');
+
+      initLiveScreenDataShow();
     }
 
     function closeLiveScreenModal() {
+      if (liveDataShowUnsubscribe) liveDataShowUnsubscribe();
+      if (liveTimerInterval) clearInterval(liveTimerInterval);
       document.getElementById('live-screen-modal').classList.add('hidden');
+    }
+
+    // 🖥️ دالة تشغيل الداتا شو والشاشة المباشرة المنفصلة لكل صف دراسي وسنتر
+    function initLiveScreenDataShow() {
+      if (liveDataShowUnsubscribe) liveDataShowUnsubscribe();
+      if (liveTimerInterval) clearInterval(liveTimerInterval);
+
+      const stage = document.getElementById('live-screen-stage-select').value;
+      const center = selectedTeacherCenter;
+
+      const codeDisplay = document.getElementById('live-modal-active-code');
+      const timerDisplay = document.getElementById('live-modal-timer-status');
+      const countDisplay = document.getElementById('live-attendance-count');
+      const indicatorDisplay = document.getElementById('live-status-indicator');
+
+      codeDisplay.innerText = "كود الحصة الجارية: جاري التحميل...";
+      timerDisplay.innerHTML = `<span style="color: var(--warning);">⏳ جاري فحص الكود والوقت...</span>`;
+      countDisplay.innerText = "0";
+
+      // الاستماع المباشر للجلسة الحالية الخاصة بالصف والسنتر المحددين
+      db.collection('sessions')
+        .where('center', '==', center)
+        .where('stage', '==', stage)
+        .onSnapshot((snapshot) => {
+          let activeSession = null;
+          const now = Date.now();
+
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            if (now <= data.expiresAt) {
+              if (!activeSession || data.createdAt > activeSession.createdAt) {
+                activeSession = { id: doc.id, ...data };
+              }
+            }
+          });
+
+          if (!activeSession) {
+            codeDisplay.innerText = `لا يوجد كود نشط حالياً لصف (${stage})`;
+            timerDisplay.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🛑 الجلسة غير نشطة أو انتهت صلاحية الكود</span>`;
+            countDisplay.innerText = "0";
+            indicatorDisplay.innerHTML = `<span style="color: var(--text-muted);">⏹️ التحديث توقف</span>`;
+            if (liveTimerInterval) clearInterval(liveTimerInterval);
+            return;
+          }
+
+          codeDisplay.innerText = `كود الحصة الجارية لـ (${stage}): ${activeSession.code}`;
+
+          // تشغيل العد التنازلي التلقائي فور تفعيل الكود
+          if (liveTimerInterval) clearInterval(liveTimerInterval);
+
+          const updateTimer = () => {
+            const current = Date.now();
+            const remainingMS = activeSession.expiresAt - current;
+
+            if (remainingMS <= 0) {
+              clearInterval(liveTimerInterval);
+              codeDisplay.innerText = `انتهت صلاحية كود (${activeSession.code})`;
+              timerDisplay.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🛑 انتهت الـ 20 دقيقة وتوقف العد اللحظي</span>`;
+              countDisplay.innerText = "0";
+              indicatorDisplay.innerHTML = `<span style="color: var(--danger);">🛑 مغلق</span>`;
+              return;
+            }
+
+            const remainingMinutes = Math.floor(remainingMS / (1000 * 60));
+            const remainingSeconds = Math.floor((remainingMS % (1000 * 60)) / 1000);
+            timerDisplay.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 الجلسة نشطة (متبقي ${remainingMinutes} دقيقة و ${remainingSeconds} ثانية)</span>`;
+          };
+
+          updateTimer();
+          liveTimerInterval = setInterval(updateTimer, 1000);
+
+          // الاستماع للحضور الفعلي لحظة بلحظة لهذه الحصة
+          if (liveDataShowUnsubscribe) liveDataShowUnsubscribe();
+
+          liveDataShowUnsubscribe = db.collection('attendance')
+            .where('sessionId', '==', activeSession.id)
+            .onSnapshot((attSnapshot) => {
+              countDisplay.innerText = attSnapshot.size;
+              indicatorDisplay.innerHTML = `<span style="color: var(--success);">🟢 جاري التحديث اللحظي (${attSnapshot.size} طالب)</span>`;
+            });
+        });
     }
 
     function compressAndConvertToBase64(file) {
@@ -1431,7 +1531,7 @@
       }
     }
 
-    // 🎯 منطق العرض الشديد والتأكيد على إجبارية الـ QR والـ GPS
+    // 🎯 منطق العرض وتحديد معايير الـ GPS لكل سنتر
     function showStudentStep2() {
       document.getElementById('student-step-1').classList.add('hidden');
       document.getElementById('student-step-2').classList.remove('hidden');
@@ -1461,26 +1561,26 @@
         locationBox.classList.add('hidden');
         sessionCodeBox.classList.add('hidden');
       } else {
-        // تم مسح الـ QR Code بنجاح
         const centerText = qrCenterParam ? ` بـ (${escapeHTML(decodeURIComponent(qrCenterParam))})` : '';
         
-        if (studentCenter === 'سنتر كفر رجب') {
+        // تفعيل الـ GPS لسنتر كفر رجب وسنتر كفر تصفا
+        if (studentCenter === 'سنتر كفر رجب' || studentCenter === 'كفر تصفا') {
           bannerEl.className = 'qr-banner success';
           bannerEl.innerHTML = `
             🎯 تم مسح الـ QR Code الخاصة${centerText} بنجاح!<br>
             <span style="font-size: 0.92rem; font-weight: 500;">باقي لك خطوة واحدة وهي تأكيد موقعك الجغرافي بالسنتر عبر الـ GPS بالأسفل لتسجيل الحضور.</span>
           `;
-          locationBox.classList.remove('hidden'); // إظهار الـ GPS لكفر رجب فقط
-          sessionCodeBox.classList.add('hidden');  // محجوب لحين فحص الـ GPS
+          locationBox.classList.remove('hidden'); 
+          sessionCodeBox.classList.add('hidden');  
         } else {
-          // السناتر الأخرى (التلين وكفر تصفا): بدون GPS
+          // السناتر الأخرى (التلين): بدون GPS
           bannerEl.className = 'qr-banner success';
           bannerEl.innerHTML = `
             🎯 تم مسح الـ QR Code الخاصة${centerText} بنجاح!<br>
             <span style="font-size: 0.92rem; font-weight: 500;">أدخل كود الحصة المعطى لك من الأستاذ بالأسفل لتأكيد الحضور.</span>
           `;
-          locationBox.classList.add('hidden');      // إخفاء الـ GPS للسناتر الأخرى
-          sessionCodeBox.classList.remove('hidden'); // إظهار خانة الكود فوراً بعد الـ QR
+          locationBox.classList.add('hidden');      
+          sessionCodeBox.classList.remove('hidden'); 
         }
       }
 
@@ -1495,7 +1595,7 @@
       const Δφ = (lat2 - lat1) * Math.PI / 180;
       const Δλ = (lon2 - lon1) * Math.PI / 180;
 
-      const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
                 Math.cos(φ1) * Math.cos(φ2) *
                 Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
@@ -1503,84 +1603,87 @@
       return R * c;
     }
 
-  // 📍 فحص الـ GPS المطور والآمن (مع تصفية الاهتزاز واختيار أدق قراءة)
-function verifyStudentLocation() {
-  if (!isFromQR) {
-    alert("🚫 يجب مسح كود الـ QR المطبوع بالقاعة أولاً عبر الكاميرا!");
-    return;
-  }
-
-  if (!navigator.geolocation) {
-    alert("❌ جهازك أو متصفحك لا يدعم خاصية تحديد الموقع الجغرافي (GPS)!");
-    return;
-  }
-
-  const verifyBtn = document.getElementById('btn-verify-location');
-  const statusText = document.getElementById('location-status-text');
-
-  verifyBtn.disabled = true;
-  verifyBtn.innerText = "جاري معايرة الـ GPS وقراءة أدق موقع... ⏳";
-
-  let samples = [];
-  let attempts = 0;
-
-  // أخذ عدة قراءات متتالية لاختيار أدق قراءة
-  const watchId = navigator.geolocation.watchPosition(
-    (position) => {
-      samples.push(position);
-      attempts++;
-
-      // بعد جمع 3 قراءات متتالية
-      if (samples.length >= 3 || attempts >= 5) {
-        navigator.geolocation.clearWatch(watchId); // إيقاف المتابعة
-
-        // ترتيب القراءات لاختيار القراءة ذات أدق نسبة إشارة (أقل coords.accuracy)
-        samples.sort((a, b) => a.coords.accuracy - b.coords.accuracy);
-        const bestPosition = samples[0];
-
-        const userLat = bestPosition.coords.latitude;
-        const userLng = bestPosition.coords.longitude;
-        const accuracyRadius = Math.round(bestPosition.coords.accuracy); // نسبة الخطأ بالامتار
-
-        const targetCoords = CENTER_COORDINATES['سنتر كفر رجب'];
-        const distanceMeters = calculateDistanceMeters(userLat, userLng, targetCoords.lat, targetCoords.lng);
-
-        // إذا كانت نسبة خطأ الإشارة ضخمة جداً (أكبر من 35 متر) بسبب السقف الخرساني
-        if (accuracyRadius > 35) {
-          statusText.innerHTML = `<span style="color: var(--warning); font-weight: bold;">⚠️ إشارة الـ GPS ضعيفة داخل القاعة (دقة الإشارة: ±${accuracyRadius}m). يرجى تشغيل الـ Wi-Fi بالموبايل لزيادة الدقة والمحاولة مجدداً.</span>`;
-          verifyBtn.disabled = false;
-          verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
-          return;
-        }
-
-        // تطبيق شرط الـ 50 متر مع مراعاة دقة الإشارة
-        if (distanceMeters <= targetCoords.radiusMeters) {
-          isLocationVerified = true;
-          statusText.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 تم التأكد من تواجدك الجغرافي بـ (سنتر كفر رجب) بنجاح! (نسبة الدقة: ±${accuracyRadius}m).</span>`;
-          document.getElementById('session-code-container').classList.remove('hidden');
-          document.getElementById('location-verify-box').style.borderColor = 'var(--success)';
-          verifyBtn.innerText = "✅ تم التحقق الجغرافي بنجاح";
-        } else {
-          isLocationVerified = false;
-          document.getElementById('session-code-container').classList.add('hidden');
-          const distMetersRounded = Math.round(distanceMeters);
-          alert(`🚫 عذراً! أنت تتواجد خارج نطاق 50 متراً لـ (سنتر كفر رجب)!\nالمسافة بينك وبين السنتر حالياً: ${distMetersRounded} متراً.`);
-          statusText.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🔴 أنت خارج نطاق السنتر الجغرافي (على مسافة ${distMetersRounded} متر)!</span>`;
-          verifyBtn.disabled = false;
-          verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
-        }
+    // 📍 فحص الـ GPS لسنتر كفر رجب وسنتر كفر تصفا
+    function verifyStudentLocation() {
+      if (!isFromQR) {
+        alert("🚫 يجب مسح كود الـ QR المطبوع بالقاعة أولاً عبر الكاميرا!");
+        return;
       }
-    },
-    (error) => {
-      navigator.geolocation.clearWatch(watchId);
-      console.error("GPS Error:", error);
-      verifyBtn.disabled = false;
-      verifyBtn.innerText = "📍 التحقق من موقعي بالسنتر الآن";
-      alert("❌ تعذر الوصول لـ GPS الموبايل! يرجى السماح بتحديد الموقع في متصفحك والمحاولة مجدداً.");
-    },
-    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
-  );
-}
+
+      if (!navigator.geolocation) {
+        alert("❌ جهازك أو متصفحك لا يدعم خاصية تحديد الموقع الجغرافي (GPS)!");
+        return;
+      }
+
+      const studentCenter = currentStudent.center;
+      const targetCoords = CENTER_COORDINATES[studentCenter];
+
+      if (!targetCoords) {
+        isLocationVerified = true;
+        document.getElementById('session-code-container').classList.remove('hidden');
+        return;
+      }
+
+      const verifyBtn = document.getElementById('btn-verify-location');
+      const statusText = document.getElementById('location-status-text');
+
+      verifyBtn.disabled = true;
+      verifyBtn.innerText = "جاري معايرة الـ GPS وقراءة أدق موقع... ⏳";
+
+      let samples = [];
+      let attempts = 0;
+
+      const watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          samples.push(position);
+          attempts++;
+
+          if (samples.length >= 3 || attempts >= 5) {
+            navigator.geolocation.clearWatch(watchId);
+
+            samples.sort((a, b) => a.coords.accuracy - b.coords.accuracy);
+            const bestPosition = samples[0];
+
+            const userLat = bestPosition.coords.latitude;
+            const userLng = bestPosition.coords.longitude;
+            const accuracyRadius = Math.round(bestPosition.coords.accuracy);
+
+            const distanceMeters = calculateDistanceMeters(userLat, userLng, targetCoords.lat, targetCoords.lng);
+
+            if (accuracyRadius > 45) {
+              statusText.innerHTML = `<span style="color: var(--warning); font-weight: bold;">⚠️ إشارة الـ GPS ضعيفة داخل القاعة (دقة الإشارة: ±${accuracyRadius}m). يرجى تشغيل الـ Wi-Fi بالموبايل لزيادة الدقة والمحاولة مجدداً.</span>`;
+              verifyBtn.disabled = false;
+              verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
+              return;
+            }
+
+            if (distanceMeters <= targetCoords.radiusMeters) {
+              isLocationVerified = true;
+              statusText.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 تم التأكد من تواجدك الجغرافي بـ (${escapeHTML(studentCenter)}) بنجاح! (نسبة الدقة: ±${accuracyRadius}m).</span>`;
+              document.getElementById('session-code-container').classList.remove('hidden');
+              document.getElementById('location-verify-box').style.borderColor = 'var(--success)';
+              verifyBtn.innerText = "✅ تم التحقق الجغرافي بنجاح";
+            } else {
+              isLocationVerified = false;
+              document.getElementById('session-code-container').classList.add('hidden');
+              const distMetersRounded = Math.round(distanceMeters);
+              alert(`🚫 عذراً! أنت تتواجد خارج نطاق (${targetCoords.radiusMeters} متر) لـ (${studentCenter})!\nالمسافة بينك وبين السنتر حالياً: ${distMetersRounded} متراً.`);
+              statusText.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🔴 أنت خارج نطاق السنتر الجغرافي (على مسافة ${distMetersRounded} متر)!</span>`;
+              verifyBtn.disabled = false;
+              verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
+            }
+          }
+        },
+        (error) => {
+          navigator.geolocation.clearWatch(watchId);
+          console.error("GPS Error:", error);
+          verifyBtn.disabled = false;
+          verifyBtn.innerText = "📍 التحقق من موقعي بالسنتر الآن";
+          alert("❌ تعذر الوصول لـ GPS الموبايل! يرجى السماح بتحديد الموقع في متصفحك والمحاولة مجدداً.");
+        },
+        { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+      );
+    }
 
     async function loadStudentSessionsHistory() {
       const historyContainer = document.getElementById('student-sessions-history');
@@ -1673,9 +1776,8 @@ function verifyStudentLocation() {
       document.getElementById('student-step-1').classList.remove('hidden');
     }
 
-    // 🔒 دالة حفظ الحضور المؤمنة ضد أي ثغرة أو اختراق
+    // 🔒 دالة حفظ الحضور المؤمنة
     async function submitSessionCode() {
-      // 🛡️ فحص أمني 1: التأكد الجبري من مسح الـ QR
       if (!isFromQR) {
         alert("🚫 خطأ أمني: مسح كود الـ QR الخاص بالقاعة إجباري لتتمكن من الحضور!");
         return;
@@ -1683,9 +1785,8 @@ function verifyStudentLocation() {
 
       const studentCenter = currentStudent.center;
 
-      // 🛡️ فحص أمني 2: التأكد الجبري من الـ GPS إذا كان الطالب يتبع سنتر كفر رجب
-      if (studentCenter === 'سنتر كفر رجب' && !isLocationVerified) {
-        alert("🚫 خطأ أمني: يجب أولاً تأكيد تواجدك الجغرافي داخل سنتر كفر رجب عبر الـ GPS!");
+      if ((studentCenter === 'سنتر كفر رجب' || studentCenter === 'كفر تصفا') && !isLocationVerified) {
+        alert(`🚫 خطأ أمني: يجب أولاً تأكيد تواجدك الجغرافي داخل (${studentCenter}) عبر الـ GPS!`);
         return;
       }
 
@@ -2035,8 +2136,6 @@ function verifyStudentLocation() {
             totalLiveCheckIns++;
           }
         });
-
-        document.getElementById('live-attendance-count').innerText = totalLiveCheckIns;
 
         const container = document.getElementById('students-display-container');
         container.innerHTML = '';
