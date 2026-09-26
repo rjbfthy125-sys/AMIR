@@ -131,10 +131,11 @@
       justify-content: center;
       gap: 12px;
       margin-bottom: 25px;
+      flex-wrap: wrap;
     }
 
     .tab-btn {
-      padding: 12px 28px;
+      padding: 12px 24px;
       border: 1px solid var(--border-color);
       background-color: var(--card-bg);
       color: var(--primary);
@@ -344,6 +345,7 @@
       margin-bottom: 20px;
       border-bottom: 1px solid var(--border-color);
       padding-bottom: 10px;
+      flex-wrap: wrap;
     }
 
     .sub-nav-btn {
@@ -359,6 +361,7 @@
     .sub-nav-btn.active {
       background: var(--bg-body);
       color: var(--accent);
+      border: 1px solid var(--border-color);
     }
 
     .student-grid {
@@ -501,6 +504,14 @@
       cursor: pointer;
     }
 
+    .setting-card-item {
+      background: var(--bg-body);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 15px;
+    }
+
     footer {
       text-align: center;
       margin-top: 40px;
@@ -517,9 +528,7 @@
       transition: all 0.2s ease;
     }
 
-    .teacher-name-link:hover {
-      text-decoration: underline;
-    }
+    .teacher-name-link:hover { text-decoration: underline; }
 
     .dev-name-link {
       color: var(--dev-color);
@@ -529,9 +538,7 @@
       transition: all 0.2s ease;
     }
 
-    .dev-name-link:hover {
-      text-decoration: underline;
-    }
+    .dev-name-link:hover { text-decoration: underline; }
 
     .whatsapp-icon-link {
       color: #25D366;
@@ -541,9 +548,7 @@
       transition: transform 0.2s ease;
     }
 
-    .whatsapp-icon-link:hover {
-      transform: scale(1.2);
-    }
+    .whatsapp-icon-link:hover { transform: scale(1.2); }
 
     @media (max-width: 600px) {
       body { padding: 12px 8px; }
@@ -571,11 +576,16 @@
 
   <!-- 🛑 نافذة حظر الريفريش المتكرر -->
   <div id="refresh-lock-modal" class="modal-overlay hidden" style="z-index: 100000; background: rgba(15, 23, 42, 0.98);">
-    <div class="modal-card" style="text-align: center; max-width: 450px; border: 2px solid var(--danger);">
-      <h2 style="color: var(--danger); font-size: 1.5rem; margin-bottom: 10px;">⚠️ تم إيقاف الصفحة مؤقتاً</h2>
-      <p style="color: var(--text-muted); margin-bottom: 20px;">قم بإعادة تحديث الصفحة أكثر من 3 مرات متتالية بسرعة. يرجى الانتظار بضع ثوانٍ لحماية سيرفر المنصة.</p>
+    <div class="modal-card" style="text-align: center; max-width: 480px; border: 2px solid var(--danger);">
+      <h2 style="color: var(--danger); font-size: 1.5rem; margin-bottom: 12px;">⚠️ حظر أمني مؤقت للمنصة</h2>
+      <p style="color: var(--text-main); font-weight: 600; font-size: 0.95rem; margin-bottom: 10px;">
+        تم اكتشاف تحديث متكرر للصفحة 3 مرات متتالية من جهازك!
+      </p>
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">
+        تم تفعيل الحماية اللحظية وتجميد الصفحة لمدة 15 ثانية لحماية الخادم والأمان.
+      </p>
       <div id="refresh-countdown" style="font-size: 3.5rem; font-weight: 800; color: var(--accent); margin-bottom: 15px;">15</div>
-      <p style="font-size: 0.85rem; color: var(--text-muted);">ستفتح الصفحة تلقائياً فور انتهاء العد التنازلي...</p>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">ستُفتح الصفحة تلقائياً فور انتهاء العداد...</p>
     </div>
   </div>
 
@@ -596,6 +606,7 @@
     <div class="view-switcher">
       <button class="tab-btn active" id="tab-student" onclick="switchMainView('student')">🎓 بوابة الطالب</button>
       <button class="tab-btn" id="tab-teacher" onclick="switchMainView('teacher')">👑 لوحة الأستاذ</button>
+      <button class="tab-btn" id="tab-admin" onclick="switchMainView('admin')">⚙️ إدارة المنصة</button>
     </div>
 
     <!-- 1. بوابة الطالب -->
@@ -603,7 +614,6 @@
       <div id="student-step-1" class="card">
         <h2 class="card-title">📝 تسجيل الدخول بالمنصة</h2>
         
-        <!-- زر جوجل اختياري -->
         <div style="background: var(--bg-body); padding: 15px; border-radius: 14px; margin-bottom: 20px; border: 1px solid var(--border-color);">
           <button type="button" class="btn btn-google" onclick="loginWithGoogle()">
             <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
@@ -664,7 +674,10 @@
               <h3 id="welcome-student-name">أهلاً بك يا طالب</h3>
               <p id="welcome-student-info">المرحلة: - | السنتر: - | الهاتف: -</p>
               <div id="student-badges-container" style="margin-top: 6px;"></div>
-              <button class="btn btn-primary" style="width: auto; padding: 6px 14px; font-size: 0.85rem; margin-top: 8px;" onclick="openEditProfileModal()">✏️ تعديل البيانات والملف الشخصي</button>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+                <button class="btn btn-primary" style="width: auto; padding: 6px 14px; font-size: 0.85rem;" onclick="openEditProfileModal()">✏️ تعديل البيانات والملف الشخصي</button>
+                <button class="btn btn-subtle" style="width: auto; padding: 6px 14px; font-size: 0.85rem; border-color: var(--accent); color: var(--accent);" onclick="resetStudentQRScan()">🔄 إعاده مسح QR الكود</button>
+              </div>
             </div>
           </div>
           <button class="btn btn-subtle" style="width: auto; padding: 6px 14px; font-size: 0.8rem;" onclick="logoutStudent()">تغيير الحساب</button>
@@ -732,7 +745,7 @@
           </div>
 
           <div class="form-group" style="margin-bottom: 10px;">
-            <label for="teacher-set-code">تنزيل كود حصة جديد لهذا السنتر (ينتهي بعد 20 دقيقة):</label>
+            <label for="teacher-set-code">تنزيل كود حصة جديد لهذا السنتر (ينتهي حسب مدة النظام):</label>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
               <input type="text" id="teacher-set-code" placeholder="أدخل كود الحصة الجديد" style="flex: 1; min-width: 150px;">
               <button class="btn btn-primary" style="width: auto; padding: 0 20px;" onclick="saveNewSessionCode()">تنشيط ونشر الكود 🚀</button>
@@ -813,6 +826,139 @@
       </div>
     </div>
 
+    <!-- 3. ⚙️ لوحة بوابة إدارة المنصة الجديدة المقسمة إلى تبويبات شامله لكل جزء -->
+    <div id="admin-view" class="hidden">
+      <div id="admin-lock-screen" class="card" style="text-align: center; max-width: 450px; margin: 0 auto;">
+        <h2 class="card-title" style="justify-content: center;">⚙️ إدارة المنصة الشاملة</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">منطقة التحكم والسيطرة الكاملة لجميع أجزاء المنصة.</p>
+        <div class="form-group">
+          <input type="password" id="admin-password" placeholder="كلمة سر الإدارة" style="text-align: center; font-size: 1.2rem;">
+        </div>
+        <button class="btn btn-primary" onclick="unlockAdminDashboard()">دخول لوحة الإدارة الشاملة</button>
+      </div>
+
+      <div id="admin-content" class="card hidden">
+        <h2 class="card-title">⚙️ لوحة إدارة جميع أجزاء المنصة</h2>
+
+        <!-- تبويبات داخلية لبوابة الإدارة -->
+        <div class="sub-nav">
+          <button class="sub-nav-btn active" id="admin-subtab-gps" onclick="switchAdminTab('gps')">📍 إعدادات السناتر و GPS</button>
+          <button class="sub-nav-btn" id="admin-subtab-students" onclick="switchAdminTab('students')">👥 إدارة الطلاب وتعديل الحسابات</button>
+          <button class="sub-nav-btn" id="admin-subtab-sessions" onclick="switchAdminTab('sessions')">🔑 إدارة الجلسات ومواعيد الأكواد</button>
+          <button class="sub-nav-btn" id="admin-subtab-security" onclick="switchAdminTab('security')">🛡️ إعدادات الأمان والحظر</button>
+        </div>
+
+        <!-- 1. تبويب GPS والسناتر -->
+        <div id="admin-section-gps">
+          <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 15px;">📍 التحكم بنظام تحديد المواقع (GPS) لكل سنتر:</h3>
+          
+          <div class="setting-card-item">
+            <h4 style="color: var(--accent); margin-bottom: 10px;">🏢 سنتر كفر رجب</h4>
+            <div class="form-group" style="margin-bottom: 10px;">
+              <label><input type="checkbox" id="setting-gps-kafr-ragab"> تفعيل فحص الـ GPS الجبري للسنتر</label>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="font-size: 0.82rem;">خط العرض (Lat):</label>
+                <input type="number" step="any" id="setting-lat-kafr-ragab">
+              </div>
+              <div>
+                <label style="font-size: 0.82rem;">خط الطول (Lng):</label>
+                <input type="number" step="any" id="setting-lng-kafr-ragab">
+              </div>
+              <div>
+                <label style="font-size: 0.82rem;">نصف القطر (متر):</label>
+                <input type="number" id="setting-radius-kafr-ragab">
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-card-item">
+            <h4 style="color: var(--accent); margin-bottom: 10px;">🏢 سنتر كفر تصفا</h4>
+            <div class="form-group" style="margin-bottom: 10px;">
+              <label><input type="checkbox" id="setting-gps-kafr-tasfa"> تفعيل فحص الـ GPS الجبري للسنتر</label>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="font-size: 0.82rem;">خط العرض (Lat):</label>
+                <input type="number" step="any" id="setting-lat-kafr-tasfa">
+              </div>
+              <div>
+                <label style="font-size: 0.82rem;">خط الطول (Lng):</label>
+                <input type="number" step="any" id="setting-lng-kafr-tasfa">
+              </div>
+              <div>
+                <label style="font-size: 0.82rem;">نصف القطر (متر):</label>
+                <input type="number" id="setting-radius-kafr-tasfa">
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-card-item">
+            <h4 style="color: var(--accent); margin-bottom: 10px;">🏢 سنتر التلين</h4>
+            <div class="form-group" style="margin-bottom: 10px;">
+              <label><input type="checkbox" id="setting-gps-eltaleen"> تفعيل فحص الـ GPS الجبري للسنتر</label>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+              <div>
+                <label style="font-size: 0.82rem;">خط العرض (Lat):</label>
+                <input type="number" step="any" id="setting-lat-eltaleen">
+              </div>
+              <div>
+                <label style="font-size: 0.82rem;">خط الطول (Lng):</label>
+                <input type="number" step="any" id="setting-lng-eltaleen">
+              </div>
+              <div>
+                <label style="font-size: 0.82rem;">نصف القطر (متر):</label>
+                <input type="number" id="setting-radius-eltaleen">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. تبويب الطلاب وتعديل الحسابات -->
+        <div id="admin-section-students" class="hidden">
+          <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 15px;">👥 التحكم بالحسابات ومحاولات التعديل:</h3>
+          <div class="setting-card-item">
+            <div class="form-group">
+              <label for="admin-student-search-phone">إعادة تعيين محاولات التعديل للطالب برقم الهاتف:</label>
+              <div style="display: flex; gap: 10px;">
+                <input type="tel" id="admin-student-search-phone" placeholder="أدخل رقم هاتف الطالب">
+                <button class="btn btn-primary" style="width: auto; padding: 0 20px;" onclick="resetStudentEditLimit()">تصفير المحاولات 🔄</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. تبويب الجلسات والأكواد -->
+        <div id="admin-section-sessions" class="hidden">
+          <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 15px;">⏱️ التحكم بمدة الجلسات وصلاحية الأكواد:</h3>
+          <div class="setting-card-item">
+            <div class="form-group">
+              <label for="setting-code-timeout">المدة الافتراضية لصلاحية كود الحضور (بالدقائق):</label>
+              <input type="number" id="setting-code-timeout" value="20" min="1" max="180">
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. تبويب الأمان والحظر -->
+        <div id="admin-section-security" class="hidden">
+          <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 15px;">🛡️ إعدادات الحظر والأمان اللحظي:</h3>
+          <div class="setting-card-item">
+            <div class="form-group">
+              <label for="setting-admin-pass">تغيير كلمة سر لوحة الأستاذ والإدارة:</label>
+              <input type="password" id="setting-admin-pass" value="amir4211">
+            </div>
+            <button class="btn btn-danger" style="width: auto; padding: 10px 20px; font-size: 0.9rem;" onclick="clearSystemLockouts()">فك حظر الريفريش المعلق لجميع الأجهزة 🔓</button>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <button class="btn btn-primary" onclick="saveAdminSettings()">حفظ وتطبيق كافة إعدادات المنصة فوراً 💾</button>
+        </div>
+      </div>
+    </div>
+
     <footer>
       <p style="margin-bottom: 8px; font-weight: 700; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
         جميع الحقوق محفوظة لـ 
@@ -837,7 +983,7 @@
     </footer>
   </div>
 
-  <!-- 🖥️ نافذة شاشة القاعة والداتا شو الحية بالكامل (منفصلة لكل صف دراسي وسنتر) -->
+  <!-- 🖥️ نافذة شاشة القاعة والداتا شو الحية -->
   <div id="live-screen-modal" class="modal-overlay hidden" style="background: rgba(15, 23, 42, 0.95);">
     <div class="modal-card" style="max-width: 800px; text-align: center; border: 2px solid var(--accent);">
       <div class="modal-header">
@@ -937,7 +1083,7 @@
   </div>
 
   <script>
-    // --- إعدادات قاعدة البيانات (Firebase الحقيقية الخاصة بك) ---
+    // --- إعدادات قاعدة البيانات (Firebase الحقيقية) ---
     const firebaseConfig = {
       apiKey: "AIzaSyBja36JoyQuVrOtwwjATqLO9hVE-VG5ShQ",
       authDomain: "mramir-a454d.firebaseapp.com",
@@ -954,6 +1100,7 @@
     let currentStudent = null;
     let currentGoogleUser = null; 
     let isTeacherUnlocked = false;
+    let isAdminUnlocked = false;
     let isFromQR = false;
     let qrCenterParam = '';
     let selectedTeacherCenter = 'سنتر كفر رجب';
@@ -962,11 +1109,22 @@
     let liveDataShowUnsubscribe = null;
     let liveTimerInterval = null;
 
-    // 📍 إحداثيات GPS المعتمدة الدقيقة
-    const CENTER_COORDINATES = {
-      'سنتر كفر رجب': { lat: 30.5741625, lng: 31.3281118, radiusMeters: 80 },
-      'كفر تصفا': { lat: 30.570316, lng: 31.304298, radiusMeters: 100 }
+    let DEFAULT_SETTINGS = {
+      adminPassword: "amir4211",
+      codeTimeoutMinutes: 20,
+      centers: {
+        'سنتر كفر رجب': { gpsEnabled: true, lat: 30.5741625, lng: 31.3281118, radiusMeters: 80 },
+        'كفر تصفا': { gpsEnabled: true, lat: 30.570316, lng: 31.304298, radiusMeters: 100 },
+        'التلين': { gpsEnabled: false, lat: 30.570000, lng: 31.300000, radiusMeters: 100 }
+      }
     };
+
+    function loadSettings() {
+      const saved = localStorage.getItem('history_app_admin_settings');
+      if (saved) {
+        try { DEFAULT_SETTINGS = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) }; } catch(e) {}
+      }
+    }
 
     function escapeHTML(str) {
       if (str === null || str === undefined) return '';
@@ -994,7 +1152,7 @@
       }
       refreshData.last = NOW;
 
-      if (refreshData.count > 3) {
+      if (refreshData.count >= 3) {
         refreshData.lockUntil = NOW + 15000;
         refreshData.count = 0;
         sessionStorage.setItem('history_app_refresh_tracker', JSON.stringify(refreshData));
@@ -1026,7 +1184,21 @@
       }, 1000);
     }
 
-    // 🌐 تسجيل الدخول بواسطة Google (اختياري)
+    function resetStudentQRScan() {
+      const confirmReset = confirm("هل تريد إعادة مسح الـ QR Code من جديد لتنشيط الكاميرا والحساس؟");
+      if (!confirmReset) return;
+
+      isFromQR = false;
+      qrCenterParam = '';
+      isLocationVerified = false;
+
+      const newUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+
+      showStudentStep2();
+      alert("🔄 تم إعادة التعيين بنجاح! يمكنك الآن إعادة مسح الـ QR Code الخاص بالقاعة.");
+    }
+
     async function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       const googleBtn = document.querySelector('.btn-google');
@@ -1087,7 +1259,6 @@
       return { isValid: true, cleanName: cleanName };
     }
 
-    // 📝 التسجيل بـ Firebase
     async function loginOrRegisterStudent() {
       const rawName = document.getElementById('reg-name').value;
       const phone = document.getElementById('reg-phone').value.trim();
@@ -1154,6 +1325,7 @@
     }
 
     window.onload = function() {
+      loadSettings();
       handleAntiRefresh();
 
       const savedTheme = localStorage.getItem('history_app_theme');
@@ -1210,15 +1382,30 @@
     function switchMainView(view) {
       document.getElementById('tab-student').classList.toggle('active', view === 'student');
       document.getElementById('tab-teacher').classList.toggle('active', view === 'teacher');
+      document.getElementById('tab-admin').classList.toggle('active', view === 'admin');
+
       document.getElementById('student-view').classList.toggle('hidden', view !== 'student');
       document.getElementById('teacher-view').classList.toggle('hidden', view !== 'teacher');
+      document.getElementById('admin-view').classList.toggle('hidden', view !== 'admin');
 
       if (view === 'teacher' && isTeacherUnlocked) {
         fetchTeacherStageData();
         generateCenterQRCode();
+      } else if (view === 'admin' && isAdminUnlocked) {
+        populateAdminFields();
       } else if (view === 'student' && currentStudent) {
         checkStudentStatusAndLoad();
       }
+    }
+
+    function switchAdminTab(tab) {
+      document.querySelectorAll('#admin-content .sub-nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`admin-subtab-${tab}`).classList.add('active');
+
+      document.getElementById('admin-section-gps').classList.toggle('hidden', tab !== 'gps');
+      document.getElementById('admin-section-students').classList.toggle('hidden', tab !== 'students');
+      document.getElementById('admin-section-sessions').classList.toggle('hidden', tab !== 'sessions');
+      document.getElementById('admin-section-security').classList.toggle('hidden', tab !== 'security');
     }
 
     function switchTeacherCenter(centerName) {
@@ -1237,7 +1424,7 @@
     }
 
     function switchTeacherSubTab(tab) {
-      document.querySelectorAll('.sub-nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('#teacher-content .sub-nav-btn').forEach(btn => btn.classList.remove('active'));
       const clickedBtn = document.getElementById(`subtab-${tab}`) || document.getElementById('subtab-all');
       if (clickedBtn) clickedBtn.classList.add('active');
       renderTeacherData();
@@ -1274,7 +1461,6 @@
       document.getElementById('live-screen-modal').classList.add('hidden');
     }
 
-    // 🖥️ دالة تشغيل الداتا شو والشاشة المباشرة المنفصلة لكل صف دراسي وسنتر
     function initLiveScreenDataShow() {
       if (liveDataShowUnsubscribe) liveDataShowUnsubscribe();
       if (liveTimerInterval) clearInterval(liveTimerInterval);
@@ -1291,7 +1477,6 @@
       timerDisplay.innerHTML = `<span style="color: var(--warning);">⏳ جاري فحص الكود والوقت...</span>`;
       countDisplay.innerText = "0";
 
-      // الاستماع المباشر للجلسة الحالية الخاصة بالصف والسنتر المحددين
       db.collection('sessions')
         .where('center', '==', center)
         .where('stage', '==', stage)
@@ -1319,7 +1504,6 @@
 
           codeDisplay.innerText = `كود الحصة الجارية لـ (${stage}): ${activeSession.code}`;
 
-          // تشغيل العد التنازلي التلقائي فور تفعيل الكود
           if (liveTimerInterval) clearInterval(liveTimerInterval);
 
           const updateTimer = () => {
@@ -1329,7 +1513,7 @@
             if (remainingMS <= 0) {
               clearInterval(liveTimerInterval);
               codeDisplay.innerText = `انتهت صلاحية كود (${activeSession.code})`;
-              timerDisplay.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🛑 انتهت الـ 20 دقيقة وتوقف العد اللحظي</span>`;
+              timerDisplay.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🛑 انتهت الصلاحية وتوقف العد اللحظي</span>`;
               countDisplay.innerText = "0";
               indicatorDisplay.innerHTML = `<span style="color: var(--danger);">🛑 مغلق</span>`;
               return;
@@ -1343,14 +1527,13 @@
           updateTimer();
           liveTimerInterval = setInterval(updateTimer, 1000);
 
-          // الاستماع للحضور الفعلي لحظة بلحظة لهذه الحصة
           if (liveDataShowUnsubscribe) liveDataShowUnsubscribe();
 
           liveDataShowUnsubscribe = db.collection('attendance')
             .where('sessionId', '==', activeSession.id)
             .onSnapshot((attSnapshot) => {
               countDisplay.innerText = attSnapshot.size;
-              indicatorDisplay.innerHTML = `<span style="color: var(--success);">🟢 جاري التحديث اللحظي (${attSnapshot.size} طالب)</span>`;
+            indicatorDisplay.innerHTML = `<span style="color: var(--success);">🟢 جاري التحديث اللحظي (${attSnapshot.size} طالب)</span>`;
             });
         });
     }
@@ -1531,7 +1714,6 @@
       }
     }
 
-    // 🎯 منطق العرض وتحديد معايير الـ GPS لكل سنتر
     function showStudentStep2() {
       document.getElementById('student-step-1').classList.add('hidden');
       document.getElementById('student-step-2').classList.remove('hidden');
@@ -1551,7 +1733,8 @@
       bannerEl.classList.remove('hidden');
       isLocationVerified = false;
 
-      // 🛑 فحص حاسم لإجبارية مسح الـ QR Code
+      const centerConfig = DEFAULT_SETTINGS.centers[studentCenter] || { gpsEnabled: false };
+
       if (!isFromQR) {
         bannerEl.className = 'qr-banner danger';
         bannerEl.innerHTML = `
@@ -1563,8 +1746,7 @@
       } else {
         const centerText = qrCenterParam ? ` بـ (${escapeHTML(decodeURIComponent(qrCenterParam))})` : '';
         
-        // تفعيل الـ GPS لسنتر كفر رجب وسنتر كفر تصفا
-        if (studentCenter === 'سنتر كفر رجب' || studentCenter === 'كفر تصفا') {
+        if (centerConfig.gpsEnabled) {
           bannerEl.className = 'qr-banner success';
           bannerEl.innerHTML = `
             🎯 تم مسح الـ QR Code الخاصة${centerText} بنجاح!<br>
@@ -1573,7 +1755,6 @@
           locationBox.classList.remove('hidden'); 
           sessionCodeBox.classList.add('hidden');  
         } else {
-          // السناتر الأخرى (التلين): بدون GPS
           bannerEl.className = 'qr-banner success';
           bannerEl.innerHTML = `
             🎯 تم مسح الـ QR Code الخاصة${centerText} بنجاح!<br>
@@ -1587,7 +1768,6 @@
       loadStudentSessionsHistory();
     }
 
-    // 📐 حساب المسافة بدقة (Haversine Formula)
     function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
       const φ1 = lat1 * Math.PI / 180;
@@ -1595,7 +1775,7 @@
       const Δφ = (lat2 - lat1) * Math.PI / 180;
       const Δλ = (lon2 - lon1) * Math.PI / 180;
 
-  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
                 Math.cos(φ1) * Math.cos(φ2) *
                 Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
@@ -1603,7 +1783,6 @@
       return R * c;
     }
 
-    // 📍 فحص الـ GPS لسنتر كفر رجب وسنتر كفر تصفا
     function verifyStudentLocation() {
       if (!isFromQR) {
         alert("🚫 يجب مسح كود الـ QR المطبوع بالقاعة أولاً عبر الكاميرا!");
@@ -1616,9 +1795,9 @@
       }
 
       const studentCenter = currentStudent.center;
-      const targetCoords = CENTER_COORDINATES[studentCenter];
+      const centerConfig = DEFAULT_SETTINGS.centers[studentCenter];
 
-      if (!targetCoords) {
+      if (!centerConfig || !centerConfig.gpsEnabled) {
         isLocationVerified = true;
         document.getElementById('session-code-container').classList.remove('hidden');
         return;
@@ -1648,7 +1827,7 @@
             const userLng = bestPosition.coords.longitude;
             const accuracyRadius = Math.round(bestPosition.coords.accuracy);
 
-            const distanceMeters = calculateDistanceMeters(userLat, userLng, targetCoords.lat, targetCoords.lng);
+            const distanceMeters = calculateDistanceMeters(userLat, userLng, centerConfig.lat, centerConfig.lng);
 
             if (accuracyRadius > 45) {
               statusText.innerHTML = `<span style="color: var(--warning); font-weight: bold;">⚠️ إشارة الـ GPS ضعيفة داخل القاعة (دقة الإشارة: ±${accuracyRadius}m). يرجى تشغيل الـ Wi-Fi بالموبايل لزيادة الدقة والمحاولة مجدداً.</span>`;
@@ -1657,7 +1836,7 @@
               return;
             }
 
-            if (distanceMeters <= targetCoords.radiusMeters) {
+            if (distanceMeters <= centerConfig.radiusMeters) {
               isLocationVerified = true;
               statusText.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 تم التأكد من تواجدك الجغرافي بـ (${escapeHTML(studentCenter)}) بنجاح! (نسبة الدقة: ±${accuracyRadius}m).</span>`;
               document.getElementById('session-code-container').classList.remove('hidden');
@@ -1667,7 +1846,7 @@
               isLocationVerified = false;
               document.getElementById('session-code-container').classList.add('hidden');
               const distMetersRounded = Math.round(distanceMeters);
-              alert(`🚫 عذراً! أنت تتواجد خارج نطاق (${targetCoords.radiusMeters} متر) لـ (${studentCenter})!\nالمسافة بينك وبين السنتر حالياً: ${distMetersRounded} متراً.`);
+              alert(`🚫 عذراً! أنت تتواجد خارج نطاق (${centerConfig.radiusMeters} متر) لـ (${studentCenter})!\nالمسافة بينك وبين السنتر حالياً: ${distMetersRounded} متراً.`);
               statusText.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🔴 أنت خارج نطاق السنتر الجغرافي (على مسافة ${distMetersRounded} متر)!</span>`;
               verifyBtn.disabled = false;
               verifyBtn.innerText = "📍 إعادة التحقق من موقعي الآن";
@@ -1776,7 +1955,6 @@
       document.getElementById('student-step-1').classList.remove('hidden');
     }
 
-    // 🔒 دالة حفظ الحضور المؤمنة
     async function submitSessionCode() {
       if (!isFromQR) {
         alert("🚫 خطأ أمني: مسح كود الـ QR الخاص بالقاعة إجباري لتتمكن من الحضور!");
@@ -1784,8 +1962,9 @@
       }
 
       const studentCenter = currentStudent.center;
+      const centerConfig = DEFAULT_SETTINGS.centers[studentCenter] || { gpsEnabled: false };
 
-      if ((studentCenter === 'سنتر كفر رجب' || studentCenter === 'كفر تصفا') && !isLocationVerified) {
+      if (centerConfig.gpsEnabled && !isLocationVerified) {
         alert(`🚫 خطأ أمني: يجب أولاً تأكيد تواجدك الجغرافي داخل (${studentCenter}) عبر الـ GPS!`);
         return;
       }
@@ -1814,7 +1993,7 @@
         });
 
         if (!validSession) {
-          alert(`❌ كود الحصة غير صحيح أو غير مخصص لـ (${studentCenter}) أو انتهت مدة تفعيله (20 دقيقة)!`);
+          alert(`❌ كود الحصة غير صحيح أو غير مخصص لـ (${studentCenter}) أو انتهت مدة تفعيله!`);
           return;
         }
 
@@ -1849,10 +2028,9 @@
       }
     }
 
-    // 🔑 كلمة المرور المعينة: amir4211
     function unlockTeacherDashboard() {
       const pass = document.getElementById('teacher-password').value.trim();
-      if (pass === "amir4211") {
+      if (pass === DEFAULT_SETTINGS.adminPassword) {
         isTeacherUnlocked = true;
         document.getElementById('teacher-lock-screen').classList.add('hidden');
         document.getElementById('teacher-content').classList.remove('hidden');
@@ -1861,6 +2039,101 @@
       } else {
         alert("❌ كلمة السر غير صحيحة!");
       }
+    }
+
+    function unlockAdminDashboard() {
+      const pass = document.getElementById('admin-password').value.trim();
+      if (pass === DEFAULT_SETTINGS.adminPassword) {
+        isAdminUnlocked = true;
+        document.getElementById('admin-lock-screen').classList.add('hidden');
+        document.getElementById('admin-content').classList.remove('hidden');
+        populateAdminFields();
+      } else {
+        alert("❌ كلمة السر غير صحيحة!");
+      }
+    }
+
+    function populateAdminFields() {
+      document.getElementById('setting-code-timeout').value = DEFAULT_SETTINGS.codeTimeoutMinutes;
+      document.getElementById('setting-admin-pass').value = DEFAULT_SETTINGS.adminPassword;
+
+      const kr = DEFAULT_SETTINGS.centers['سنتر كفر رجب'];
+      document.getElementById('setting-gps-kafr-ragab').checked = kr.gpsEnabled;
+      document.getElementById('setting-lat-kafr-ragab').value = kr.lat;
+      document.getElementById('setting-lng-kafr-ragab').value = kr.lng;
+      document.getElementById('setting-radius-kafr-ragab').value = kr.radiusMeters;
+
+      const kt = DEFAULT_SETTINGS.centers['كفر تصفا'];
+      document.getElementById('setting-gps-kafr-tasfa').checked = kt.gpsEnabled;
+      document.getElementById('setting-lat-kafr-tasfa').value = kt.lat;
+      document.getElementById('setting-lng-kafr-tasfa').value = kt.lng;
+      document.getElementById('setting-radius-kafr-tasfa').value = kt.radiusMeters;
+
+      const et = DEFAULT_SETTINGS.centers['التلين'];
+      document.getElementById('setting-gps-eltaleen').checked = et.gpsEnabled;
+      document.getElementById('setting-lat-eltaleen').value = et.lat;
+      document.getElementById('setting-lng-eltaleen').value = et.lng;
+      document.getElementById('setting-radius-eltaleen').value = et.radiusMeters;
+    }
+
+    async function resetStudentEditLimit() {
+      const phone = document.getElementById('admin-student-search-phone').value.trim();
+      if (!phone) {
+        alert("يرجى إدخال رقم هاتف الطالب أولاً!");
+        return;
+      }
+
+      try {
+        const docRef = db.collection('students').doc(phone);
+        const doc = await docRef.get();
+        if (!doc.exists) {
+          alert("❌ لم يتم العثور على طالب بهذا الرقم!");
+          return;
+        }
+
+        await docRef.update({ editCount: 0 });
+        alert(`✅ تم تصفير محاولات التعديل للطالب برقم (${phone}) بنجاح!`);
+        document.getElementById('admin-student-search-phone').value = '';
+      } catch (e) {
+        alert("❌ حدث خطأ: " + e.message);
+      }
+    }
+
+    function clearSystemLockouts() {
+      sessionStorage.removeItem('history_app_refresh_tracker');
+      alert("✅ تم فك حظر الريفريش المؤقت وإلغائه بنجاح!");
+    }
+
+    function saveAdminSettings() {
+      const timeoutVal = parseInt(document.getElementById('setting-code-timeout').value) || 20;
+      const passVal = document.getElementById('setting-admin-pass').value.trim() || "amir4211";
+
+      DEFAULT_SETTINGS.codeTimeoutMinutes = timeoutVal;
+      DEFAULT_SETTINGS.adminPassword = passVal;
+
+      DEFAULT_SETTINGS.centers['سنتر كفر رجب'] = {
+        gpsEnabled: document.getElementById('setting-gps-kafr-ragab').checked,
+        lat: parseFloat(document.getElementById('setting-lat-kafr-ragab').value),
+        lng: parseFloat(document.getElementById('setting-lng-kafr-ragab').value),
+        radiusMeters: parseInt(document.getElementById('setting-radius-kafr-ragab').value)
+      };
+
+      DEFAULT_SETTINGS.centers['كفر تصفا'] = {
+        gpsEnabled: document.getElementById('setting-gps-kafr-tasfa').checked,
+        lat: parseFloat(document.getElementById('setting-lat-kafr-tasfa').value),
+        lng: parseFloat(document.getElementById('setting-lng-kafr-tasfa').value),
+        radiusMeters: parseInt(document.getElementById('setting-radius-kafr-tasfa').value)
+      };
+
+      DEFAULT_SETTINGS.centers['التلين'] = {
+        gpsEnabled: document.getElementById('setting-gps-eltaleen').checked,
+        lat: parseFloat(document.getElementById('setting-lat-eltaleen').value),
+        lng: parseFloat(document.getElementById('setting-lng-eltaleen').value),
+        radiusMeters: parseInt(document.getElementById('setting-radius-eltaleen').value)
+      };
+
+      localStorage.setItem('history_app_admin_settings', JSON.stringify(DEFAULT_SETTINGS));
+      alert("✅ تم حفظ الإعدادات الجديدة وتطبيقها على كامل المنصة بنجاح!");
     }
 
     function generateCenterQRCode() {
@@ -1881,7 +2154,8 @@
 
       try {
         const now = Date.now();
-        const expiresAt = now + (20 * 60 * 1000);
+        const timeoutMinutes = DEFAULT_SETTINGS.codeTimeoutMinutes || 20;
+        const expiresAt = now + (timeoutMinutes * 60 * 1000);
 
         await db.collection('sessions').add({
           stage: stage,
@@ -1891,7 +2165,7 @@
           expiresAt: expiresAt
         });
 
-        alert(`✅ تم تنشيط ونشر كود الحصة (${code}) لمرحلة (${stage}) بـ (${selectedTeacherCenter}) بنجاح!\n(ينتهي الكود تلقائياً بعد 20 دقيقة).`);
+        alert(`✅ تم تنشيط ونشر كود الحصة (${code}) لمرحلة (${stage}) بـ (${selectedTeacherCenter}) بنجاح!\n(ينتهي الكود تلقائياً بعد ${timeoutMinutes} دقيقة).`);
         codeInput.value = '';
         fetchTeacherStageData();
       } catch (error) {
