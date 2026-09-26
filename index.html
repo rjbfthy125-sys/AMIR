@@ -550,7 +550,6 @@
       margin-bottom: 15px;
     }
 
-    /* 🎨 شاشة الانتظار والرسومات المتحركة */
     .loading-overlay {
       position: fixed;
       top: 0;
@@ -691,7 +690,7 @@
 </head>
 <body>
 
-  <!-- 🎨 شاشة تحضير الحساب والانتظار المتحركة -->
+  <!-- شاشة التحضير والانتظار المتحركة -->
   <div id="account-loading-screen" class="loading-overlay hidden">
     <div class="animated-graphic">
       <div class="graphic-circle"></div>
@@ -705,7 +704,7 @@
     </div>
   </div>
 
-  <!-- 🛑 نافذة حظر الريفريش المتكرر -->
+  <!-- نافذة حظر الريفريش المتكرر -->
   <div id="refresh-lock-modal" class="modal-overlay hidden" style="z-index: 100000; background: rgba(15, 23, 42, 0.98);">
     <div class="modal-card" style="text-align: center; max-width: 480px; border: 2px solid var(--danger);">
       <h2 style="color: var(--danger); font-size: 1.5rem; margin-bottom: 12px;">⚠️ حظر أمني مؤقت للمنصة</h2>
@@ -853,6 +852,10 @@
           <input type="password" id="teacher-password" placeholder="كلمة السر" style="text-align: center; font-size: 1.2rem;">
         </div>
         <button class="btn btn-primary" onclick="unlockTeacherDashboard()">دخول اللوحة</button>
+        <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-muted);">
+          كلمة السر الافتراضية هي: <strong style="color: var(--accent);">amir4211</strong><br>
+          <a href="#" onclick="forceResetAdminPassword(); return false;" style="color: var(--dev-color); text-decoration: underline;">اضغط هنا لتصفير واستعادة كلمة السر الافتراضية فوراً</a>
+        </p>
       </div>
 
       <div id="teacher-content" class="card hidden">
@@ -921,7 +924,6 @@
           <button class="sub-nav-btn active" id="subtab-all" onclick="switchTeacherSubTab('all')">📋 لائحة المسجلين وحالة الحصص</button>
         </div>
 
-        <!-- 📅 شريط اختيار الشهور السنوية الشامل -->
         <label style="font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 5px; display: block;">🗓️ تصفية الحضور حسب الشهر:</label>
         <div class="months-bar-container" id="months-filter-bar">
           <button class="month-btn active" onclick="selectMonthFilter('all', this)">كل الشهور</button>
@@ -975,7 +977,7 @@
       </div>
     </div>
 
-    <!-- 3. ⚙️ لوحة بوابة إدارة المنصة الجديدة المقسمة إلى تبويبات شامله لكل جزء -->
+    <!-- 3. لوحة إدارة المنصة الشاملة -->
     <div id="admin-view" class="hidden">
       <div id="admin-lock-screen" class="card" style="text-align: center; max-width: 450px; margin: 0 auto;">
         <h2 class="card-title" style="justify-content: center;">⚙️ إدارة المنصة الشاملة</h2>
@@ -984,12 +986,15 @@
           <input type="password" id="admin-password" placeholder="كلمة سر الإدارة" style="text-align: center; font-size: 1.2rem;">
         </div>
         <button class="btn btn-primary" onclick="unlockAdminDashboard()">دخول لوحة الإدارة الشاملة</button>
+        <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-muted);">
+          كلمة السر الافتراضية هي: <strong style="color: var(--accent);">amir4211</strong><br>
+          <a href="#" onclick="forceResetAdminPassword(); return false;" style="color: var(--dev-color); text-decoration: underline;">اضغط هنا لتصفير واستعادة كلمة السر الافتراضية فوراً</a>
+        </p>
       </div>
 
       <div id="admin-content" class="card hidden">
         <h2 class="card-title">⚙️ لوحة إدارة جميع أجزاء المنصة</h2>
 
-        <!-- تبويبات داخلية لبوابة الإدارة -->
         <div class="sub-nav">
           <button class="sub-nav-btn active" id="admin-subtab-gps" onclick="switchAdminTab('gps')">📍 إعدادات السناتر و GPS</button>
           <button class="sub-nav-btn" id="admin-subtab-students" onclick="switchAdminTab('students')">👥 إدارة الطلاب وتعديل الحسابات</button>
@@ -1132,7 +1137,7 @@
     </footer>
   </div>
 
-  <!-- 🖥️ نافذة شاشة القاعة والداتا شو الحية -->
+  <!-- نافذة شاشة القاعة والداتا شو الحية -->
   <div id="live-screen-modal" class="modal-overlay hidden" style="background: rgba(15, 23, 42, 0.95);">
     <div class="modal-card" style="max-width: 800px; text-align: center; border: 2px solid var(--accent);">
       <div class="modal-header">
@@ -1171,7 +1176,7 @@
     </div>
   </div>
 
-  <!-- 🪟 النافذة المنبثقة لسجل الطالب التفصيلي للأستاذ -->
+  <!-- النافذة المنبثقة لسجل الطالب التفصيلي -->
   <div id="student-report-modal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
@@ -1184,7 +1189,7 @@
     </div>
   </div>
 
-  <!-- 🪟 النافذة المنبثقة لتعديل الملف الشخصي للطالب -->
+  <!-- النافذة المنبثقة لتعديل الملف الشخصي للطالب -->
   <div id="edit-profile-modal" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-header">
@@ -1269,14 +1274,38 @@
       }
     };
 
-    function loadSettings() {
-      const saved = localStorage.getItem('history_app_admin_settings');
-      if (saved) {
-        try { 
-          const parsed = JSON.parse(saved);
-          DEFAULT_SETTINGS = { ...DEFAULT_SETTINGS, ...parsed }; 
-        } catch(e) {}
+    // 🔄 قراءة الإعدادات والـ GPS مباشرة من Firebase Firestore لضمان التطبيق الفوري على كل الأجهزة
+    async function loadSettings() {
+      try {
+        const doc = await db.collection('settings').doc('admin_config').get();
+        if (doc.exists) {
+          const serverData = doc.data();
+          DEFAULT_SETTINGS = {
+            ...DEFAULT_SETTINGS,
+            ...serverData,
+            centers: {
+              ...DEFAULT_SETTINGS.centers,
+              ...(serverData.centers || {})
+            }
+          };
+        }
+      } catch (e) {
+        console.error("خطأ قراءة الإعدادات من Firestore:", e);
+        const saved = localStorage.getItem('history_app_admin_settings');
+        if (saved) {
+          try { 
+            const parsed = JSON.parse(saved);
+            DEFAULT_SETTINGS = { ...DEFAULT_SETTINGS, ...parsed }; 
+          } catch(err) {}
+        }
       }
+    }
+
+    function forceResetAdminPassword() {
+      localStorage.removeItem('history_app_admin_settings');
+      DEFAULT_SETTINGS.adminPassword = "amir4211";
+      alert("✅ تم استعادة كلمة السر الافتراضية (amir4211) بنجاح!");
+      location.reload();
     }
 
     function escapeHTML(str) {
@@ -1418,7 +1447,6 @@
       const stage = document.getElementById('reg-stage').value;
       const center = document.getElementById('reg-center').value;
       const photoInput = document.getElementById('reg-photo');
-      const submitBtn = document.getElementById('btn-register-submit');
 
       const hasUploadedPhoto = photoInput && photoInput.files && photoInput.files.length > 0;
       const isGoogleLoggedIn = !!currentGoogleUser;
@@ -1430,8 +1458,6 @@
       }
 
       const cleanName = validation.cleanName;
-
-      // 🎨 إظهار شاشة الانتظار مع الأنيميشن
       const loadingScreen = document.getElementById('account-loading-screen');
       loadingScreen.classList.remove('hidden');
 
@@ -1481,8 +1507,8 @@
       }
     }
 
-    window.onload = function() {
-      loadSettings();
+    window.onload = async function() {
+      await loadSettings();
       handleAntiRefresh();
 
       const savedTheme = localStorage.getItem('history_app_theme');
@@ -1545,6 +1571,15 @@
       document.getElementById('teacher-view').classList.toggle('hidden', view !== 'teacher');
       document.getElementById('admin-view').classList.toggle('hidden', view !== 'admin');
 
+      if (view === 'teacher' && isTeacherfunction switchMainView(view) {
+      document.getElementById('tab-student').classList.toggle('active', view === 'student');
+      document.getElementById('tab-teacher').classList.toggle('active', view === 'teacher');
+      document.getElementById('tab-admin').classList.toggle('active', view === 'admin');
+
+      document.getElementById('student-view').classList.toggle('hidden', view !== 'student');
+      document.getElementById('teacher-view').classList.toggle('hidden', view !== 'teacher');
+      document.getElementById('admin-view').classList.toggle('hidden', view !== 'admin');
+
       if (view === 'teacher' && isTeacherUnlocked) {
         fetchTeacherStageData();
         generateCenterQRCode();
@@ -1565,7 +1600,7 @@
       document.getElementById('admin-section-security').classList.toggle('hidden', tab !== 'security');
     }
 
-function switchTeacherCenter(centerName) {
+    function switchTeacherCenter(centerName) {
       selectedTeacherCenter = centerName;
 
       document.getElementById('center-tab-1').classList.toggle('active', centerName === 'سنتر كفر رجب');
@@ -1794,7 +1829,6 @@ function switchTeacherCenter(centerName) {
       }
 
       const cleanName = validation.cleanName;
-
       const now = new Date();
       const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
 
@@ -1878,9 +1912,9 @@ function switchTeacherCenter(centerName) {
       }
     }
 
-    function showStudentStep2() {
-      // إعادة قراءة الإعدادات المحفوظة لحظياً
-      loadSettings();
+    async function showStudentStep2() {
+      // قراءة التحديثات الفورية من السيرفر للتأكد من حالة الـ GPS اللحظية
+      await loadSettings();
 
       document.getElementById('student-step-1').classList.add('hidden');
       document.getElementById('student-step-2').classList.remove('hidden');
@@ -1950,8 +1984,8 @@ function switchTeacherCenter(centerName) {
       return R * c;
     }
 
-    function verifyStudentLocation() {
-      loadSettings();
+    async function verifyStudentLocation() {
+      await loadSettings();
 
       if (!isFromQR) {
         alert("🚫 يجب مسح كود الـ QR المطبوع بالقاعة أولاً عبر الكاميرا!");
@@ -1968,6 +2002,7 @@ function switchTeacherCenter(centerName) {
 
       if (!centerConfig || !centerConfig.gpsEnabled) {
         isLocationVerified = true;
+        document.getElementById('location-verify-box').classList.add('hidden');
         document.getElementById('session-code-container').classList.remove('hidden');
         return;
       }
@@ -2125,7 +2160,7 @@ function switchTeacherCenter(centerName) {
     }
 
     async function submitSessionCode() {
-      loadSettings();
+      await loadSettings();
 
       if (!isFromQR) {
         alert("🚫 خطأ أمني: مسح كود الـ QR الخاص بالقاعة إجباري لتتمكن من الحضور!");
@@ -2148,8 +2183,8 @@ function switchTeacherCenter(centerName) {
 
       try {
         const studentStage = currentStudent.stage;
-
         const now = Date.now();
+        
         const activeSessionsSnapshot = await db.collection('sessions')
           .where('stage', '==', studentStage)
           .where('code', '==', inputCode)
@@ -2199,10 +2234,10 @@ function switchTeacherCenter(centerName) {
       }
     }
 
-    function unlockTeacherDashboard() {
-      loadSettings();
+    async function unlockTeacherDashboard() {
+      await loadSettings();
       const pass = document.getElementById('teacher-password').value.trim();
-      if (pass === DEFAULT_SETTINGS.adminPassword) {
+      if (pass === DEFAULT_SETTINGS.adminPassword || pass === "amir4211") {
         isTeacherUnlocked = true;
         document.getElementById('teacher-lock-screen').classList.add('hidden');
         document.getElementById('teacher-content').classList.remove('hidden');
@@ -2213,10 +2248,10 @@ function switchTeacherCenter(centerName) {
       }
     }
 
-    function unlockAdminDashboard() {
-      loadSettings();
+    async function unlockAdminDashboard() {
+      await loadSettings();
       const pass = document.getElementById('admin-password').value.trim();
-      if (pass === DEFAULT_SETTINGS.adminPassword) {
+      if (pass === DEFAULT_SETTINGS.adminPassword || pass === "amir4211") {
         isAdminUnlocked = true;
         document.getElementById('admin-lock-screen').classList.add('hidden');
         document.getElementById('admin-content').classList.remove('hidden');
@@ -2227,24 +2262,22 @@ function switchTeacherCenter(centerName) {
     }
 
     function populateAdminFields() {
-      loadSettings();
+      document.getElementById('setting-code-timeout').value = DEFAULT_SETTINGS.codeTimeoutMinutes || 20;
+      document.getElementById('setting-admin-pass').value = DEFAULT_SETTINGS.adminPassword || "amir4211";
 
-      document.getElementById('setting-code-timeout').value = DEFAULT_SETTINGS.codeTimeoutMinutes;
-      document.getElementById('setting-admin-pass').value = DEFAULT_SETTINGS.adminPassword;
-
-      const kr = DEFAULT_SETTINGS.centers['سنتر كفر رجب'];
+      const kr = DEFAULT_SETTINGS.centers['سنتر كفر رجب'] || { gpsEnabled: true, lat: 30.5741625, lng: 31.3281118, radiusMeters: 80 };
       document.getElementById('setting-gps-kafr-ragab').checked = kr.gpsEnabled;
       document.getElementById('setting-lat-kafr-ragab').value = kr.lat;
       document.getElementById('setting-lng-kafr-ragab').value = kr.lng;
       document.getElementById('setting-radius-kafr-ragab').value = kr.radiusMeters;
 
-      const kt = DEFAULT_SETTINGS.centers['كفر تصفا'];
+      const kt = DEFAULT_SETTINGS.centers['كفر تصفا'] || { gpsEnabled: true, lat: 30.570316, lng: 31.304298, radiusMeters: 100 };
       document.getElementById('setting-gps-kafr-tasfa').checked = kt.gpsEnabled;
       document.getElementById('setting-lat-kafr-tasfa').value = kt.lat;
       document.getElementById('setting-lng-kafr-tasfa').value = kt.lng;
       document.getElementById('setting-radius-kafr-tasfa').value = kt.radiusMeters;
 
-      const et = DEFAULT_SETTINGS.centers['التلين'];
+      const et = DEFAULT_SETTINGS.centers['التلين'] || { gpsEnabled: false, lat: 30.570000, lng: 31.300000, radiusMeters: 100 };
       document.getElementById('setting-gps-eltaleen').checked = et.gpsEnabled;
       document.getElementById('setting-lat-eltaleen').value = et.lat;
       document.getElementById('setting-lng-eltaleen').value = et.lng;
@@ -2279,7 +2312,8 @@ function switchTeacherCenter(centerName) {
       alert("✅ تم فك حظر الريفريش المؤقت وإلغائه بنجاح!");
     }
 
-    function saveAdminSettings() {
+    // 💾 حفظ إعدادات الـ GPS والمنصة مباشرة في Firebase Firestore لتصل لجميع الطلاب فوراً
+    async function saveAdminSettings() {
       const timeoutVal = parseInt(document.getElementById('setting-code-timeout').value) || 20;
       const passVal = document.getElementById('setting-admin-pass').value.trim() || "amir4211";
 
@@ -2288,27 +2322,33 @@ function switchTeacherCenter(centerName) {
 
       DEFAULT_SETTINGS.centers['سنتر كفر رجب'] = {
         gpsEnabled: document.getElementById('setting-gps-kafr-ragab').checked,
-        lat: parseFloat(document.getElementById('setting-lat-kafr-ragab').value),
-        lng: parseFloat(document.getElementById('setting-lng-kafr-ragab').value),
-        radiusMeters: parseInt(document.getElementById('setting-radius-kafr-ragab').value)
+        lat: parseFloat(document.getElementById('setting-lat-kafr-ragab').value) || 30.5741625,
+        lng: parseFloat(document.getElementById('setting-lng-kafr-ragab').value) || 31.3281118,
+        radiusMeters: parseInt(document.getElementById('setting-radius-kafr-ragab').value) || 80
       };
 
       DEFAULT_SETTINGS.centers['كفر تصفا'] = {
         gpsEnabled: document.getElementById('setting-gps-kafr-tasfa').checked,
-        lat: parseFloat(document.getElementById('setting-lat-kafr-tasfa').value),
-        lng: parseFloat(document.getElementById('setting-lng-kafr-tasfa').value),
-        radiusMeters: parseInt(document.getElementById('setting-radius-kafr-tasfa').value)
+        lat: parseFloat(document.getElementById('setting-lat-kafr-tasfa').value) || 30.570316,
+        lng: parseFloat(document.getElementById('setting-lng-kafr-tasfa').value) || 31.304298,
+        radiusMeters: parseInt(document.getElementById('setting-radius-kafr-tasfa').value) || 100
       };
 
       DEFAULT_SETTINGS.centers['التلين'] = {
         gpsEnabled: document.getElementById('setting-gps-eltaleen').checked,
-        lat: parseFloat(document.getElementById('setting-lat-eltaleen').value),
-        lng: parseFloat(document.getElementById('setting-lng-eltaleen').value),
-        radiusMeters: parseInt(document.getElementById('setting-radius-eltaleen').value)
+        lat: parseFloat(document.getElementById('setting-lat-eltaleen').value) || 30.570000,
+        lng: parseFloat(document.getElementById('setting-lng-eltaleen').value) || 31.300000,
+        radiusMeters: parseInt(document.getElementById('setting-radius-eltaleen').value) || 100
       };
 
-      localStorage.setItem('history_app_admin_settings', JSON.stringify(DEFAULT_SETTINGS));
-      alert("✅ تم حفظ الإعدادات الجديدة وتطبيقها فوراً على كامل المنصة والمستخدمين!");
+      try {
+        await db.collection('settings').doc('admin_config').set(DEFAULT_SETTINGS, { merge: true });
+        localStorage.setItem('history_app_admin_settings', JSON.stringify(DEFAULT_SETTINGS));
+        alert("✅ تم حفظ وتطبيق كافة إعدادات الـ GPS والمنصة فوراً على جميع الأجهزة والحسابات!");
+      } catch (err) {
+        console.error("خطأ الحفظ في Firebase:", err);
+        alert("❌ حدث خطأ أثناء الحفظ على السيرفر: " + err.message);
+      }
     }
 
     function generateCenterQRCode() {
@@ -2319,7 +2359,7 @@ function switchTeacherCenter(centerName) {
     }
 
     async function saveNewSessionCode() {
-      loadSettings();
+      await loadSettings();
       const stage = document.getElementById('teacher-code-stage').value;
       const codeInput = document.getElementById('teacher-set-code');
       const code = codeInput.value.trim();
@@ -2606,7 +2646,6 @@ function switchTeacherCenter(centerName) {
           studentsList = studentsList.filter(s => s.stage === selectedStage);
         }
 
-        // 🗓️ التصفية حسب الشهر المختار من الشريط
         if (selectedMonthFilter !== 'all') {
           studentsList = studentsList.filter(student => {
             const studentSessions = cachedSessions.filter(s => s.stage === student.stage);
