@@ -1366,7 +1366,7 @@
       }, 1000);
     }
 
-    function resetStudentQRScan() {
+    async function resetStudentQRScan() {
       const confirmReset = confirm("هل تريد إعادة مسح الـ QR Code من جديد لتنشيط الكاميرا والحساس؟");
       if (!confirmReset) return;
 
@@ -1377,7 +1377,7 @@
       const newUrl = window.location.origin + window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
 
-      showStudentStep2();
+      await showStudentStep2();
       alert("🔄 تم إعادة التعيين بنجاح! يمكنك الآن إعادة مسح الـ QR Code الخاص بالقاعة.");
     }
 
@@ -1494,10 +1494,10 @@
 
         localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
         
-        setTimeout(() => {
+        setTimeout(async () => {
           loadingScreen.classList.add('hidden');
           alert(`أهلاً بك يا ${currentStudent.name}! تم انضمامك للمنصة بنجاح بـ (${currentStudent.center}).`);
-          showStudentStep2();
+          await showStudentStep2();
         }, 1800);
 
       } catch (error) {
@@ -1526,7 +1526,7 @@
       if (savedStudent) {
         try {
           currentStudent = JSON.parse(savedStudent);
-          checkStudentStatusAndLoad();
+          await checkStudentStatusAndLoad();
         } catch(e) {
           localStorage.removeItem('history_app_student');
         }
@@ -1547,11 +1547,11 @@
         } else {
           currentStudent = studentDoc.data();
           localStorage.setItem('history_app_student', JSON.stringify(currentStudent));
-          showStudentStep2();
+          await showStudentStep2();
         }
       } catch (err) {
         console.error("خطأ فحص حالة الطالب:", err);
-        showStudentStep2();
+        await showStudentStep2();
       }
     }
 
@@ -1562,16 +1562,7 @@
       localStorage.setItem('history_app_theme', isDark ? 'dark' : 'light');
     }
 
-    function switchMainView(view) {
-      document.getElementById('tab-student').classList.toggle('active', view === 'student');
-      document.getElementById('tab-teacher').classList.toggle('active', view === 'teacher');
-      document.getElementById('tab-admin').classList.toggle('active', view === 'admin');
-
-      document.getElementById('student-view').classList.toggle('hidden', view !== 'student');
-      document.getElementById('teacher-view').classList.toggle('hidden', view !== 'teacher');
-      document.getElementById('admin-view').classList.toggle('hidden', view !== 'admin');
-
-      if (view === 'teacher' && isTeacherfunction switchMainView(view) {
+    async function switchMainView(view) {
       document.getElementById('tab-student').classList.toggle('active', view === 'student');
       document.getElementById('tab-teacher').classList.toggle('active', view === 'teacher');
       document.getElementById('tab-admin').classList.toggle('active', view === 'admin');
@@ -1586,7 +1577,7 @@
       } else if (view === 'admin' && isAdminUnlocked) {
         populateAdminFields();
       } else if (view === 'student' && currentStudent) {
-        checkStudentStatusAndLoad();
+        await checkStudentStatusAndLoad();
       }
     }
 
@@ -1897,7 +1888,7 @@
 
         alert(`✅ تم تحديث بياناتك بنجاح!`);
         closeEditProfileModal();
-        showStudentStep2();
+        await showStudentStep2();
 
         if (isTeacherUnlocked) {
           renderTeacherData();
@@ -1912,6 +1903,7 @@
       }
     }
 
+    // 🌟 تم تعديل الدالة لتصبح async وتستجيب للتحديثات في الوقت الفعلي
     async function showStudentStep2() {
       // قراءة التحديثات الفورية من السيرفر للتأكد من حالة الـ GPS اللحظية
       await loadSettings();
@@ -2160,6 +2152,7 @@
     }
 
     async function submitSessionCode() {
+      // إعادة جلب آخر حالة للإعدادات من Firebase لمنع التخطيات
       await loadSettings();
 
       if (!isFromQR) {
