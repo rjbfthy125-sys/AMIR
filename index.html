@@ -67,6 +67,24 @@
       padding: 20px 15px;
       direction: rtl;
       min-height: 100vh;
+      position: relative;
+    }
+
+    /* 🌟 أنيميشن خلفية المنصة الهادئ */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(217, 119, 6, 0.03) 0%, transparent 40%),
+                  radial-gradient(circle at 80% 80%, rgba(2, 132, 199, 0.03) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: -1;
+      animation: pulseBg 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseBg {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
     }
 
     .container {
@@ -628,6 +646,56 @@
 
     @keyframes fillBar { 100% { width: 100%; } }
 
+    /* 🤖 تنسيقات الروبوت المساعد التفاعلي */
+    .bot-floating-wrapper {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      animation: floatBot 3s ease-in-out infinite;
+    }
+
+    .bot-avatar {
+      font-size: 3.2rem;
+      cursor: pointer;
+      filter: drop-shadow(0 10px 15px rgba(217, 119, 6, 0.3));
+      transition: transform 0.3s ease;
+      user-select: none;
+    }
+
+    .bot-avatar:hover {
+      transform: scale(1.15) rotate(5deg);
+    }
+
+    .bot-speech-bubble {
+      background: var(--card-bg);
+      color: var(--primary);
+      border: 2px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 18px;
+      border-bottom-left-radius: 2px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      max-width: 230px;
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 8px;
+      animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      line-height: 1.4;
+    }
+
+    @keyframes floatBot {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
     footer {
       text-align: center;
       margin-top: 40px;
@@ -685,10 +753,21 @@
       .qr-print-card { width: 100%; padding: 15px 10px; }
       .user-welcome-box { padding: 15px; flex-direction: column; align-items: flex-start; }
       .modal-card { padding: 18px 14px; }
+      .bot-floating-wrapper { bottom: 15px; left: 15px; }
+      .bot-avatar { font-size: 2.6rem; }
+      .bot-speech-bubble { max-width: 180px; font-size: 0.8rem; padding: 10px 12px; }
     }
   </style>
 </head>
 <body>
+
+  <!-- 🤖 الروبوت التفاعلي المساعد للمنصة -->
+  <div id="interactive-bot-container" class="bot-floating-wrapper">
+    <div class="bot-speech-bubble" id="bot-bubble">
+      أهلاً بك يا بطل! 📚 اضغط عليّ للذهاب لخانة تسجيل الدخول بالمنصة ✨
+    </div>
+    <div class="bot-avatar" onclick="scrollToLogin()">🤖</div>
+  </div>
 
   <!-- شاشة التحضير والانتظار المتحركة -->
   <div id="account-loading-screen" class="loading-overlay hidden">
@@ -1273,6 +1352,35 @@
       }
     };
 
+    // 🤖 دوال الروبوت التفاعلي المساعد
+    function scrollToLogin() {
+      const loginCard = document.getElementById('student-step-1');
+      if (loginCard) {
+        loginCard.scrollIntoView({ behavior: 'smooth' });
+        triggerBotMessage("أدخل اسمك الثلاثي ورقم موبايلك للانضمام للمنصة ✍️", "info");
+      }
+    }
+
+    function triggerBotMessage(msg, type = "info") {
+      const bubble = document.getElementById('bot-bubble');
+      if (!bubble) return;
+
+      bubble.innerText = msg;
+      bubble.style.animation = 'none';
+      bubble.offsetHeight; // Reset animation
+      bubble.style.animation = 'popIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55)';
+
+      if (type === "error") {
+        bubble.style.borderColor = "var(--danger)";
+        bubble.style.backgroundColor = "#fee2e2";
+        bubble.style.color = "#991b1b";
+      } else {
+        bubble.style.borderColor = "var(--accent)";
+        bubble.style.backgroundColor = "var(--card-bg)";
+        bubble.style.color = "var(--primary)";
+      }
+    }
+
     // 🔒 مراقبة المصادقة الفورية من الفايربيس (Firebase Auth)
     auth.onAuthStateChanged((user) => {
       const lockTeacher = document.getElementById('teacher-lock-screen');
@@ -1467,29 +1575,35 @@
       // تحقق من الحروف العربية فقط
       const arabicRegex = /^[\u0600-\u06FF\s]+$/;
       if (!cleanName || !arabicRegex.test(cleanName)) {
+        triggerBotMessage("⚠️ اكتب اسمك بالحروف العربية فقط بدون أرقام أو رموز!", "error");
         return { isValid: false, message: "⚠️ يرجى كتابة اسم الطالب بالحروف العربية فقط بدون أرقام أو رموز أجنبية!" };
       }
 
       const nameWords = cleanName.split(' ');
       if (nameWords.length < 3) {
+        triggerBotMessage("⚠️ الاسم يجب أن يكون ثلاثياً على الأقل (مثال: فتحي زكريا فتحي)!", "error");
         return { isValid: false, message: "⚠️ يرجى كتابة الاسم ثلاثي على الأقل (مثال: فتحي زكريا فتحي)!" };
       }
 
       const phoneRegex = /^01[0125][0-9]{8}$/;
       if (!phoneRegex.test(phone)) {
+        triggerBotMessage("⚠️ اكتب رقم هاتف مصري من 11 رقماً يبدأ بـ 010, 011, 012, 015!", "error");
         return { isValid: false, message: "⚠️ يرجى إدخال رقم هاتف مصري صحيح يتكون من 11 رقماً ويبدأ بـ (010, 011, 012, 015)!" };
       }
 
       if (isPhotoRequired && (!photoFile || !photoFile.files || photoFile.files.length === 0)) {
+        triggerBotMessage("⚠️ لا تنسَ إرفاق صورتك الشخصية للانضمام!", "error");
         return { isValid: false, message: "⚠️ رفع الصورة الشخصية إجباري للانضمام للمنصة!" };
       }
 
       if (photoFile && photoFile.files && photoFile.files.length > 0) {
         const file = photoFile.files[0];
         if (!file.type.startsWith('image/')) {
+          triggerBotMessage("⚠️ الملف المرفوع يجب أن يكون صورة فقط!", "error");
           return { isValid: false, message: "⚠️ الملف المرفوع يجب أن يكون صورة فقط (PNG, JPG, JPEG)!" };
         }
         if (file.size > 5 * 1024 * 1024) {
+          triggerBotMessage("⚠️ حجم الصورة كبير، اختر صورة أقل من 5 ميجابايت!", "error");
           return { isValid: false, message: "⚠️ حجم الصورة كبير جداً، يرجى اختيار صورة حجمها أقل من 5 ميجابايت!" };
         }
       }
@@ -1552,6 +1666,7 @@
         
         setTimeout(async () => {
           loadingScreen.classList.add('hidden');
+          triggerBotMessage(`أهلاً بك يا ${currentStudent.name}! تم انضمامك بنجاح 🎉`, "info");
           alert(`أهلاً بك يا ${currentStudent.name}! تم انضمامك للمنصة بنجاح بـ (${currentStudent.center}).`);
           await showStudentStep2();
         }, 1800);
@@ -1566,6 +1681,28 @@
     window.onload = async function() {
       await loadSettings();
       handleAntiRefresh();
+
+      // ربط أحداث الإدخال بالروبوت التفاعلي اللحظي
+      const nameInput = document.getElementById('reg-name');
+      const phoneInput = document.getElementById('reg-phone');
+
+      if (nameInput) {
+        nameInput.addEventListener('blur', function() {
+          const words = this.value.trim().split(/\s+/);
+          if (this.value.trim() && words.length < 3) {
+            triggerBotMessage("⚠️ يرجى كتابة اسمك ثلاثياً على الأقل (مثال: فتحي زكريا فتحي)!", "error");
+          }
+        });
+      }
+
+      if (phoneInput) {
+        phoneInput.addEventListener('blur', function() {
+          const phoneRegex = /^01[0125][0-9]{8}$/;
+          if (this.value.trim() && !phoneRegex.test(this.value.trim())) {
+            triggerBotMessage("⚠️ اكتب رقم هاتف مصري صحيح من 11 رقماً يبدأ بـ 010 أو 011 أو 012 أو 015!", "error");
+          }
+        });
+      }
 
       const savedTheme = localStorage.getItem('history_app_theme');
       if (savedTheme === 'dark') {
@@ -2271,6 +2408,7 @@
           timestamp: new Date().toISOString()
         });
 
+        triggerBotMessage("✨ ممتاز يا بطل! تم تسجيل حضورك بنجاح للدرس!", "info");
         alert("✨ تم تسجيل حضورك بنجاح لهذه الحصة!");
         document.getElementById('session-code').value = '';
         loadStudentSessionsHistory();
