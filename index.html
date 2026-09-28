@@ -71,8 +71,8 @@
       overflow-x: hidden;
     }
 
-    /* 🏹 ⚔️ خلفية العناصر والأيقونات التاريخية المتحركة (أسهم وسيوف ورماح) */
-    .history-bg-decorations {
+    /* 🏹 ⚔️ 🗡️ خلفية الأسلحة والملاهم الحربية المتحركة */
+    .war-bg-decorations {
       position: fixed;
       top: 0;
       left: 0;
@@ -83,40 +83,64 @@
       overflow: hidden;
     }
 
-    .history-icon {
+    .war-icon {
       position: absolute;
-      font-size: 1.8rem;
-      opacity: 0.12;
-      filter: drop-shadow(0 2px 4px rgba(217, 119, 6, 0.3));
-      animation: floatHistoryItems 12s linear infinite;
+      font-size: 2.2rem;
+      opacity: 0.15;
+      filter: drop-shadow(0 4px 8px rgba(217, 119, 6, 0.4));
     }
 
-    .history-icon.arrow { top: 15%; left: 8%; animation-duration: 14s; }
-    .history-icon.sword { top: 60%; left: 5%; animation-duration: 18s; animation-delay: -3s; }
-    .history-icon.spear { top: 25%; right: 7%; animation-duration: 16s; animation-delay: -5s; }
-    .history-icon.shield { top: 75%; right: 8%; animation-duration: 20s; animation-delay: -8s; }
-    .history-icon.scroll { top: 45%; left: 85%; animation-duration: 15s; animation-delay: -2s; }
-
-    @keyframes floatHistoryItems {
-      0% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(10deg); }
-      100% { transform: translateY(0) rotate(0deg); }
+    /* حركة الأسهم المنطلقة */
+    .war-icon.arrow-1 {
+      top: 10%;
+      left: -10%;
+      animation: shootArrow 7s linear infinite;
+    }
+    .war-icon.arrow-2 {
+      top: 45%;
+      left: -10%;
+      animation: shootArrow 9s linear infinite 3s;
     }
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(circle at 20% 20%, rgba(217, 119, 6, 0.03) 0%, transparent 40%),
-                  radial-gradient(circle at 80% 80%, rgba(2, 132, 199, 0.03) 0%, transparent 40%);
-      pointer-events: none;
-      z-index: -1;
-      animation: pulseBg 8s ease-in-out infinite alternate;
+    @keyframes shootArrow {
+      0% { transform: translateX(0) translateY(0) rotate(25deg); opacity: 0; }
+      20% { opacity: 0.25; }
+      80% { opacity: 0.25; }
+      100% { transform: translateX(120vw) translateY(-20vh) rotate(25deg); opacity: 0; }
     }
 
-    @keyframes pulseBg {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.05); }
+    /* حركة السيوف المتقاطعة المعركة */
+    .war-icon.sword-left {
+      top: 70%;
+      left: 6%;
+      animation: battleSwords 5s ease-in-out infinite;
+    }
+    .war-icon.sword-right {
+      top: 25%;
+      right: 6%;
+      animation: battleSwords 6s ease-in-out infinite 1s;
+    }
+
+    @keyframes battleSwords {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.2) rotate(18deg); }
+    }
+
+    /* حركة الرماح المتأرجحة */
+    .war-icon.spear-1 {
+      top: 80%;
+      right: 12%;
+      animation: spearThrust 8s ease-in-out infinite;
+    }
+    .war-icon.spear-2 {
+      top: 18%;
+      left: 12%;
+      animation: spearThrust 10s ease-in-out infinite 2s;
+    }
+
+    @keyframes spearThrust {
+      0%, 100% { transform: translateY(0) rotate(-45deg); }
+      50% { transform: translateY(-18px) rotate(-35deg); }
     }
 
     .container {
@@ -680,7 +704,7 @@
 
     @keyframes fillBar { 100% { width: 100%; } }
 
-    /* 🤖 تنسيقات الروبوت المساعد التفاعلي */
+    /* 🤖 الروبوت التفاعلي المساعد */
     .bot-floating-wrapper {
       position: fixed;
       bottom: 25px;
@@ -795,16 +819,17 @@
 </head>
 <body>
 
-  <!-- 🏹 ⚔️ العناصر التاريخية المتحركة في خلفية المنصة -->
-  <div class="history-bg-decorations">
-    <div class="history-icon arrow">🏹</div>
-    <div class="history-icon sword">⚔️</div>
-    <div class="history-icon spear">🗡️</div>
-    <div class="history-icon shield">🛡️</div>
-    <div class="history-icon scroll">📜</div>
+  <!-- 🏹 ⚔️ 🗡️ الخلفية الحربية والتاريخية المتحركة (أسهم وسيوف ورماح) -->
+  <div class="war-bg-decorations">
+    <div class="war-icon arrow-1">🏹</div>
+    <div class="war-icon arrow-2">🏹</div>
+    <div class="war-icon sword-left">⚔️</div>
+    <div class="war-icon sword-right">⚔️</div>
+    <div class="war-icon spear-1">🗡️</div>
+    <div class="war-icon spear-2">🗡️</div>
   </div>
 
-  <!-- 🤖 الروبوت التفاعلي المساعد للمنصة -->
+  <!-- 🤖 الروبوت المساعد لخدمة الطلاب والدعم -->
   <div id="interactive-bot-container" class="bot-floating-wrapper">
     <div class="bot-speech-bubble" id="bot-bubble">
       أهلاً بك يا بطل! 📚 اضغط عليّ للذهاب لخانة تسجيل الدخول بالمنصة ✨
@@ -987,7 +1012,10 @@
       <div id="teacher-content" class="card hidden">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h2 class="card-title" style="border:none; margin:0;">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
-          <button class="btn btn-subtle" style="width:auto; padding: 6px 14px; color: var(--danger); border-color: var(--danger);" onclick="handleAdminLogout()">تسجيل الخروج 🚪</button>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-primary" style="width:auto; padding: 6px 14px; font-size: 0.85rem;" onclick="openTeacherIssuesModal()">📬 المشاكل والاستفسارات الواردة</button>
+            <button class="btn btn-subtle" style="width:auto; padding: 6px 14px; color: var(--danger); border-color: var(--danger);" onclick="handleAdminLogout()">تسجيل الخروج 🚪</button>
+          </div>
         </div>
         <hr style="margin-bottom: 20px;">
 
@@ -1255,19 +1283,32 @@
     </footer>
   </div>
 
-  <!-- 💬 نافذة إرسال المشكلة أو الاستفسار للروبوت -->
+  <!-- 💬 نافذة كتابة المشكلة المفتوحة بالطالب (حفظ محلي آمن بدون فايربيس) -->
   <div id="bot-support-modal" class="modal-overlay hidden">
     <div class="modal-card" style="max-width: 500px;">
       <div class="modal-header">
-        <h3>💬 اكتب مشكلتك أو استفسارك للروبوت</h3>
+        <h3>💬 اكتب مشكلتك أو استفسارك هنا</h3>
         <button class="close-modal-btn" onclick="closeSupportModal()">✖</button>
       </div>
       <div>
         <div class="form-group">
-          <label for="support-issue-text">ما هي المشكلة التي تواجهها بالمنصة؟</label>
-          <textarea id="support-issue-text" rows="4" placeholder="اكتب مشكلتك بوضوح هنا وسيتولى الأستاذ متابعتها مع حسابك..."></textarea>
+          <label for="support-issue-text">ما هي المشكلة أو السؤال الذي تريد إرساله للأستاذ؟</label>
+          <textarea id="support-issue-text" rows="4" placeholder="اكتب مشكلتك بوضوح هنا وسيتولى الأستاذ متابعتها بنفسه..."></textarea>
         </div>
-        <button class="btn btn-primary" id="btn-submit-issue" onclick="submitStudentIssue()">إرسال المشكلة للدعم الفني 🚀</button>
+        <button class="btn btn-primary" id="btn-submit-issue" onclick="submitStudentIssue()">إرسال وتسجيل المشكلة 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📬 نافذة عرض سجل المشاكل بداخل لوحة الأستاذ -->
+  <div id="teacher-issues-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3>📬 سجل المشاكل والاستفسارات المكتوبة من الطلاب</h3>
+        <button class="close-modal-btn" onclick="closeTeacherIssuesModal()">✖</button>
+      </div>
+      <div id="teacher-issues-list-container">
+        <!-- سيتم التعبئة ديناميكياً -->
       </div>
     </div>
   </div>
@@ -1387,7 +1428,6 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // حفظ الجلسة دائمياً
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
     let currentStudent = null;
@@ -1412,7 +1452,7 @@
       }
     };
 
-    // 🤖 دوال الروبوت التفاعلي المساعد والدعم الفني
+    // 🤖 دوال الروبوت التفاعلي وتخزين المشاكل آمن محلياً
     function handleBotClick() {
       if (currentStudent) {
         openSupportModal();
@@ -1435,7 +1475,7 @@
 
       bubble.innerText = msg;
       bubble.style.animation = 'none';
-      bubble.offsetHeight; // Reset animation
+      bubble.offsetHeight;
       bubble.style.animation = 'popIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55)';
 
       if (type === "error") {
@@ -1458,39 +1498,104 @@
       document.getElementById('bot-support-modal').classList.add('hidden');
     }
 
-    async function submitStudentIssue() {
+    // 🛡️ إرسال المشكلة وحفظها محلياً بأمان (بدون الفايربيس وبدون أي ثغرات)
+    function submitStudentIssue() {
       const issueText = document.getElementById('support-issue-text').value.trim();
       if (!issueText) {
         alert("يرجى كتابة نص المشكلة أولاً!");
         return;
       }
 
-      const submitBtn = document.getElementById('btn-submit-issue');
-      submitBtn.disabled = true;
-      submitBtn.innerText = "جاري الإرسال للدعم الفني... ⏳";
+      // تنقية النص من الرموز الخبيثة للوقاية التامة من XSS
+      const cleanIssueText = escapeHTML(issueText);
+
+      const ticket = {
+        id: 'ticket_' + Date.now(),
+        studentName: currentStudent ? currentStudent.name : 'طالب زائر',
+        studentPhone: currentStudent ? currentStudent.phone : 'غير محدد',
+        studentCenter: currentStudent ? currentStudent.center : 'غير محدد',
+        issue: cleanIssueText,
+        createdAt: new Date().toLocaleString('ar-EG')
+      };
 
       try {
-        await db.collection('support_tickets').add({
-          studentName: currentStudent ? currentStudent.name : 'زائر',
-          studentPhone: currentStudent ? currentStudent.phone : 'غير معروف',
-          studentCenter: currentStudent ? currentStudent.center : 'غير معروف',
-          issue: issueText,
-          createdAt: new Date().toISOString()
-        });
+        let existingTickets = JSON.parse(localStorage.getItem('history_platform_tickets') || '[]');
+        existingTickets.unshift(ticket);
+        localStorage.setItem('history_platform_tickets', JSON.stringify(existingTickets));
 
-        alert("✅ تم إرسال مشكلتك وسيقوم الأستاذ بمراجعتها وحلها فوراً!");
+        alert("✅ تم تسجيل وإرسال مشكلتك للأستاذ بنجاح!");
         closeSupportModal();
-        triggerBotMessage("تم استلام مشكلتك بنجاح وسنتابعها معك! 💬", "info");
-      } catch (err) {
-        console.error("خطأ إرسال المشكلة:", err);
-        alert("❌ تعذر إرسال المشكلة: " + err.message);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "إرسال المشكلة للدعم الفني 🚀";
+        triggerBotMessage("تم تسليم مشكلتك للأستاذ وسيتم مراجعتها! 💬", "info");
+      } catch (e) {
+        alert("❌ تعذر حفظ المشكلة محلياً!");
       }
     }
 
-    // 🔒 مراقبة المصادقة الفورية من الفايربيس (Firebase Auth)
+    // 📬 دوال شاشة الأستاذ لمعاينة المشاكل
+    function openTeacherIssuesModal() {
+      renderTeacherIssuesList();
+      document.getElementById('teacher-issues-modal').classList.remove('hidden');
+    }
+
+    function closeTeacherIssuesModal() {
+      document.getElementById('teacher-issues-modal').classList.add('hidden');
+    }
+
+    function renderTeacherIssuesList() {
+      const container = document.getElementById('teacher-issues-list-container');
+      const tickets = JSON.parse(localStorage.getItem('history_platform_tickets') || '[]');
+
+      if (tickets.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+            📬 لا توجد أي مشاكل أو استفسارات مسجلة من الطلاب حالياً.
+          </div>
+        `;
+        return;
+      }
+
+      let html = `<div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+        <span style="font-weight: bold; color: var(--primary);">عدد المشاكل الواردة: (${tickets.length})</span>
+        <button class="btn btn-danger" style="width: auto; padding: 4px 12px; font-size: 0.8rem;" onclick="clearAllTeacherIssues()">مسح الكافة 🗑️</button>
+      </div>`;
+
+      tickets.forEach(t => {
+        html += `
+          <div style="background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="color: var(--accent); font-size: 0.98rem;">👤 ${escapeHTML(t.studentName)}</strong>
+              <span style="font-size: 0.78rem; color: var(--text-muted);">⏱️ ${escapeHTML(t.createdAt)}</span>
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+              📱 رقم الموبايل: ${escapeHTML(t.studentPhone)} | 🏢 السنتر: ${escapeHTML(t.studentCenter)}
+            </div>
+            <div style="background: var(--card-bg); padding: 10px; border-radius: 8px; font-size: 0.92rem; border-right: 3px solid var(--accent); white-space: pre-wrap;">
+              ${t.issue}
+            </div>
+            <div style="text-align: left; margin-top: 8px;">
+              <button class="btn btn-subtle" style="width: auto; padding: 4px 10px; font-size: 0.78rem; color: var(--danger);" onclick="deleteSingleTeacherIssue('${t.id}')">حذف المشكلة ✖</button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function deleteSingleTeacherIssue(ticketId) {
+      let tickets = JSON.parse(localStorage.getItem('history_platform_tickets') || '[]');
+      tickets = tickets.filter(t => t.id !== ticketId);
+      localStorage.setItem('history_platform_tickets', JSON.stringify(tickets));
+      renderTeacherIssuesList();
+    }
+
+    function clearAllTeacherIssues() {
+      if (confirm("هل أنت متأكد من حذف كافة المشاكل الواردة؟")) {
+        localStorage.removeItem('history_platform_tickets');
+        renderTeacherIssuesList();
+      }
+    }
+
     auth.onAuthStateChanged((user) => {
       const lockTeacher = document.getElementById('teacher-lock-screen');
       const contentTeacher = document.getElementById('teacher-content');
@@ -1520,17 +1625,14 @@
       }
     });
 
-    // 🛡️ تصفية وتقييد إدخال اسم الطالب (حروف عربية ومسافات فقط)
     function sanitizeArabicInput(input) {
       input.value = input.value.replace(/[^\u0600-\u06FF\s]/g, '');
     }
 
-    // 🛡️ تصفية وتقييد إدخال رقم الهاتف (أرقام فقط)
     function sanitizePhoneInput(input) {
       input.value = input.value.replace(/[^0-9]/g, '');
     }
 
-    // 🔑 دالة تسجيل الدخول الآمن للأدمن
     async function handleAdminLogin(e) {
       e.preventDefault();
       const email = document.getElementById('admin-login-email').value.trim();
@@ -1551,7 +1653,6 @@
       }
     }
 
-    // 🚪 تسجيل الخروج
     async function handleAdminLogout() {
       if (confirm("هل تريد تسجيل الخروج من لوحة التحكم؟")) {
         await auth.signOut();
@@ -1681,7 +1782,6 @@
     function validateStudentInput(name, phone, photoFile, isPhotoRequired = true) {
       const cleanName = name.trim().replace(/\s+/g, ' ');
       
-      // تحقق من الحروف العربية فقط
       const arabicRegex = /^[\u0600-\u06FF\s]+$/;
       if (!cleanName || !arabicRegex.test(cleanName)) {
         triggerBotMessage("⚠️ اكتب اسمك بالحروف العربية فقط بدون أرقام أو رموز!", "error");
@@ -1791,7 +1891,6 @@
       await loadSettings();
       handleAntiRefresh();
 
-      // ربط أحداث الإدخال بالروبوت التفاعلي اللحظي
       const nameInput = document.getElementById('reg-name');
       const phoneInput = document.getElementById('reg-phone');
 
