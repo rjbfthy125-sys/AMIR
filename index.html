@@ -758,13 +758,13 @@
         </div>
 
         <div class="form-group">
-          <label for="reg-name">اسم الطالب ثلاثي:</label>
-          <input type="text" id="reg-name" placeholder="مثال: فتحي زكريا فتحي">
+          <label for="reg-name">اسم الطالب ثلاثي (حروف عربية فقط):</label>
+          <input type="text" id="reg-name" placeholder="مثال: فتحي زكريا فتحي" oninput="sanitizeArabicInput(this)">
         </div>
 
         <div class="form-group">
           <label for="reg-phone">رقم الهاتف (11 رقم):</label>
-          <input type="tel" id="reg-phone" placeholder="مثال: 01012345678" maxlength="11">
+          <input type="tel" id="reg-phone" placeholder="مثال: 01012345678" maxlength="11" oninput="sanitizePhoneInput(this)">
         </div>
 
         <div class="form-group">
@@ -846,20 +846,28 @@
 
     <!-- 2. لوحة الأستاذ -->
     <div id="teacher-view" class="hidden">
+      <!-- نموذج تسجيل دخول الأستاذ بالأمان العالي (Firebase Auth) -->
       <div id="teacher-lock-screen" class="card" style="text-align: center; max-width: 450px; margin: 0 auto;">
-        <h2 class="card-title" style="justify-content: center;">🔒 لوحة التحكم محمية</h2>
-        <div class="form-group">
-          <input type="password" id="teacher-password" placeholder="كلمة السر" style="text-align: center; font-size: 1.2rem;">
-        </div>
-        <button class="btn btn-primary" onclick="unlockTeacherDashboard()">دخول اللوحة</button>
-        <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-muted);">
-          كلمة السر الافتراضية : <strong style="color: var(--accent);"></strong><br>
-          
-        </p>
+        <h2 class="card-title" style="justify-content: center;">🔒 لوحة تحكم الأستاذ</h2>
+        <form onsubmit="handleAdminLogin(event)">
+          <div class="form-group">
+            <label style="text-align: right;">البريد الإلكتروني للأدمن:</label>
+            <input type="email" id="admin-login-email" required placeholder="admin@domain.com" style="text-align: center; font-size: 1rem;">
+          </div>
+          <div class="form-group">
+            <label style="text-align: right;">كلمة السر:</label>
+            <input type="password" id="admin-login-password" required placeholder="••••••••" style="text-align: center; font-size: 1.2rem;">
+          </div>
+          <button type="submit" id="btn-admin-login" class="btn btn-primary">تسجيل الدخول إلى اللوحة 🚀</button>
+        </form>
       </div>
 
       <div id="teacher-content" class="card hidden">
-        <h2 class="card-title">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="card-title" style="border:none; margin:0;">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>
+          <button class="btn btn-subtle" style="width:auto; padding: 6px 14px; color: var(--danger); border-color: var(--danger);" onclick="handleAdminLogout()">تسجيل الخروج 🚪</button>
+        </div>
+        <hr style="margin-bottom: 20px;">
 
         <div class="center-tabs-container">
           <button class="center-tab-btn active" id="center-tab-1" onclick="switchTeacherCenter('سنتر كفر رجب')">🏢 سنتر كفر رجب</button>
@@ -981,15 +989,7 @@
     <div id="admin-view" class="hidden">
       <div id="admin-lock-screen" class="card" style="text-align: center; max-width: 450px; margin: 0 auto;">
         <h2 class="card-title" style="justify-content: center;">⚙️ إدارة المنصة الشاملة</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">منطقة التحكم والسيطرة الكاملة لجميع أجزاء المنصة.</p>
-        <div class="form-group">
-          <input type="password" id="admin-password" placeholder="كلمة سر الإدارة" style="text-align: center; font-size: 1.2rem;">
-        </div>
-        <button class="btn btn-primary" onclick="unlockAdminDashboard()">دخول لوحة الإدارة الشاملة</button>
-        <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-muted);">
-          كلمة السر الافتراضية هي: <strong style="color: var(--accent);"></strong><br>
-          
-        </p>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">منطقة التحكم والسيطرة الكاملة لجميع أجزاء المنصة (يتطلب دخول الأدمن).</p>
       </div>
 
       <div id="admin-content" class="card hidden">
@@ -1099,10 +1099,6 @@
         <div id="admin-section-security" class="hidden">
           <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 15px;">🛡️ إعدادات الحظر والأمان اللحظي:</h3>
           <div class="setting-card-item">
-            <div class="form-group">
-              <label for="setting-admin-pass">تغيير كلمة سر لوحة الأستاذ والإدارة:</label>
-              <input type="password" id="setting-admin-pass" value="amir4211">
-            </div>
             <button class="btn btn-danger" style="width: auto; padding: 10px 20px; font-size: 0.9rem;" onclick="clearSystemLockouts()">فك حظر الريفريش المعلق لجميع الأجهزة 🔓</button>
           </div>
         </div>
@@ -1198,13 +1194,13 @@
       </div>
       <div>
         <div class="form-group">
-          <label for="edit-name">الاسم ثلاثي:</label>
-          <input type="text" id="edit-name" placeholder="أدخل اسمك ثلاثي">
+          <label for="edit-name">الاسم ثلاثي (حروف عربية فقط):</label>
+          <input type="text" id="edit-name" placeholder="أدخل اسمك ثلاثي" oninput="sanitizeArabicInput(this)">
         </div>
 
         <div class="form-group">
           <label for="edit-phone">رقم الهاتف (11 رقم):</label>
-          <input type="tel" id="edit-phone" placeholder="أدخل رقم هاتفك" maxlength="11">
+          <input type="tel" id="edit-phone" placeholder="أدخل رقم هاتفك" maxlength="11" oninput="sanitizePhoneInput(this)">
         </div>
 
         <div class="form-group">
@@ -1250,6 +1246,10 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // حفظ الجلسة دائمياً
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
     let currentStudent = null;
     let currentGoogleUser = null; 
@@ -1265,7 +1265,6 @@
     let liveTimerInterval = null;
 
     let DEFAULT_SETTINGS = {
-      adminPassword: "amir4211",
       codeTimeoutMinutes: 20,
       centers: {
         'سنتر كفر رجب': { gpsEnabled: true, lat: 30.5741625, lng: 31.3281118, radiusMeters: 80 },
@@ -1274,7 +1273,74 @@
       }
     };
 
-    // 🔄 قراءة الإعدادات والـ GPS مباشرة من Firebase Firestore لضمان التطبيق الفوري على كل الأجهزة
+    // 🔒 مراقبة المصادقة الفورية من الفايربيس (Firebase Auth)
+    auth.onAuthStateChanged((user) => {
+      const lockTeacher = document.getElementById('teacher-lock-screen');
+      const contentTeacher = document.getElementById('teacher-content');
+      const lockAdmin = document.getElementById('admin-lock-screen');
+      const contentAdmin = document.getElementById('admin-content');
+
+      if (user && user.email.toLowerCase() === "amir4211admin@gmail.com") {
+        isTeacherUnlocked = true;
+        isAdminUnlocked = true;
+
+        if (lockTeacher) lockTeacher.classList.add('hidden');
+        if (contentTeacher) contentTeacher.classList.remove('hidden');
+        if (lockAdmin) lockAdmin.classList.add('hidden');
+        if (contentAdmin) contentAdmin.classList.remove('hidden');
+
+        fetchTeacherStageData();
+        generateCenterQRCode();
+        populateAdminFields();
+      } else {
+        isTeacherUnlocked = false;
+        isAdminUnlocked = false;
+
+        if (lockTeacher) lockTeacher.classList.remove('hidden');
+        if (contentTeacher) contentTeacher.classList.add('hidden');
+        if (lockAdmin) lockAdmin.classList.remove('hidden');
+        if (contentAdmin) contentAdmin.classList.add('hidden');
+      }
+    });
+
+    // 🛡️ تصفية وتقييد إدخال اسم الطالب (حروف عربية ومسافات فقط)
+    function sanitizeArabicInput(input) {
+      input.value = input.value.replace(/[^\u0600-\u06FF\s]/g, '');
+    }
+
+    // 🛡️ تصفية وتقييد إدخال رقم الهاتف (أرقام فقط)
+    function sanitizePhoneInput(input) {
+      input.value = input.value.replace(/[^0-9]/g, '');
+    }
+
+    // 🔑 دالة تسجيل الدخول الآمن للأدمن
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('admin-login-email').value.trim();
+      const password = document.getElementById('admin-login-password').value;
+      const loginBtn = document.getElementById('btn-admin-login');
+
+      try {
+        loginBtn.disabled = true;
+        loginBtn.innerText = "جاري التحقق من الاعتماد...";
+        await auth.signInWithEmailAndPassword(email, password);
+        alert("🟢 تم تسجيل دخول الأستاذ بنجاح!");
+      } catch (err) {
+        console.error("Login Error:", err);
+        alert("❌ بيانات الدخول غير صحيحة، أو الحساب غير مخول للوصول!");
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerText = "تسجيل الدخول إلى اللوحة 🚀";
+      }
+    }
+
+    // 🚪 تسجيل الخروج
+    async function handleAdminLogout() {
+      if (confirm("هل تريد تسجيل الخروج من لوحة التحكم؟")) {
+        await auth.signOut();
+      }
+    }
+
     async function loadSettings() {
       try {
         const doc = await db.collection('settings').doc('admin_config').get();
@@ -1291,21 +1357,7 @@
         }
       } catch (e) {
         console.error("خطأ قراءة الإعدادات من Firestore:", e);
-        const saved = localStorage.getItem('history_app_admin_settings');
-        if (saved) {
-          try { 
-            const parsed = JSON.parse(saved);
-            DEFAULT_SETTINGS = { ...DEFAULT_SETTINGS, ...parsed }; 
-          } catch(err) {}
-        }
       }
-    }
-
-    function forceResetAdminPassword() {
-      localStorage.removeItem('history_app_admin_settings');
-      DEFAULT_SETTINGS.adminPassword = "amir4211";
-      alert("✅ تم استعادة كلمة السر الافتراضية (amir4211) بنجاح!");
-      location.reload();
     }
 
     function escapeHTML(str) {
@@ -1398,7 +1450,8 @@
 
         const nameInput = document.getElementById('reg-name');
         if (nameInput && !nameInput.value.trim() && currentGoogleUser.displayName) {
-          nameInput.value = currentGoogleUser.displayName;
+          const sanitizedGoogleName = currentGoogleUser.displayName.replace(/[^\u0600-\u06FF\s]/g, '');
+          nameInput.value = sanitizedGoogleName;
         }
 
         alert(`🟢 تم توثيق حساب Google بنجاح!\nيمكنك الآن إكمال باقي البيانات والضغط على زر الانضمام.`);
@@ -1410,13 +1463,16 @@
 
     function validateStudentInput(name, phone, photoFile, isPhotoRequired = true) {
       const cleanName = name.trim().replace(/\s+/g, ' ');
-      if (!cleanName || cleanName.length < 5) {
-        return { isValid: false, message: "⚠️ يرجى إدخال اسمك الثلاثي بشكل واضح وصحيح (لا يقل عن 5 أحرف)!" };
+      
+      // تحقق من الحروف العربية فقط
+      const arabicRegex = /^[\u0600-\u06FF\s]+$/;
+      if (!cleanName || !arabicRegex.test(cleanName)) {
+        return { isValid: false, message: "⚠️ يرجى كتابة اسم الطالب بالحروف العربية فقط بدون أرقام أو رموز أجنبية!" };
       }
 
       const nameWords = cleanName.split(' ');
       if (nameWords.length < 3) {
-        return { isValid: false, message: "⚠️ يرجى كتابة الاسم ثلاثي على الأقل (مثال: فتحي زكريا علي)!" };
+        return { isValid: false, message: "⚠️ يرجى كتابة الاسم ثلاثي على الأقل (مثال: فتحي زكريا فتحي)!" };
       }
 
       const phoneRegex = /^01[0125][0-9]{8}$/;
@@ -1903,9 +1959,7 @@
       }
     }
 
-    // 🌟 تم تعديل الدالة لتصبح async وتستجيب للتحديثات في الوقت الفعلي
     async function showStudentStep2() {
-      // قراءة التحديثات الفورية من السيرفر للتأكد من حالة الـ GPS اللحظية
       await loadSettings();
 
       document.getElementById('student-step-1').classList.add('hidden');
@@ -2152,7 +2206,6 @@
     }
 
     async function submitSessionCode() {
-      // إعادة جلب آخر حالة للإعدادات من Firebase لمنع التخطيات
       await loadSettings();
 
       if (!isFromQR) {
@@ -2227,36 +2280,8 @@
       }
     }
 
-    async function unlockTeacherDashboard() {
-      await loadSettings();
-      const pass = document.getElementById('teacher-password').value.trim();
-      if (pass === DEFAULT_SETTINGS.adminPassword || pass === "amir4211") {
-        isTeacherUnlocked = true;
-        document.getElementById('teacher-lock-screen').classList.add('hidden');
-        document.getElementById('teacher-content').classList.remove('hidden');
-        fetchTeacherStageData();
-        generateCenterQRCode();
-      } else {
-        alert("❌ كلمة السر غير صحيحة!");
-      }
-    }
-
-    async function unlockAdminDashboard() {
-      await loadSettings();
-      const pass = document.getElementById('admin-password').value.trim();
-      if (pass === DEFAULT_SETTINGS.adminPassword || pass === "amir4211") {
-        isAdminUnlocked = true;
-        document.getElementById('admin-lock-screen').classList.add('hidden');
-        document.getElementById('admin-content').classList.remove('hidden');
-        populateAdminFields();
-      } else {
-        alert("❌ كلمة السر غير صحيحة!");
-      }
-    }
-
     function populateAdminFields() {
       document.getElementById('setting-code-timeout').value = DEFAULT_SETTINGS.codeTimeoutMinutes || 20;
-      document.getElementById('setting-admin-pass').value = DEFAULT_SETTINGS.adminPassword || "amir4211";
 
       const kr = DEFAULT_SETTINGS.centers['سنتر كفر رجب'] || { gpsEnabled: true, lat: 30.5741625, lng: 31.3281118, radiusMeters: 80 };
       document.getElementById('setting-gps-kafr-ragab').checked = kr.gpsEnabled;
@@ -2305,13 +2330,10 @@
       alert("✅ تم فك حظر الريفريش المؤقت وإلغائه بنجاح!");
     }
 
-    // 💾 حفظ إعدادات الـ GPS والمنصة مباشرة في Firebase Firestore لتصل لجميع الطلاب فوراً
     async function saveAdminSettings() {
       const timeoutVal = parseInt(document.getElementById('setting-code-timeout').value) || 20;
-      const passVal = document.getElementById('setting-admin-pass').value.trim() || "amir4211";
 
       DEFAULT_SETTINGS.codeTimeoutMinutes = timeoutVal;
-      DEFAULT_SETTINGS.adminPassword = passVal;
 
       DEFAULT_SETTINGS.centers['سنتر كفر رجب'] = {
         gpsEnabled: document.getElementById('setting-gps-kafr-ragab').checked,
@@ -2336,7 +2358,6 @@
 
       try {
         await db.collection('settings').doc('admin_config').set(DEFAULT_SETTINGS, { merge: true });
-        localStorage.setItem('history_app_admin_settings', JSON.stringify(DEFAULT_SETTINGS));
         alert("✅ تم حفظ وتطبيق كافة إعدادات الـ GPS والمنصة فوراً على جميع الأجهزة والحسابات!");
       } catch (err) {
         console.error("خطأ الحفظ في Firebase:", err);
