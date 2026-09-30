@@ -429,23 +429,6 @@
       flex-wrap: wrap;  
       gap: 15px;  
     }  
-  
-    .student-avatar-lg {  
-      width: 65px;  
-      height: 65px;  
-      border-radius: 50%;  
-      object-fit: cover;  
-      border: 2px solid var(--accent);  
-    }  
-  
-    .student-avatar-sm {  
-      width: 48px;  
-      height: 48px;  
-      border-radius: 50%;  
-      object-fit: cover;  
-      border: 1.5px solid var(--border-color);  
-    }  
-  
     .sub-nav {  
       display: flex;  
       gap: 10px;  
@@ -937,7 +920,7 @@
         <div class="user-welcome-box">  
           <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">  
             <div>  
-              
+              <img id="welcome-student-img" src="https://via.placeholder.com/65?text=Student" alt="" class="student-avatar-lg">  
             </div>  
             <div>  
               <h3 id="welcome-student-name">أهلاً بك يا طالب</h3>  
@@ -2802,7 +2785,7 @@
   
         modalBody.innerHTML = `  
           <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; background: var(--bg-body); padding: 15px; border-radius: 14px; border: 1px solid var(--border-color);">  
-            
+            <img src="${escapeHTML(photoURL) || 'https://via.placeholder.com/60'}" class="student-avatar-lg" alt=" ">  
             <div>  
               <h4 style="font-size: 1.1rem; color: var(--primary);">${escapeHTML(name)}</h4>  
               <p style="font-size: 0.88rem; color: var(--text-muted);">📱 ${escapeHTML(phone)} | 📚 ${escapeHTML(stage)} | 🏢 ${escapeHTML(studentCenter)}</p>  
@@ -2933,7 +2916,7 @@
   
           card.innerHTML = `  
             <div style="display: flex; align-items: center; gap: 12px;">  
-                
+              <img src="${escapeHTML(photoSrc)}" alt=" " class="student-avatar-sm">  
               <div>  
                 <h4 style="color: var(--primary); font-size: 1rem;">${escapeHTML(student.name)}</h4>  
                 <p style="color: var(--text-muted); font-size: 0.85rem;">📱 ${escapeHTML(student.phone)} | 📚 ${escapeHTML(student.stage)}</p>  
