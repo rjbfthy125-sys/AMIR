@@ -800,7 +800,7 @@
     <div class="war-icon arrow-2">🏹</div>  
     <div class="war-icon sword-left">⚔️</div>  
     <div class="war-icon sword-right">⚔️</div>  
-    <div class="war-icon spear-1">🗡️️</div>  
+    <div class="war-icon spear-1">🗡</div>  
     <div class="war-icon spear-2">🗡️</div>  
   </div>    
 
@@ -869,7 +869,7 @@
 
         <div style="background: var(--bg-body); padding: 15px; border-radius: 14px; margin-bottom: 20px; border: 1.5px solid var(--accent); font-size: 0.92rem; line-height: 1.6; color: var(--text-main);">
           💡 إذا كنت تريد تسجيل الدخول كطالب فستكتب اسمك الثلاثي باللغة العربية فقط وتكتب رقم هاتفك الجوال، وإذا أردت تسجيل الدخول بجوجل فسجل، هذا أمر اختياري ويوجد زرار للتخطي فوق.
-        </div>
+        </div>  
           
         <div style="background: var(--bg-body); padding: 15px; border-radius: 14px; margin-bottom: 20px; border: 1px solid var(--border-color);">  
           <button type="button" class="btn btn-google" onclick="loginWithGoogle()">  
@@ -976,7 +976,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">  
           <h2 class="card-title" style="border:none; margin:0;">👑 لوحة إدارة المنصة — الأستاذ أمير</h2>  
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">  
-            <button class="btn btn-primary" style="width:auto; padding: 6px 14px; font-size: 0.85rem;" onclick="openTeacherIssuesModal()">📬 المشاكل والاستفسارات الواردة</button>  
+            <button class="btn btn-primary" style="width:auto; padding: 6px 14px; font-size: 0.85rem;" onclick="openTeacherIssuesModal()">📬 المشاكل واستفسارات الطلاب</button>  
             <button class="btn btn-subtle" style="width:auto; padding: 6px 14px; color: var(--danger); border-color: var(--danger);" onclick="handleAdminLogout()">تسجيل الخروج 🚪</button>  
           </div>  
         </div>  
@@ -1829,7 +1829,7 @@
         nameInput.addEventListener('blur', function() {  
           const words = this.value.trim().split(/\s+/);  
           if (this.value.trim() && words.length < 3) {  
-            triggerBotMessage("⚠️️ يرجى كتابة اسمك ثلاثياً على الأقل (مثال: فتحي زكريا فتحي)!", "error");  
+            triggerBotMessage("⚠ يرجى كتابة اسمك ثلاثياً على الأقل (مثال: فتحي زكريا فتحي)!", "error");  
           }  
         });  
       }  
@@ -2330,6 +2330,7 @@
       const studentCenter = currentStudent.center;
       const studentStage = currentStudent.stage;  
       const now = Date.now();  
+      const todayDateKey = new Date().toISOString().split('T')[0];
         
       try {
         const activeSessionsSnapshot = await db.collection('sessions')  
@@ -2374,7 +2375,8 @@
           name: currentStudent.name,  
           photoURL: currentStudent.photoURL || '',  
           speedMinutes: speedMinutes,  
-          dateKey: new Date().toISOString().split('T')[0],
+          dateKey: todayDateKey,
+          dailyKey: `${currentStudent.phone}_${todayDateKey}`,
           timestamp: new Date().toISOString()  
         });  
   
@@ -2403,20 +2405,20 @@
           .where('phone', '==', currentStudent.phone)  
           .get();  
   
-      const attendedSessionIds = new Set();
-const attendedDates = new Set(); // خريطة التواريخ اليومية
-let totalAttendedCount = 0;
+        const attendedSessionIds = new Set();
+        const attendedDates = new Set(); // خريطة التواريخ اليومية
+        let totalAttendedCount = 0;
 
-attendanceSnapshot.forEach(doc => {
-  const data = doc.data();
-  if (data.sessionId) attendedSessionIds.add(data.sessionId);
-  
-  // استخراج تاريخ الحضور (YYYY-MM-DD)
-  const dateStr = data.dateKey || (data.timestamp ? data.timestamp.split('T')[0] : null);
-  if (dateStr) attendedDates.add(dateStr);
+        attendanceSnapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.sessionId) attendedSessionIds.add(data.sessionId);  
+          
+          // استخراج تاريخ الحضور (YYYY-MM-DD)
+          const dateStr = data.dateKey || (data.timestamp ? data.timestamp.split('T')[0] : null);
+          if (dateStr) attendedDates.add(dateStr);
 
-  totalAttendedCount++;
-});
+          totalAttendedCount++;
+        });
   
         const badgesContainer = document.getElementById('student-badges-container');  
         if (totalAttendedCount >= 4) {  
@@ -2451,11 +2453,11 @@ attendanceSnapshot.forEach(doc => {
           const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });  
           const formattedTime = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });  
   
-          // 1. استخراج تاريخ الحصة
-const sessionDate = session.createdAt ? new Date(session.createdAt).toISOString().split('T')[0] : null;
+          // استخراج تاريخ الحصة
+          const sessionDate = session.createdAt ? new Date(session.createdAt).toISOString().split('T')[0] : null;
 
-// 2. الشرط الجديد: يعتبر حاضر لو حضر الحصة دي بالذات OR حضر أي حصة تانية في نفس التاريخ
-const isAttended = attendedSessionIds.has(session.id) || (sessionDate && attendedDates.has(sessionDate));  
+          // يعتبر حاضر لو حضر الحصة تحديداً أو أي حصة أخرى في نفس اليوم
+          const isAttended = attendedSessionIds.has(session.id) || (sessionDate && attendedDates.has(sessionDate));  
           const isExpired = now > session.expiresAt;  
   
           let badgeHTML = '';  
@@ -2742,9 +2744,13 @@ const isAttended = attendedSessionIds.has(session.id) || (sessionDate && attende
           .get();  
   
         const attendedMap = {};  
+        const attendedDatesSet = new Set();
+
         attendanceSnapshot.forEach(doc => {  
           const data = doc.data();  
-          attendedMap[data.sessionId] = data;  
+          if (data.sessionId) attendedMap[data.sessionId] = data;  
+          const dateStr = data.dateKey || (data.timestamp ? data.timestamp.split('T')[0] : null);
+          if (dateStr) attendedDatesSet.add(dateStr);
         });  
   
         const studentSessions = [];  
@@ -2765,7 +2771,10 @@ const isAttended = attendedSessionIds.has(session.id) || (sessionDate && attende
   
         studentSessions.forEach((session, idx) => {  
           const attData = attendedMap[session.id];  
-          const isAttended = !!attData;  
+          const sessionDateKey = session.createdAt ? new Date(session.createdAt).toISOString().split('T')[0] : null;
+          
+          // الطالب يعتبر حاضراً برقم الحصة أو بتاريخ اليوم
+          const isAttended = !!attData || (sessionDateKey && attendedDatesSet.has(sessionDateKey));  
           if (isAttended) attendedCount++;  
   
           const sessDateObj = new Date(session.createdAt);  
@@ -2774,7 +2783,7 @@ const isAttended = attendedSessionIds.has(session.id) || (sessionDate && attende
   
           let statusBadge = '';  
           if (isAttended) {  
-            const timeAtt = new Date(attData.timestamp).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });  
+            const timeAtt = attData && attData.timestamp ? new Date(attData.timestamp).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) : formattedTime;  
             statusBadge = `<span class="badge badge-success">حضر 🟢 (${timeAtt})</span>`;  
           } else if (now > session.expiresAt) {  
             statusBadge = `<span class="badge badge-danger">لم يحضر 🔴</span>`;  
@@ -2834,11 +2843,17 @@ const isAttended = attendedSessionIds.has(session.id) || (sessionDate && attende
         const attendanceSnapshot = await db.collection('attendance').get();  
   
         const attendanceMap = new Map();  
-  
+        const dailyAttendanceSet = new Set(); // الربط برقم الهاتف وتاريخ اليوم
+
         attendanceSnapshot.forEach(doc => {  
           const data = doc.data();  
           const key = `${data.sessionId}_${data.phone}`;  
           attendanceMap.set(key, data);  
+
+          const dateStr = data.dateKey || (data.timestamp ? data.timestamp.split('T')[0] : null);
+          if (dateStr && data.phone) {
+            dailyAttendanceSet.add(`${data.phone}_${dateStr}`);
+          }
         });  
   
         const container = document.getElementById('students-display-container');  
@@ -2872,7 +2887,11 @@ const isAttended = attendedSessionIds.has(session.id) || (sessionDate && attende
               const sessDate = new Date(session.createdAt);  
               const sessMonth = (sessDate.getMonth() + 1).toString();  
               const key = `${session.id}_${student.phone}`;  
-              return sessMonth === selectedMonthFilter && attendanceMap.has(key);  
+
+              const sessionDateKey = sessDate.toISOString().split('T')[0];
+              const dailyKey = `${student.phone}_${sessionDateKey}`;
+
+              return sessMonth === selectedMonthFilter && (attendanceMap.has(key) || dailyAttendanceSet.has(dailyKey));  
             });  
           });  
         }  
@@ -2892,7 +2911,15 @@ const isAttended = attendedSessionIds.has(session.id) || (sessionDate && attende
           if (selectedSessionId !== "all") {  
             const selectedSession = cachedSessions.find(s => s.id === selectedSessionId);  
             const key = `${selectedSessionId}_${student.phone}`;  
-            const hasAttended = attendanceMap.has(key);  
+
+            let sessionDateKey = null;
+            if (selectedSession && selectedSession.createdAt) {
+              sessionDateKey = new Date(selectedSession.createdAt).toISOString().split('T')[0];
+            }
+            const dailyKey = sessionDateKey ? `${student.phone}_${sessionDateKey}` : null;
+
+            // التحقق برقم الحصة أو بحضور أي حصة في نفس اليوم
+            const hasAttended = attendanceMap.has(key) || (dailyKey && dailyAttendanceSet.has(dailyKey));  
   
             if (hasAttended) {  
               badgeHTML = `<span class="badge badge-success">حضر الحصة 🟢</span>`;  
@@ -2907,7 +2934,14 @@ const isAttended = attendedSessionIds.has(session.id) || (sessionDate && attende
             } else {  
               const latestSession = studentStageSessions[0];  
               const key = `${latestSession.id}_${student.phone}`;  
-              const hasAttended = attendanceMap.has(key);  
+
+              let sessionDateKey = null;
+              if (latestSession && latestSession.createdAt) {
+                sessionDateKey = new Date(latestSession.createdAt).toISOString().split('T')[0];
+              }
+              const dailyKey = sessionDateKey ? `${student.phone}_${sessionDateKey}` : null;
+
+              const hasAttended = attendanceMap.has(key) || (dailyKey && dailyAttendanceSet.has(dailyKey));  
   
               if (hasAttended) {  
                 badgeHTML = `<span class="badge badge-success">حضر آخر حصة 🟢</span>`;  
