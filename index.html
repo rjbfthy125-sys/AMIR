@@ -2374,10 +2374,11 @@
           name: currentStudent.name,  
           photoURL: currentStudent.photoURL || '',  
           speedMinutes: speedMinutes,  
+          dateKey: new Date().toISOString().split('T')[0],
           timestamp: new Date().toISOString()  
         });  
   
-        triggerBotMessage("✨ ممتاز يا بطل! تم تسجيل حضورك بنجاح للدرس!", "info");  
+        triggerBotMessage("✨ ممتاز يا بطل/(بطلة)! تم تسجيل حضورك بنجاح للدرس!", "info");  
         alert("✨ تم تسجيل حضورك بنجاح لهذه الحصة!");  
         loadStudentSessionsHistory();  
 
@@ -2402,13 +2403,20 @@
           .where('phone', '==', currentStudent.phone)  
           .get();  
   
-        const attendedSessionIds = new Set();  
-        let totalAttendedCount = 0;  
+      const attendedSessionIds = new Set();
+const attendedDates = new Set(); // خريطة التواريخ اليومية
+let totalAttendedCount = 0;
+
+attendanceSnapshot.forEach(doc => {
+  const data = doc.data();
+  if (data.sessionId) attendedSessionIds.add(data.sessionId);
   
-        attendanceSnapshot.forEach(doc => {  
-          attendedSessionIds.add(doc.data().sessionId);  
-          totalAttendedCount++;  
-        });  
+  // استخراج تاريخ الحضور (YYYY-MM-DD)
+  const dateStr = data.dateKey || (data.timestamp ? data.timestamp.split('T')[0] : null);
+  if (dateStr) attendedDates.add(dateStr);
+
+  totalAttendedCount++;
+});
   
         const badgesContainer = document.getElementById('student-badges-container');  
         if (totalAttendedCount >= 4) {  
@@ -2443,7 +2451,11 @@
           const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric' });  
           const formattedTime = sessDateObj.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });  
   
-          const isAttended = attendedSessionIds.has(session.id);  
+          // 1. استخراج تاريخ الحصة
+const sessionDate = session.createdAt ? new Date(session.createdAt).toISOString().split('T')[0] : null;
+
+// 2. الشرط الجديد: يعتبر حاضر لو حضر الحصة دي بالذات OR حضر أي حصة تانية في نفس التاريخ
+const isAttended = attendedSessionIds.has(session.id) || (sessionDate && attendedDates.has(sessionDate));  
           const isExpired = now > session.expiresAt;  
   
           let badgeHTML = '';  
