@@ -1116,7 +1116,7 @@
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">  
           <div class="form-group" style="margin-bottom: 0;">  
             <label for="filter-stage-select">المرحلة الدراسية المعروضة:</label>  
-            <select id="filter-stage-select" onchange="renderTeacherData()">  
+            <select id="filter-stage-select" onchange="executeTargetedTeacherSearch()">  
               <option value="الكل">جميع المراحل الدراسية</option>  
               <option value="الأول الثانوي">الأول الثانوي</option>  
               <option value="الثاني الثانوي عام">الثاني الثانوي عام</option>  
@@ -1127,7 +1127,7 @@
 
           <div class="form-group" style="margin-bottom: 0;">  
             <label for="filter-session-select">تحديد حصة معينة لمعاينة الحضور:</label>  
-            <select id="filter-session-select" onchange="autoFilterStageBySession(); renderTeacherData();">  
+            <select id="filter-session-select" onchange="autoFilterStageBySession(); executeTargetedTeacherSearch();">  
               <option value="all">عرض الحالة العامة للمنصة</option>  
             </select>  
           </div>  
@@ -1135,7 +1135,7 @@
 
         <div style="background: var(--bg-body); padding: 15px; border-radius: 14px; margin-bottom: 15px; border: 1px solid var(--border-color); display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">  
           <div style="flex: 1; min-width: 220px;">  
-            <input type="text" id="teacher-search-input" placeholder="🔍 بحث باسم الطالب أو رقم الهاتف..." oninput="renderTeacherData()" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 10px; outline: none;">  
+            <input type="text" id="teacher-search-input" placeholder="🔍 بحث باسم الطالب أو رقم الهاتف..." onkeyup="if(event.key==='Enter') executeTargetedTeacherSearch()" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border-color); border-radius: 10px; outline: none;">  
           </div>  
           <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">  
             <span id="total-students-count-badge" class="badge badge-info" style="font-size: 0.9rem; padding: 8px 14px;">إجمالي الطلاب المسجلين بالسنتر: 0 طالب</span>  
@@ -1995,14 +1995,14 @@
       document.querySelectorAll('#teacher-content .sub-nav-btn').forEach(btn => btn.classList.remove('active'));  
       const clickedBtn = document.getElementById(`subtab-${tab}`) || document.getElementById('subtab-all');  
       if (clickedBtn) clickedBtn.classList.add('active');  
-      renderTeacherData();  
+      executeTargetedTeacherSearch();  
     }  
   
     function selectMonthFilter(month, btnEl) {  
       selectedMonthFilter = month;  
       document.querySelectorAll('#months-filter-bar .month-btn').forEach(btn => btn.classList.remove('active'));  
       if (btnEl) btnEl.classList.add('active');  
-      renderTeacherData();  
+      executeTargetedTeacherSearch();  
     }  
   
     function toggleStudentListSection() {  
@@ -2031,87 +2031,81 @@
     }  
   
     function closeLiveScreenModal() {  
-      if (liveDataShowUnsubscribe) liveDataShowUnsubscribe();  
-      if (liveTimerInterval) clearInterval(liveTimerInterval);  
-      document.getElementById('live-screen-modal').classList.add('hidden');  
-    }  
-  
-    function initLiveScreenDataShow() {  
-      if (liveDataShowUnsubscribe) liveDataShowUnsubscribe();  
-      if (liveTimerInterval) clearInterval(liveTimerInterval);  
-  
-      const stage = document.getElementById('live-screen-stage-select').value;  
-      const center = selectedTeacherCenter;  
-  
-      const codeDisplay = document.getElementById('live-modal-active-code');  
-      const timerDisplay = document.getElementById('live-modal-timer-status');  
-      const countDisplay = document.getElementById('live-attendance-count');  
-      const indicatorDisplay = document.getElementById('live-status-indicator');  
-  
-      codeDisplay.innerText = "حالة الحصة الجارية: جاري التحميل...";  
-      timerDisplay.innerHTML = `<span style="color: var(--warning);">⏳ جاري فحص الحصة والوقت...</span>`;  
-      countDisplay.innerText = "0";  
-  
-      db.collection('sessions')  
-        .where('center', '==', center)  
-        .where('stage', '==', stage)  
-        .onSnapshot((snapshot) => {  
-          let activeSession = null;  
-          const now = Date.now();  
-  
-          snapshot.forEach(doc => {  
-            const data = doc.data();  
-            if (now <= data.expiresAt) {  
-              if (!activeSession || data.createdAt > activeSession.createdAt) {  
-                activeSession = { id: doc.id, ...data };  
-              }  
-            }  
-          });  
-  
-          if (!activeSession) {  
-            codeDisplay.innerText = `لا توجد حصة مفعلة حالياً لـ (${stage})`;  
-            timerDisplay.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🛑 لا توجد حصة مفعلة بالوقت الحالي</span>`;  
-            countDisplay.innerText = "0";  
-            indicatorDisplay.innerHTML = `<span style="color: var(--text-muted);">⏹️ التحديث متوقف</span>`;  
-            if (liveTimerInterval) clearInterval(liveTimerInterval);  
-            return;  
+  if (liveSessionsUnsub) { liveSessionsUnsub(); liveSessionsUnsub = null; }
+  if (liveDataShowUnsubscribe) { liveDataShowUnsubscribe(); liveDataShowUnsubscribe = null; }  
+  if (liveTimerInterval) { clearInterval(liveTimerInterval); liveTimerInterval = null; }  
+  document.getElementById('live-screen-modal').classList.add('hidden');  
+}  
+
+function initLiveScreenDataShow() {  
+  if (liveSessionsUnsub) liveSessionsUnsub();
+  if (liveDataShowUnsubscribe) liveDataShowUnsubscribe();  
+  if (liveTimerInterval) clearInterval(liveTimerInterval);  
+
+  const stage = document.getElementById('live-screen-stage-select').value;  
+  const center = selectedTeacherCenter;  
+
+  const codeDisplay = document.getElementById('live-modal-active-code');  
+  const timerDisplay = document.getElementById('live-modal-timer-status');  
+  const countDisplay = document.getElementById('live-attendance-count');  
+  const indicatorDisplay = document.getElementById('live-status-indicator');  
+
+  codeDisplay.innerText = "حالة الحصة الجارية: جاري التحميل...";  
+  timerDisplay.innerHTML = `<span style="color: var(--warning);">⏳ جاري فحص الحصة والوقت...</span>`;  
+  countDisplay.innerText = "0";  
+
+  liveSessionsUnsub = db.collection('sessions')  
+    .where('center', '==', center)  
+    .where('stage', '==', stage)  
+    .onSnapshot((snapshot) => {  
+      let activeSession = null;  
+      const now = Date.now();  
+
+      snapshot.forEach(doc => {  
+        const data = doc.data();  
+        if (now <= data.expiresAt) {  
+          if (!activeSession || data.createdAt > activeSession.createdAt) {  
+            activeSession = { id: doc.id, ...data };  
           }  
-  
-          codeDisplay.innerText = `الحصة مفعلة حالياً لـ (${stage})`;  
-  
-          if (liveTimerInterval) clearInterval(liveTimerInterval);  
-  
-          const updateTimer = () => {  
-            const current = Date.now();  
-            const remainingMS = activeSession.expiresAt - current;  
-  
-            if (remainingMS <= 0) {  
-              clearInterval(liveTimerInterval);  
-              codeDisplay.innerText = `انتهت مدة تفعيل الحصة لـ (${stage})`;  
-              timerDisplay.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🛑 انتهت المدة وتوقف التسجيل اللحظي</span>`;  
-              countDisplay.innerText = "0";  
-              indicatorDisplay.innerHTML = `<span style="color: var(--danger);">🛑 مغلق</span>`;  
-              return;  
-            }  
-  
-            const remainingMinutes = Math.floor(remainingMS / (1000 * 60));  
-            const remainingSeconds = Math.floor((remainingMS % (1000 * 60)) / 1000);  
-            timerDisplay.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 الحصة شغال وتستقبل الطلاب (متبقي ${remainingMinutes} دقيقة و ${remainingSeconds} ثانية)</span>`;  
-          };  
-  
-          updateTimer();  
-          liveTimerInterval = setInterval(updateTimer, 1000);  
-  
-          if (liveDataShowUnsubscribe) liveDataShowUnsubscribe();  
-  
-          liveDataShowUnsubscribe = db.collection('attendance')  
-            .where('sessionId', '==', activeSession.id)  
-            .onSnapshot((attSnapshot) => {  
-              countDisplay.innerText = attSnapshot.size;  
-              indicatorDisplay.innerHTML = `<span style="color: var(--success);">🟢 جاري التحديث اللحظي (${attSnapshot.size} طالب)</span>`;  
-            });  
+        }  
+      });  
+
+      if (liveTimerInterval) clearInterval(liveTimerInterval);
+      if (liveDataShowUnsubscribe) liveDataShowUnsubscribe();
+
+      if (!activeSession) {  
+        codeDisplay.innerText = `لا توجد حصة مفعلة حالياً لـ (${stage})`;  
+        timerDisplay.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🛑 لا توجد حصة مفعلة بالوقت الحالي</span>`;  
+        countDisplay.innerText = "0";  
+        indicatorDisplay.innerHTML = `<span style="color: var(--text-muted);">⏹ التحديث متوقف</span>`;  
+        return;  
+      }  
+
+      codeDisplay.innerText = `الحصة مفعلة حالياً لـ (${stage})`;  
+
+      const updateTimer = () => {  
+        const remainingMS = activeSession.expiresAt - Date.now();  
+        if (remainingMS <= 0) {  
+          clearInterval(liveTimerInterval);  
+          timerDisplay.innerHTML = `<span style="color: var(--danger); font-weight: bold;">🛑 انتهت المدة وتوقف التسجيل اللحظي</span>`;  
+          return;  
+        }  
+        const mins = Math.floor(remainingMS / 60000);  
+        const secs = Math.floor((remainingMS % 60000) / 1000);  
+        timerDisplay.innerHTML = `<span style="color: var(--success); font-weight: bold;">🟢 الحصة شغالة وتستقبل الطلاب (متبقي ${mins} دقيقة و ${secs} ثانية)</span>`;  
+      };  
+
+      updateTimer();  
+      liveTimerInterval = setInterval(updateTimer, 1000);  
+
+      liveDataShowUnsubscribe = db.collection('attendance')  
+        .where('sessionId', '==', activeSession.id)  
+        .onSnapshot((attSnapshot) => {  
+          countDisplay.innerText = attSnapshot.size;  
+          indicatorDisplay.innerHTML = `<span style="color: var(--success);">🟢 جاري التحديث اللحظي (${attSnapshot.size} طالب)</span>`;  
         });  
-    }  
+    });  
+}
   
     function openEditProfileModal() {  
       if (!currentStudent) return;  
@@ -2228,7 +2222,7 @@
         await showStudentStep2();  
   
         if (isTeacherUnlocked) {  
-          renderTeacherData();  
+          executeTargetedTeacherSearch();  
         }  
   
       } catch (err) {  
@@ -2740,7 +2734,7 @@
           activeDisplay.style.color = 'var(--text-muted)';  
         }  
   
-        renderTeacherData();  
+      updateStudentCountBadge();  
       } catch (err) {  
         console.error("خطأ قراءة بيانات المرحلة:", err);  
       }  
@@ -2768,7 +2762,7 @@
         await batch.commit();  
   
         alert(`✅ تم حذف الطالب (${name}) وسجلاته بنجاح.`);  
-        renderTeacherData();  
+      executeTargetedTeacherSearch();
       } catch (error) {  
         console.error("خطأ أثناء حذف الطالب:", error);  
         alert("❌ تعذر حذف الطالب: " + error.message);  
@@ -2883,156 +2877,126 @@
       document.getElementById('student-report-modal').classList.add('hidden');  
     }  
   
-    async function renderTeacherData() {  
-      if (!isTeacherUnlocked) return;  
-  
-      const selectedStage = document.getElementById('filter-stage-select').value;  
-      const selectedSessionId = document.getElementById('filter-session-select').value;  
-      const searchQuery = document.getElementById('teacher-search-input').value.trim().toLowerCase();  
-  
-      try {  
-        const studentsSnapshot = await db.collection('students').get();  
-        const attendanceSnapshot = await db.collection('attendance').get();  
-  
-        const attendanceMap = new Map();  
-        const dailyAttendanceSet = new Set(); // الربط برقم الهاتف وتاريخ اليوم
+    // ⚡ 1. دالة جلب عدد الطلاب بـ (قراءة واحدة فقط) ⚡
+async function updateStudentCountBadge() {
+  const badge = document.getElementById('total-students-count-badge');
+  if (!badge) return;
+  try {
+    const countSnap = await db.collection('students')
+      .where('center', '==', selectedTeacherCenter)
+      .count()
+      .get();
+    badge.innerText = `إجمالي الطلاب المسجلين بالسنتر: ${countSnap.data().count} طالب`;
+  } catch (e) {
+    console.error("Count Error:", e);
+    badge.innerText = `إجمالي الطلاب بالسنتر: --`;
+  }
+}
 
-        attendanceSnapshot.forEach(doc => {  
-          const data = doc.data();  
-          const key = `${data.sessionId}_${data.phone}`;  
-          attendanceMap.set(key, data);  
+// ⚡ 2. دالة البحث المباشر باسم الطالب أو هاتفه (تقليل قراءات الفايربيس) ⚡
+async function executeTargetedTeacherSearch() {  
+  if (!isTeacherUnlocked) return;  
 
-          const dateStr = data.dateKey || (data.timestamp ? data.timestamp.split('T')[0] : null);
-          if (dateStr && data.phone) {
-            dailyAttendanceSet.add(`${data.phone}_${dateStr}`);
-          }
-        });  
-  
-        const container = document.getElementById('students-display-container');  
-        container.innerHTML = '';  
-  
-        let studentsList = [];  
-        studentsSnapshot.forEach(doc => {  
-          const data = doc.data();  
-          if (data.center === selectedTeacherCenter) {  
-            studentsList.push(data);  
-          }  
-        });  
-  
-        document.getElementById('total-students-count-badge').innerText = `إجمالي الطلاب المسجلين بالسنتر: ${studentsList.length} طالب`;  
-  
-        if (searchQuery) {  
-          studentsList = studentsList.filter(s =>   
-            (s.name && s.name.toLowerCase().includes(searchQuery)) ||   
-            (s.phone && s.phone.includes(searchQuery))  
-          );  
-        }  
-  
-        if (selectedStage !== "الكل") {  
-          studentsList = studentsList.filter(s => s.stage === selectedStage);  
-        }  
-  
-        if (selectedMonthFilter !== 'all') {  
-          studentsList = studentsList.filter(student => {  
-            const studentSessions = cachedSessions.filter(s => s.stage === student.stage);  
-            return studentSessions.some(session => {  
-              const sessDate = new Date(session.createdAt);  
-              const sessMonth = (sessDate.getMonth() + 1).toString();  
-              const key = `${session.id}_${student.phone}`;  
+  const searchInput = document.getElementById('teacher-search-input').value.trim();  
+  const container = document.getElementById('students-display-container');  
+  const selectedStage = document.getElementById('filter-stage-select').value;
+  const selectedSessionId = document.getElementById('filter-session-select').value;
 
-              const sessionDateKey = sessDate.toISOString().split('T')[0];
-              const dailyKey = `${student.phone}_${sessionDateKey}`;
+  if (!searchInput) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 30px; color: var(--text-muted); font-weight: 600; background: var(--bg-body); border-radius: 12px; border: 1px dashed var(--border-color);">
+        🔍 اكتب اسم الطالب أو رقم هاتفه في مربع البحث واضغط (بحث) للحد من قراءات الفايربيس وحماية المنصة.
+      </div>`;
+    return;
+  }
 
-              return sessMonth === selectedMonthFilter && (attendanceMap.has(key) || dailyAttendanceSet.has(dailyKey));  
-            });  
-          });  
-        }  
-  
-        if (studentsList.length === 0) {  
-          container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">لا يوجد طلاب مطابقون للبحث والتصفية الحالية بـ (${escapeHTML(selectedTeacherCenter)}).</p>`;  
-          return;  
-        }  
-  
-        const now = Date.now();  
-  
-        studentsList.forEach(student => {  
-          let badgeHTML = '';  
-  
-          const studentStageSessions = cachedSessions.filter(s => s.stage === student.stage);  
-  
-          if (selectedSessionId !== "all") {  
-            const selectedSession = cachedSessions.find(s => s.id === selectedSessionId);  
-            const key = `${selectedSessionId}_${student.phone}`;  
+  container.innerHTML = `<p style="text-align:center; padding:20px; color:var(--text-muted);">جاري البحث بـ (${escapeHTML(selectedTeacherCenter)})... ⏳</p>`;
 
-            let sessionDateKey = null;
-            if (selectedSession && selectedSession.createdAt) {
-              sessionDateKey = new Date(selectedSession.createdAt).toISOString().split('T')[0];
-            }
-            const dailyKey = sessionDateKey ? `${student.phone}_${sessionDateKey}` : null;
+  try {  
+    let query = db.collection('students').where('center', '==', selectedTeacherCenter);
+    let fetchedStudents = [];
 
-            // التحقق برقم الحصة أو بحضور أي حصة في نفس اليوم
-            const hasAttended = attendanceMap.has(key) || (dailyKey && dailyAttendanceSet.has(dailyKey));  
-  
-            if (hasAttended) {  
-              badgeHTML = `<span class="badge badge-success">حضر الحصة 🟢</span>`;  
-            } else if (selectedSession) {  
-              const sessDateObj = new Date(selectedSession.createdAt);  
-              const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', month: 'numeric', day: 'numeric' });  
-              badgeHTML = `<span class="badge badge-danger">لم يحضر حصة - ${formattedDate} 🔴</span>`;  
-            }  
-          } else {  
-            if (studentStageSessions.length === 0) {  
-              badgeHTML = `<span class="badge badge-info">مسجل على المنصة ⚪</span>`;  
-            } else {  
-              const latestSession = studentStageSessions[0];  
-              const key = `${latestSession.id}_${student.phone}`;  
+    if (/^01[0-9]{9}$/.test(searchInput)) {
+      const doc = await db.collection('students').doc(searchInput).get();
+      if (doc.exists) fetchedStudents.push(doc.data());
+    } else {
+      const snap = await query.where('name', '>=', searchInput).where('name', '<=', searchInput + '\uf8ff').limit(15).get();
+      snap.forEach(doc => fetchedStudents.push(doc.data()));
+    }
 
-              let sessionDateKey = null;
-              if (latestSession && latestSession.createdAt) {
-                sessionDateKey = new Date(latestSession.createdAt).toISOString().split('T')[0];
-              }
-              const dailyKey = sessionDateKey ? `${student.phone}_${sessionDateKey}` : null;
+    if (selectedStage !== "الكل") {
+      fetchedStudents = fetchedStudents.filter(s => s.stage === selectedStage);
+    }
 
-              const hasAttended = attendanceMap.has(key) || (dailyKey && dailyAttendanceSet.has(dailyKey));  
-  
-              if (hasAttended) {  
-                badgeHTML = `<span class="badge badge-success">حضر آخر حصة 🟢</span>`;  
-              } else if (now > latestSession.expiresAt) {  
-                const sessDateObj = new Date(latestSession.createdAt);  
-                const formattedDate = sessDateObj.toLocaleDateString('ar-EG', { weekday: 'long', month: 'numeric', day: 'numeric' });  
-  
-                badgeHTML = `<span class="badge badge-danger">لم يحضر حصة - ${formattedDate} 🔴</span>`;  
-              } else {  
-                badgeHTML = `<span class="badge badge-warning">حصة جارية المفعلة ⏳</span>`;  
-              }  
-            }  
-          }  
-  
-          const card = document.createElement('div');  
-          card.className = 'student-card-item';  
-          const photoSrc = student.photoURL || 'https://via.placeholder.com/48?text=Student';  
-  
-          card.innerHTML = `  
-            <div style="display: flex; align-items: center; gap: 12px;">  
-              <img src="${escapeHTML(photoSrc)}" alt=" " class="student-avatar-sm">  
-              <div>  
-                <h4 style="color: var(--primary); font-size: 1rem;">${escapeHTML(student.name)}</h4>  
-                <p style="color: var(--text-muted); font-size: 0.85rem;">📱 ${escapeHTML(student.phone)} | 📚 ${escapeHTML(student.stage)}</p>  
-              </div>  
-            </div>  
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">  
-              ${badgeHTML}  
-              <button class="btn btn-info" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="showStudentReport('${escapeHTML(student.phone)}', '${escapeHTML(student.name)}', '${escapeHTML(student.stage)}', '${escapeHTML(student.center)}', '${escapeHTML(photoSrc)}')">👁️ سجل الطالب</button>  
-              <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="deleteStudent('${escapeHTML(student.phone)}', '${escapeHTML(student.name)}')">حذف 🗑️</button>  
-            </div>  
-          `;  
-  
-          container.appendChild(card);  
-        });  
-      } catch (err) {  
-        console.error("خطأ عرض بيانات الجدول:", err);  
-      }  
+    if (fetchedStudents.length === 0) {  
+      container.innerHTML = `<p style="text-align:center; padding: 20px; color: var(--text-muted);">❌ لم يتم العثور على نتائج للبحث (${escapeHTML(searchInput)}).</p>`;  
+      return;  
     }  
+
+    const studentPhones = fetchedStudents.map(s => s.phone);
+    let attendanceMap = new Map();
+
+    if (studentPhones.length > 0) {
+      const attSnap = await db.collection('attendance').where('phone', 'in', studentPhones.slice(0, 10)).get();
+      attSnap.forEach(doc => {
+        const data = doc.data();
+        attendanceMap.set(`${data.sessionId}_${data.phone}`, data);
+      });
+    }
+
+    container.innerHTML = '';  
+    const now = Date.now();  
+
+    fetchedStudents.forEach(student => {  
+      let badgeHTML = '';  
+      const studentStageSessions = cachedSessions.filter(s => s.stage === student.stage);  
+
+      if (selectedSessionId !== "all") {  
+        const key = `${selectedSessionId}_${student.phone}`;  
+        badgeHTML = attendanceMap.has(key) 
+          ? `<span class="badge badge-success">حضر الحصة 🟢</span>` 
+          : `<span class="badge badge-danger">لم يحضر الحصة 🔴</span>`;  
+      } else {  
+        if (studentStageSessions.length === 0) {  
+          badgeHTML = `<span class="badge badge-info">مسجل على المنصة ⚪</span>`;  
+        } else {  
+          const latestSession = studentStageSessions[0];  
+          const key = `${latestSession.id}_${student.phone}`;  
+          if (attendanceMap.has(key)) {  
+            badgeHTML = `<span class="badge badge-success">حضر آخر حصة 🟢</span>`;  
+          } else if (now > latestSession.expiresAt) {  
+            badgeHTML = `<span class="badge badge-danger">لم يحضر آخر حصة 🔴</span>`;  
+          } else {  
+            badgeHTML = `<span class="badge badge-warning">حصة جارية المفعلة ⏳</span>`;  
+          }  
+        }  
+      }  
+
+      const card = document.createElement('div');  
+      card.className = 'student-card-item';  
+      const photoSrc = student.photoURL || 'https://via.placeholder.com/48?text=Student';  
+
+      card.innerHTML = `  
+        <div style="display: flex; align-items: center; gap: 12px;">  
+          <img src="${escapeHTML(photoSrc)}" alt=" " class="student-avatar-sm">  
+          <div>  
+            <h4 style="color: var(--primary); font-size: 1rem;">${escapeHTML(student.name)}</h4>  
+            <p style="color: var(--text-muted); font-size: 0.85rem;">📱 ${escapeHTML(student.phone)} | 📚 ${escapeHTML(student.stage)}</p>  
+          </div>  
+        </div>  
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">  
+          ${badgeHTML}  
+          <button class="btn btn-info" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="showStudentReport('${escapeHTML(student.phone)}', '${escapeHTML(student.name)}', '${escapeHTML(student.stage)}', '${escapeHTML(student.center)}', '${escapeHTML(photoSrc)}')">👁️ سجل الطالب</button>  
+          <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="deleteStudent('${escapeHTML(student.phone)}', '${escapeHTML(student.name)}')">حذف 🗑️</button>  
+        </div>  
+      `;  
+
+      container.appendChild(card);  
+    });  
+  } catch (err) {  
+    console.error("خطأ البحث:", err);  
+  }  
+}
   </script>  
 </body>  
 </html>
