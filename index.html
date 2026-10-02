@@ -2879,14 +2879,26 @@ function initLiveScreenDataShow() {
   
     // ⚡ 1. دالة جلب عدد الطلاب بـ (قراءة واحدة فقط) ⚡
 async function updateStudentCountBadge() {
-  const badge = document.getElementById('total-students-count-badge');
+  const badge = document.getElementById('total-student-badge') || document.querySelector('[id*="total-student"]');
   if (!badge) return;
   try {
-    const countSnap = await db.collection('students')
-      .where('center', '==', selectedTeacherCenter)
-      .count()
-      .get();
-    badge.innerText = `إجمالي الطلاب المسجلين بالسنتر: ${countSnap.data().count} طالب`;
+    let query = db.collection('students');
+    if (typeof selectedTeacherCenter !== 'undefined' && selectedTeacherCenter) {
+      query = query.where('center', '==', selectedTeacherCenter);
+    }
+    
+    let totalCount = 0;
+    
+    // فحص دعم .count() أو التراجع للـ .get()
+    if (typeof query.count === 'function') {
+      const countSnap = await query.count().get();
+      totalCount = countSnap.data().count;
+    } else {
+      const snap = await query.get();
+      totalCount = snap.size;
+    }
+    
+    badge.innerText = `إجمالي الطلاب المسجلين بالسنتر: ${totalCount}`;
   } catch (e) {
     console.error("Count Error:", e);
     badge.innerText = `إجمالي الطلاب بالسنتر: --`;
