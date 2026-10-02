@@ -2916,7 +2916,7 @@ async function executeTargetedTeacherSearch() {
   if (!searchInput) {
     container.innerHTML = `
       <div style="text-align: center; padding: 30px; color: var(--text-muted); font-weight: 600; background: var(--bg-body); border-radius: 12px; border: 1px dashed var(--border-color);">
-        🔍 اكتب اسم الطالب أو رقم هاتفه في مربع البحث واضغط (بحث) للحد من قراءات الفايربيس وحماية المنصة.
+        🔍لازم الاسم كامل او الرقم كامل زي ما مكتوبين عند الطالب 
       </div>`;
     return;
   }
@@ -2931,8 +2931,8 @@ async function executeTargetedTeacherSearch() {
       const doc = await db.collection('students').doc(searchInput).get();
       if (doc.exists) fetchedStudents.push(doc.data());
     } else {
-      const snap = await query.where('name', '>=', searchInput).where('name', '<=', searchInput + '\uf8ff').limit(15).get();
-      snap.forEach(doc => fetchedStudents.push(doc.data()));
+  let snap = await query.where('name', '==', searchInput).get();
+  snap.forEach(doc => fetchedStudents.push(doc.data()));
     }
 
     if (selectedStage !== "الكل") {
