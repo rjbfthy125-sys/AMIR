@@ -2441,14 +2441,18 @@ function initLiveScreenDataShow() {
   
       try {  
         const studentCenter = currentStudent.center;  
-  
+
         const sessionsSnapshot = await db.collection('sessions')  
           .where('stage', '==', currentStudent.stage)  
+          .orderBy('createdAt', 'desc')
+          .limit(10)
           .get();  
   
         const attendanceSnapshot = await db.collection('attendance')  
           .where('phone', '==', currentStudent.phone)  
-          .get();  
+          .orderBy('timestamp', 'desc')
+          .limit(10)
+          .get(); 
   
         const attendedSessionIds = new Set();
         const attendedDates = new Set(); // خريطة التواريخ اليومية
@@ -2693,7 +2697,10 @@ function initLiveScreenDataShow() {
       const activeDisplay = document.getElementById('current-active-code-display');  
   
       try {  
-        const sessionsSnapshot = await db.collection('sessions').get();  
+      const sessionsSnapshot = await db.collection('sessions')
+          .orderBy('createdAt', 'desc')
+          .limit(15)
+          .get();  
   
         cachedSessions = [];  
         sessionsSnapshot.forEach(doc => {  
@@ -2925,7 +2932,7 @@ async function executeTargetedTeacherSearch() {
 
   try {  
     let query = db.collection('students').where('center', '==', selectedTeacherCenter);
-    let fetchedStudents = [];
+    let etchedStudents = [];
 
     if (/^01[0-9]{9}$/.test(searchInput)) {
       const doc = await db.collection('students').doc(searchInput).get();
